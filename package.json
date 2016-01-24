@@ -1,0 +1,37 @@
+{
+    "name": "node-kik",
+    "version": "0.0.1",
+    "description": "",
+    "main": "index.js",
+    "engines": {
+        "node": "5.x.x",
+        "npm": "3.x.x"
+    },
+    "scripts": {
+        "test": "mocha"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/kikinteractive/node-kik"
+    },
+    "devDependencies": {
+        "nock": "6.0.x",
+        "supertest": "1.1.x",
+        "mocha": "2.3.x",
+        "should": "1.2.x",
+        "jsdoc": "3.4.x",
+        "jshint": "2.9.x",
+        "istanbul": "0.4.x",
+        "grunt-mocha-istanbul": "3.0.x",
+        "grunt-mocha-test": "0.12.x",
+        "grunt-contrib-jshint": "0.12.x",
+        "grunt-jsdoc": "1.1.x",
+        "grunt-jscs": "2.6.x",
+        "grunt-contrib-watch": "0.6.1",
+        "grunt": ">=0.4.0"
+    },
+    "dependencies": {
+        "validator": "4.5.x",
+        "request-promise": "1.0.2"
+    }
+}

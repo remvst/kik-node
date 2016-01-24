@@ -61,6 +61,119 @@ describe('Incoming handling', () => {
             .expect(200)
             .end(done);
     });
+
+    it('Routes incoming messages anywhere', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiToken: BOT_API_TOKEN,
+            skipSignatureCheck: true,
+        });
+
+        bot.use((incoming, bot, next) => {
+            assert.deepEqual(incoming, { type: 'text', body: 'Testing' });
+
+            next();
+            done();
+        });
+
+        request(bot.incoming())
+            .post('/receive')
+            .send({
+                messages: [
+                    { type: 'text', body: 'Testing' }
+                ]
+            })
+            .expect(200)
+            .end();
+    });
+
+    it('Routes incoming messages to incoming', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiToken: BOT_API_TOKEN,
+            skipSignatureCheck: true,
+        });
+
+        bot.textMessage((incoming, bot, next) => {
+            assert.deepEqual(incoming, { type: 'text', body: 'Testing' });
+
+            next();
+            done();
+        });
+
+        request(bot.incoming())
+            .post('/receive')
+            .send({
+                messages: [
+                    { type: 'text', body: 'Testing' }
+                ]
+            })
+            .expect(200)
+            .end();
+    });
+
+    it('Does not route content messages to text', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiToken: BOT_API_TOKEN,
+            skipSignatureCheck: true,
+        });
+
+        bot.textMessage((incoming, bot, next) => {
+            assert(false);
+            next();
+        });
+
+        bot.use((incoming, bot, next) => {
+            done();
+            next();
+        });
+
+        request(bot.incoming())
+            .post('/receive')
+            .send({
+                messages: [
+                    { type: 'picture', picUrl: 'http://i.imgur.com/MxnW5UM.jpg' }
+                ]
+            })
+            .expect(200)
+            .end();
+    });
+
+    it('Routing respects ordering', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiToken: BOT_API_TOKEN,
+            skipSignatureCheck: true,
+        });
+        let index = 0;
+
+        bot.use((incoming, bot, next) => {
+            assert.equal(index++, 0);
+            next();
+        });
+
+        bot.use((incoming, bot, next) => {
+            assert.equal(index++, 1);
+            next();
+        });
+
+        bot.use((incoming, bot, next) => {
+            assert.equal(index++, 2);
+            done();
+            next();
+        });
+
+        request(bot.incoming())
+            .post('/receive')
+            .send({
+                messages: [
+                    { type: 'picture', picUrl: 'http://i.imgur.com/MxnW5UM.jpg' }
+                ]
+            })
+            .expect(200)
+            .end();
+    });
 });
 
 describe('Outoing messaging', () => {

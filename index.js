@@ -53,37 +53,45 @@ class Bot {
             throw new Error(errors.join(', '));
         }
 
+        this.stack = [];
         this.pendingMessages = [];
         this.pendingFlush = null;
+    }
 
-        let stack = [];
+    handle(data, bot, done)
+    {
+        let index = 0;
+        let advance = (err) => {
+            let layer = this.stack[index++];
 
-        this.handle = (stack, data, bot, done) => {
-            let index = 0;
-
-            function next(err)
-            {
-                let layer = stack[index++];
-
-                if (!layer) {
-                    if (done) {
-                        done(err);
-                    }
+            if (!layer) {
+                if (done) {
+                    done(err);
                 }
 
-                layer(data, bot, next);
+                return;
+            }
+
+            try {
+                layer(data, bot, advance);
+            }
+            catch (e) {
+                advance(e);
             }
         };
 
-        this.use = (handler) => {
-            stack.push(handler);
-        };
+        advance();
     }
 
-    incomingMessage(handler)
+    use(handler)
+    {
+        this.stack.push(handler);
+    }
+
+    textMessage(handler)
     {
         this.use((incoming, bot, next) => {
-            if (incoming.type === 'message') {
+            if (incoming.type === 'text') {
                 handler(incoming, bot, next);
             }
             else {
@@ -119,6 +127,29 @@ class Bot {
         });
 
         return this.flush();
+    }
+
+    _send(messages)
+    {
+        if (!util.isArray(messages)) {
+            messages = [messages];
+        }
+
+        let data = {'messages': messages};
+        
+        return rp({
+            method: 'POST',
+            uri: this.apiDomain + API_MESSAGES_PATH,
+            body: data,
+            json: true,
+            auth: {
+                user: this.username,
+                pass: this.apiToken
+            },
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
     }
 
     incoming()
@@ -167,13 +198,21 @@ class Bot {
                     return res.end('Invalid body');
                 }
 
+                var remainingMessages = parsed.messages.length;
+
+                function checkDone() {
+                    if (remainingMessages === 0) {
+                        res.statusCode = 200;
+
+                        return res.end('OK');
+                    }
+                }
+
                 parsed.messages.forEach((json) => {
-                    this.handle(json, this);
+                    this.handle(json, this, checkDone);
                 });
 
-                res.statusCode = 200;
-
-                return res.end('OK');
+                checkDone();
             });
         };
     }
@@ -204,29 +243,9 @@ class Bot {
                 this.pendingMessages = [];
             }
 
-            let data = {'messages': pendingMessages};
+            if (pendingMessages.length > 0) {
+                this._send(pendingMessages);
 
-            if (pendingMessages.length) {
-                rp({
-                    method: 'POST',
-                    uri: this.apiDomain + API_MESSAGES_PATH,
-                    body: data,
-                    json: true,
-                    auth: {
-                        user: this.username,
-                        pass: this.apiToken
-                    },
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then((data) => {
-                    console.log('g', data);
-                }, (error) => {
-                    console.log('h', error);
-                });
-            }
-
-            if (this.pendingMessages.length > 0) {
                 resolve(this.flush());
             }
             else {

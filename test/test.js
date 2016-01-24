@@ -184,7 +184,7 @@ describe('Outoing messages', () => {
             skipSignatureCheck: true
         });
 
-        let engine = nock('http://engine.apikik.com')
+        let engine = nock('https://engine.apikik.com')
             .post('/api/v1/message')
             .reply(200, (err, body, cb) => {
                 assert.deepEqual(body, {

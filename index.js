@@ -28,7 +28,7 @@ class Bot {
     constructor(options)
     {
         // default configuration
-        this.apiDomain = 'http://engine.apikik.com';
+        this.apiDomain = 'https://engine.apikik.com';
         this.incomingPath = '/receive';
         this.maxMessagePerBatch = 100;
 
@@ -224,7 +224,6 @@ class Bot {
             else {
                 this.pendingMessages = [];
             }
-
 
             if (pendingMessages.length > 0) {
                 API.sendMessages(

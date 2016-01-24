@@ -14,7 +14,7 @@ const BOT_USERNAME = 'testbot';
 const BOT_API_TOKEN = 'ff467bf2-2837-477c-923d-c8148cb394d9';
 
 describe('Incoming handling', () => {
-    it('Rejects invalid signatures', (done) => {
+    it('rejects invalid signatures', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
             apiToken: BOT_API_TOKEN
@@ -29,7 +29,7 @@ describe('Incoming handling', () => {
             .end(done);
     });
 
-    it('Rejects missing messages object', (done) => {
+    it('rejects missing messages object', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
             apiToken: BOT_API_TOKEN,
@@ -45,7 +45,7 @@ describe('Incoming handling', () => {
             .end(done);
     });
 
-    it('Respects incoming path option', (done) => {
+    it('respects incoming path option', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
             apiToken: BOT_API_TOKEN,
@@ -62,7 +62,7 @@ describe('Incoming handling', () => {
             .end(done);
     });
 
-    it('Routes incoming messages anywhere', (done) => {
+    it('routes incoming messages anywhere', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
             apiToken: BOT_API_TOKEN,
@@ -70,7 +70,7 @@ describe('Incoming handling', () => {
         });
 
         bot.use((incoming, bot, next) => {
-            assert.deepEqual(incoming, { type: 'text', body: 'Testing' });
+            assert.deepEqual(incoming.toJSON(), { type: 'text', body: 'Testing' });
 
             next();
             done();
@@ -87,7 +87,7 @@ describe('Incoming handling', () => {
             .end();
     });
 
-    it('Routes incoming messages to incoming', (done) => {
+    it('routes incoming messages to incoming', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
             apiToken: BOT_API_TOKEN,
@@ -95,7 +95,7 @@ describe('Incoming handling', () => {
         });
 
         bot.textMessage((incoming, bot, next) => {
-            assert.deepEqual(incoming, { type: 'text', body: 'Testing' });
+            assert.deepEqual(incoming.toJSON(), { type: 'text', body: 'Testing' });
 
             next();
             done();
@@ -112,7 +112,7 @@ describe('Incoming handling', () => {
             .end();
     });
 
-    it('Does not route content messages to text', (done) => {
+    it('does not route content messages to text', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
             apiToken: BOT_API_TOKEN,
@@ -140,7 +140,7 @@ describe('Incoming handling', () => {
             .end();
     });
 
-    it('Routing respects ordering', (done) => {
+    it('routing respects ordering', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
             apiToken: BOT_API_TOKEN,
@@ -176,8 +176,8 @@ describe('Incoming handling', () => {
     });
 });
 
-describe('Outoing messaging', () => {
-    it('Respects incoming path', (done) => {
+describe('Outoing messages', () => {
+    it('are sent properly', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
             apiToken: BOT_API_TOKEN,
@@ -185,16 +185,15 @@ describe('Outoing messaging', () => {
         });
 
         let engine = nock('http://engine.apikik.com')
-                        .persist()
-                        .post('/api/v1/messages')
-                        .reply(200, (err, body, cb) => {
-                            assert.deepEqual(body, {
-                                messages: [
-                                    { body: 'Test', type: 'text', to: 'mpr' }
-                                ]
-                            });
-                            done();
-                        });
+            .post('/api/v1/message')
+            .reply(200, (err, body, cb) => {
+                assert.deepEqual(body, {
+                    messages: [
+                        { body: 'Test', type: 'text', to: 'mpr' }
+                    ]
+                });
+                done();
+            });
 
         bot.send('mpr', {
             type: 'text',

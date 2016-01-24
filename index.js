@@ -4,9 +4,8 @@ let util = require('util');
 let extend = util._extend;
 let validator = require('validator');
 let crypto = require('crypto');
-let rp = require('request-promise');
-
-const API_MESSAGES_PATH = '/api/v1/messages';
+let Message = require('./lib/message.js');
+let API = require('./lib/api.js');
 
 function isSignatureValid(body, apiToken, signature)
 {
@@ -118,6 +117,10 @@ class Bot {
 
         recipients.forEach((recipient) => {
             messages.forEach((message) => {
+                if (util.isFunction(message.toJSON)) {
+                    message = message.toJSON();
+                }
+
                 message = extend({}, message);
 
                 message.to = recipient;
@@ -127,29 +130,6 @@ class Bot {
         });
 
         return this.flush();
-    }
-
-    _send(messages)
-    {
-        if (!util.isArray(messages)) {
-            messages = [messages];
-        }
-
-        let data = {'messages': messages};
-        
-        return rp({
-            method: 'POST',
-            uri: this.apiDomain + API_MESSAGES_PATH,
-            body: data,
-            json: true,
-            auth: {
-                user: this.username,
-                pass: this.apiToken
-            },
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
     }
 
     incoming()
@@ -198,10 +178,12 @@ class Bot {
                     return res.end('Invalid body');
                 }
 
-                var remainingMessages = parsed.messages.length;
+                let remainingMessages = parsed.messages.length + 1;
 
                 function checkDone() {
-                    if (remainingMessages === 0) {
+                    --remainingMessages;
+                    
+                    if (remainingMessages <= 0) {
                         res.statusCode = 200;
 
                         return res.end('OK');
@@ -209,7 +191,7 @@ class Bot {
                 }
 
                 parsed.messages.forEach((json) => {
-                    this.handle(json, this, checkDone);
+                    this.handle(Message.fromJSON(json), this, checkDone);
                 });
 
                 checkDone();
@@ -243,8 +225,13 @@ class Bot {
                 this.pendingMessages = [];
             }
 
+
             if (pendingMessages.length > 0) {
-                this._send(pendingMessages);
+                API.sendMessages(
+                    this.apiDomain,
+                    this.username,
+                    this.apiToken,
+                    pendingMessages);
 
                 resolve(this.flush());
             }
@@ -254,5 +241,7 @@ class Bot {
         });
     }
 }
+
+Bot.Message = Message;
 
 module.exports = Bot;

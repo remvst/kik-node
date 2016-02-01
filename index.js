@@ -7,6 +7,21 @@ let crypto = require('crypto');
 let Message = require('./lib/message.js');
 let API = require('./lib/api.js');
 
+function sanitizeMessage(message)
+{
+    if (util.isString(message)) {
+        message = Message.text(message);
+    }
+    else if (message instanceof Message) {
+        message = message.toJSON();
+    }
+    else if (util.isFunction(message.toJSON)) {
+        message = message.toJSON();
+    }
+
+    return message;
+}
+
 function isSignatureValid(body, apiToken, signature)
 {
     if (!signature) {
@@ -147,8 +162,10 @@ class Bot {
         }
 
         if (!util.isArray(messages)) {
-        	messages = [messages];
+            messages = [messages];
         }
+
+        messages = messages.map(sanitizeMessage);
 
         let members = incoming.members ? incoming.members : [incoming.from];
 
@@ -174,7 +191,7 @@ class Bot {
                     return msg;
                 });
             }
-            
+
             // send both the pic and title messages to the user
             this.send(to, messages);
         });
@@ -195,13 +212,11 @@ class Bot {
         if (!!messages && !util.isArray(messages)) {
             messages = [messages];
         }
+        
+        messages = messages.map(sanitizeMessage);
 
         recipients.forEach((recipient) => {
             messages.forEach((message) => {
-                if (util.isFunction(message.toJSON)) {
-                    message = message.toJSON();
-                }
-
                 message = extend({}, message);
 
                 message.to = recipient;

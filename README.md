@@ -1,5 +1,6 @@
 ## Example: Echo Bot
 
+```javascript
 'use strict';
 
 let util = require('util');
@@ -21,3 +22,4 @@ echoTheBot.textMessage((msg, bot, next) => {
 let server = http
     .createServer(echoTheBot.incoming())
     .listen(process.env['PORT'] || 8080);
+```

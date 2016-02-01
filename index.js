@@ -55,6 +55,29 @@ class Bot {
         this.stack = [];
         this.pendingMessages = [];
         this.pendingFlush = null;
+
+        this.textMessage((msg, bot, next) => {
+            if (msg.body) {
+                let components = msg.body.split('|');
+
+                if (components.length > 1) {
+                    msg.body = components[0];
+                    msg.chats = components[1].split(',');
+                    msg.members = components[2].split(',');
+                }
+
+                if (msg.body.indexOf('@') === 0) {
+                    let mentionComponents = /^(@[A-Za-z0-9._]{2,32})(.*)/.exec(msg.body);
+
+                    if (mentionComponents) {
+                        msg.body = mentionComponents[2].trim();
+                        msg.isMention = true;
+                    }
+                }
+            }
+
+            next();
+        });
     }
 
     handle(data, bot, done)
@@ -96,6 +119,64 @@ class Bot {
             else {
                 next();
             }
+        });
+    }
+
+    scanCode(options)
+    {
+        if (!options || !options.data) {
+            return API.usernameScanCode(this.username);
+        }
+
+        return API.dataScanCode(this.username, data);
+    }
+
+    lookupUserInfo(username)
+    {
+        return API.userInfo(
+            this.apiDomain,
+            this.username,
+            this.apiToken,
+            username);
+    }
+
+    reply(incoming, messages)
+    {
+        if (!incoming) {
+            throw 'Invalid recipient list';
+        }
+
+        if (!util.isArray(messages)) {
+        	messages = [messages];
+        }
+
+        let members = incoming.members ? incoming.members : [incoming.from];
+
+        members.forEach((to, index) => {
+            let chat;
+
+            if (incoming.chats) {
+                chat = incoming.chats[index];
+            }
+
+            if (chat) {
+                messages = messages.map((message) => {
+                    let msg = JSON.parse(JSON.stringify(message));
+                    let oldText = msg.appName || msg.body;
+
+                    if (msg.type === 'text') {
+                        msg.body = oldText + '|' + chat;
+                    }
+                    else {
+                        msg.appName = oldText + '|' + chat;
+                    }
+
+                    return msg;
+                });
+            }
+            
+            // send both the pic and title messages to the user
+            this.send(to, messages);
         });
     }
 

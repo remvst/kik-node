@@ -7,21 +7,6 @@ let crypto = require('crypto');
 let Message = require('./lib/message.js');
 let API = require('./lib/api.js');
 
-function sanitizeMessage(message)
-{
-    if (util.isString(message)) {
-        message = Message.text(message);
-    }
-    else if (message instanceof Message) {
-        message = message.toJSON();
-    }
-    else if (util.isFunction(message.toJSON)) {
-        message = message.toJSON();
-    }
-
-    return message;
-}
-
 function isSignatureValid(body, apiToken, signature)
 {
     if (!signature) {
@@ -165,8 +150,6 @@ class Bot {
             messages = [messages];
         }
 
-        messages = messages.map(sanitizeMessage);
-
         let members = incoming.members ? incoming.members : [incoming.from];
 
         members.forEach((to, index) => {
@@ -177,23 +160,32 @@ class Bot {
             }
 
             if (chat) {
-                messages = messages.map((message) => {
-                    let msg = JSON.parse(JSON.stringify(message));
-                    let oldText = msg.appName || msg.body;
+                this.send(to, messages.map((message) => {
+                    if (util.isFunction(message.toJSON)) {
+                        message = message.toJSON();
+                    }
 
-                    if (msg.type === 'text') {
-                        msg.body = oldText + '|' + chat;
+                    message = extend({}, message);
+
+                    let oldText = message.body;
+
+                    if (message.attribution) {
+                        oldText = message.attribution.name;
+                    }
+
+                    if (message.type === 'text') {
+                        message.body = oldText + '|' + chat;
                     }
                     else {
-                        msg.appName = oldText + '|' + chat;
+                        message.attribution.name = oldText + '|' + chat;
                     }
 
-                    return msg;
-                });
+                    return message;
+                }));
             }
-
-            // send both the pic and title messages to the user
-            this.send(to, messages);
+            else {
+                this.send(to, messages);
+            }
         });
     }
 
@@ -212,11 +204,13 @@ class Bot {
         if (!!messages && !util.isArray(messages)) {
             messages = [messages];
         }
-        
-        messages = messages.map(sanitizeMessage);
 
         recipients.forEach((recipient) => {
             messages.forEach((message) => {
+                if (util.isFunction(message.toJSON)) {
+                    message = message.toJSON();
+                }
+
                 message = extend({}, message);
 
                 message.to = recipient;

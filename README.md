@@ -5,7 +5,7 @@
 
 let util = require('util');
 let http = require('http');
-let Bot  = require('../../node-kik');
+let Bot  = require('node-kik-bot');
 
 // configure the bot API endpoint, details for your bot
 let echoTheBot = new Bot({
@@ -21,5 +21,5 @@ echoTheBot.textMessage((msg, bot, next) => {
 // set up your server and start listening
 let server = http
     .createServer(echoTheBot.incoming())
-    .listen(process.env['PORT'] || 8080);
+    .listen(process.env.PORT || 8080);
 ```

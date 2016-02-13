@@ -29,7 +29,7 @@ class Bot {
     {
         // default configuration
         this.apiDomain = 'https://engine.apikik.com';
-        this.incomingPath = '/receive';
+        this.incomingPath = '/incoming';
         this.maxMessagePerBatch = 100;
 
         // override any specified configuration
@@ -222,17 +222,19 @@ class Bot {
         return this.flush();
     }
 
-    incoming()
+    incoming(incomingPath)
     {
+        incomingPath = incomingPath || this.incomingPath;
+
         return (req, res) => {
-            if (req.url !== this.incomingPath) {
+            if (req.url !== incomingPath) {
                 return;
             }
 
             if (req.method !== 'POST') {
                 res.statusCode = 405;
 
-                return res.end(this.incomingPath + ' only accepts POST');
+                return res.end(incomingPath + ' only accepts POST');
             }
 
             let body = '';

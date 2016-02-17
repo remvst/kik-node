@@ -150,6 +150,15 @@ class Bot {
             messages = [messages];
         }
 
+        for(var i = 0 ; i < messages.length ; i++){
+            if (util.isString(messages[i])) {
+                messages[i] = {
+                    'type': 'text',
+                    'body': messages[i]
+                };
+            }
+        }
+
         let members = incoming.members ? incoming.members : [incoming.from];
 
         members.forEach((to, index) => {
@@ -274,7 +283,7 @@ class Bot {
 
                 function checkDone() {
                     --remainingMessages;
-                    
+
                     if (remainingMessages <= 0) {
                         res.statusCode = 200;
 

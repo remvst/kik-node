@@ -23,3 +23,18 @@ let server = http
     .createServer(echoTheBot.incoming())
     .listen(process.env.PORT || 8080);
 ```
+
+## Example: sending a message to a specific user
+```javascript
+// To one user:
+bot.send('user1', {
+    'type': 'text',
+    'body': 'yoloooooooo'
+});
+
+// To multiple users
+bot.send(['user1', 'user2'], {
+    'type': 'text',
+    'body': 'yoloooooooo'
+});
+```

@@ -11,13 +11,13 @@ let defer = typeof setImmediate === 'function' ? setImmediate : (fn) => {
 let Bot = require('../index.js');
 
 const BOT_USERNAME = 'testbot';
-const BOT_API_TOKEN = 'ff467bf2-2837-477c-923d-c8148cb394d9';
+const BOT_API_KEY = 'ff467bf2-2837-477c-923d-c8148cb394d9';
 
 describe('Incoming handling', () => {
     it('rejects invalid signatures', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
-            apiToken: BOT_API_TOKEN
+            apiKey: BOT_API_KEY
         });
 
         request(bot.incoming())
@@ -32,7 +32,7 @@ describe('Incoming handling', () => {
     it('rejects missing messages object', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
-            apiToken: BOT_API_TOKEN,
+            apiKey: BOT_API_KEY,
             skipSignatureCheck: true
         });
 
@@ -48,7 +48,7 @@ describe('Incoming handling', () => {
     it('respects incoming path option', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
-            apiToken: BOT_API_TOKEN,
+            apiKey: BOT_API_KEY,
             skipSignatureCheck: true,
             incomingPath: '/incoming_test'
         });
@@ -65,8 +65,13 @@ describe('Incoming handling', () => {
     it('routes incoming messages anywhere', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
+<<<<<<< HEAD
             apiToken: BOT_API_TOKEN,
             skipSignatureCheck: true
+=======
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true,
+>>>>>>> be5c1b445a01ac811c7ae74e15709ce00a16e7fa
         });
 
         bot.use((incoming, bot, next) => {
@@ -90,7 +95,7 @@ describe('Incoming handling', () => {
     it('routes incoming messages to incoming', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
-            apiToken: BOT_API_TOKEN,
+            apiKey: BOT_API_KEY,
             skipSignatureCheck: true,
         });
 
@@ -115,7 +120,7 @@ describe('Incoming handling', () => {
     it('does not route content messages to text', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
-            apiToken: BOT_API_TOKEN,
+            apiKey: BOT_API_KEY,
             skipSignatureCheck: true,
         });
 
@@ -143,7 +148,7 @@ describe('Incoming handling', () => {
     it('routing respects ordering', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
-            apiToken: BOT_API_TOKEN,
+            apiKey: BOT_API_KEY,
             skipSignatureCheck: true,
         });
         let index = 0;
@@ -180,7 +185,7 @@ describe('Outoing messages', () => {
     it('are sent properly', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
-            apiToken: BOT_API_TOKEN,
+            apiKey: BOT_API_KEY,
             skipSignatureCheck: true
         });
 

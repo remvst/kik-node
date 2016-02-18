@@ -27,14 +27,9 @@ let server = http
 ## Example: sending a message to a specific user
 ```javascript
 // To one user:
-bot.send('user1', {
-    'type': 'text',
-    'body': 'yoloooooooo'
-});
+bot.send('user1', Bot.Message.text('some text'));
+bot.send('user1', 'some text'); // shorthand for text messages
 
 // To multiple users
-bot.send(['user1', 'user2'], {
-    'type': 'text',
-    'body': 'yoloooooooo'
-});
+bot.send(['user1', 'user2'], 'some text');
 ```

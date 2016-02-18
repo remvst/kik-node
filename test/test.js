@@ -65,13 +65,8 @@ describe('Incoming handling', () => {
     it('routes incoming messages anywhere', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
-<<<<<<< HEAD
-            apiToken: BOT_API_TOKEN,
-            skipSignatureCheck: true
-=======
             apiKey: BOT_API_KEY,
-            skipSignatureCheck: true,
->>>>>>> be5c1b445a01ac811c7ae74e15709ce00a16e7fa
+            skipSignatureCheck: true
         });
 
         bot.use((incoming, bot, next) => {

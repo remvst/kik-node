@@ -21,7 +21,7 @@ describe('Incoming handling', () => {
         });
 
         request(bot.incoming())
-            .post('/receive')
+            .post(bot.incomingPath)
             .send({
                 messages: []
             })
@@ -37,7 +37,7 @@ describe('Incoming handling', () => {
         });
 
         request(bot.incoming())
-            .post('/receive')
+            .post(bot.incomingPath)
             .send({
                 messages: null
             })
@@ -66,18 +66,18 @@ describe('Incoming handling', () => {
         let bot = new Bot({
             username: BOT_USERNAME,
             apiToken: BOT_API_TOKEN,
-            skipSignatureCheck: true,
+            skipSignatureCheck: true
         });
 
         bot.use((incoming, bot, next) => {
-            assert.deepEqual(incoming.toJSON(), { type: 'text', body: 'Testing' });
+            assert.deepEqual(incoming.toJSON(), Bot.Message.text('Testing').toJSON());
 
             next();
             done();
         });
 
         request(bot.incoming())
-            .post('/receive')
+            .post(bot.incomingPath)
             .send({
                 messages: [
                     { type: 'text', body: 'Testing' }
@@ -95,14 +95,14 @@ describe('Incoming handling', () => {
         });
 
         bot.textMessage((incoming, bot, next) => {
-            assert.deepEqual(incoming.toJSON(), { type: 'text', body: 'Testing' });
+            assert.deepEqual(incoming.toJSON(), Bot.Message.text('Testing').toJSON());
 
             next();
             done();
         });
 
         request(bot.incoming())
-            .post('/receive')
+            .post(bot.incomingPath)
             .send({
                 messages: [
                     { type: 'text', body: 'Testing' }
@@ -130,7 +130,7 @@ describe('Incoming handling', () => {
         });
 
         request(bot.incoming())
-            .post('/receive')
+            .post(bot.incomingPath)
             .send({
                 messages: [
                     { type: 'picture', picUrl: 'http://i.imgur.com/MxnW5UM.jpg' }
@@ -165,7 +165,7 @@ describe('Incoming handling', () => {
         });
 
         request(bot.incoming())
-            .post('/receive')
+            .post(bot.incomingPath)
             .send({
                 messages: [
                     { type: 'picture', picUrl: 'http://i.imgur.com/MxnW5UM.jpg' }

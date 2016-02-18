@@ -150,14 +150,13 @@ class Bot {
             messages = [messages];
         }
 
-        for(var i = 0 ; i < messages.length ; i++){
-            if (util.isString(messages[i])) {
-                messages[i] = {
-                    'type': 'text',
-                    'body': messages[i]
-                };
+        messages = messages.map((message) => {
+            if (util.isString(message)) {
+                return {'type': 'text', 'body': message};
             }
-        }
+
+            return message;
+        });
 
         let members = incoming.members ? incoming.members : [incoming.from];
 

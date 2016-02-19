@@ -7,7 +7,7 @@ let crypto = require('crypto');
 let Message = require('./lib/message.js');
 let API = require('./lib/api.js');
 
-function isSignatureValid(body, apiToken, signature)
+function isSignatureValid(body, apiKey, signature)
 {
     if (!signature) {
         return false;
@@ -15,7 +15,7 @@ function isSignatureValid(body, apiToken, signature)
 
     let signatureToLowerCase = signature.toLowerCase();
     let expected = crypto
-        .createHmac('sha1', apiToken)
+        .createHmac('sha1', apiKey)
         .update(new Buffer(body))
         .digest('hex')
         .toLowerCase();
@@ -44,8 +44,8 @@ class Bot {
             errors.push('Option "username" must be a valid Kik username');
         }
 
-        if (validator.isHexadecimal(this.apiToken)) {
-            errors.push('Option "apiToken" must be a Kik API token, see http://dev.kik.com/');
+        if (validator.isHexadecimal(this.apiKey)) {
+            errors.push('Option "apiKey" must be a Kik API key, see http://dev.kik.com/');
         }
 
         if (errors.length > 0) {
@@ -136,7 +136,7 @@ class Bot {
         return API.userInfo(
             this.apiDomain,
             this.username,
-            this.apiToken,
+            this.apiKey,
             username);
     }
 
@@ -149,6 +149,14 @@ class Bot {
         if (!util.isArray(messages)) {
             messages = [messages];
         }
+
+        messages = messages.map((message) => {
+            if (util.isString(message)) {
+                return {'type': 'text', 'body': message};
+            }
+
+            return message;
+        });
 
         let members = incoming.members ? incoming.members : [incoming.from];
 
@@ -247,7 +255,7 @@ class Bot {
 
             req.on('end', () => {
                 if (!this.skipSignatureCheck) {
-                    if (!isSignatureValid(body, this.apiToken, req.headers['x-kik-signature'])) {
+                    if (!isSignatureValid(body, this.apiKey, req.headers['x-kik-signature'])) {
                         // the request was not sent with a valid signature, so we reject it
                         res.statusCode = 403;
 
@@ -276,7 +284,7 @@ class Bot {
 
                 function checkDone() {
                     --remainingMessages;
-                    
+
                     if (remainingMessages <= 0) {
                         res.statusCode = 200;
 
@@ -323,7 +331,7 @@ class Bot {
                 API.sendMessages(
                     this.apiDomain,
                     this.username,
-                    this.apiToken,
+                    this.apiKey,
                     pendingMessages);
 
                 resolve(this.flush());

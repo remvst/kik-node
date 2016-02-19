@@ -8,7 +8,8 @@
         "npm": "3.x.x"
     },
     "scripts": {
-        "test": "mocha"
+        "test": "mocha",
+        "cover": "istanbul cover _mocha -- -R spec"
     },
     "repository": {
         "type": "git",

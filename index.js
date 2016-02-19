@@ -235,7 +235,7 @@ class Bot {
         incomingPath = incomingPath || this.incomingPath;
 
         return (req, res, next) => {
-            next = next || () => {};
+            next = next || function() {};
 
             if (req.url !== incomingPath) {
                 return next();

@@ -226,9 +226,11 @@ class Bot {
     {
         incomingPath = incomingPath || this.incomingPath;
 
-        return (req, res) => {
+        return (req, res, next) => {
+            next = next || () => {};
+
             if (req.url !== incomingPath) {
-                return;
+                return next();
             }
 
             if (req.method !== 'POST') {

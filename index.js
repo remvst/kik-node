@@ -23,6 +23,15 @@ function isSignatureValid(body, apiKey, signature)
     return expected === signatureToLowerCase;
 }
 
+/**
+ * @class Bot
+ * This is a test
+ * @constructor
+ * @param {String} options.username
+ * @param {String} options.apiToken
+ * @param {String} [options.incomingPath]="/incoming" Set true to enable polling or set options
+ * @see https://engine.kik.com
+ */
 class Bot {
 
     constructor(options)
@@ -30,7 +39,7 @@ class Bot {
         // default configuration
         this.apiDomain = 'https://engine.apikik.com';
         this.incomingPath = '/incoming';
-        this.maxMessagePerBatch = 100;
+        this.maxMessagePerBatch = 25;
 
         // override any specified configuration
         Object.keys(options).forEach((key) => {
@@ -317,32 +326,43 @@ class Bot {
             }
 
             this.pendingFlush = false;
+            this.pendingMessages = [];
 
-            // trim the batch and schedule another flush
-            if (pendingMessages.length > this.maxMessagePerBatch) {
-                this.pendingMessages = pendingMessages.slice(this.maxMessagePerBatch, pendingMessages.length);
-                pendingMessages.length = this.maxMessagePerBatch;
-            }
-            else {
-                this.pendingMessages = [];
-            }
+            let batches = {};
 
-            if (pendingMessages.length > 0) {
-                API.sendMessages(
-                    this.apiDomain,
-                    this.username,
-                    this.apiKey,
-                    pendingMessages);
+            pendingMessages.forEach((message) => {
+                let to = message.to;
+                let batch = batches[to];
 
-                resolve(this.flush());
-            }
-            else {
-                resolve();
-            }
+                if (!batch) {
+                    batch = batches[to] = [];
+                }
+
+                batch.push(message);
+            });
+
+            Object.keys(batches).forEach((key) => {
+                let batch = batches[key];
+
+                while (batch.length > 0) {
+                    // keep the remainder around to send after
+                    let nextBatch = pendingMessages.slice(this.maxMessagePerBatch, batch.length);
+
+                    // trim the batch to the max limit
+                    batch.length = Math.min(batch.length, this.maxMessagePerBatch);
+
+                    API.sendMessages(this.apiDomain, this.username, this.apiKey, batch);
+
+                    batch = nextBatch;
+                }
+            });
+
+            resolve();
         });
     }
 }
 
 Bot.Message = Message;
+Bot.API = API;
 
 module.exports = Bot;

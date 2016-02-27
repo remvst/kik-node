@@ -33,3 +33,17 @@ bot.send('user1', 'some text'); // shorthand for text messages
 // To multiple users
 bot.send(['user1', 'user2'], 'some text');
 ```
+
+## API Documentation
+
+<a name="Bot"></a>
+## Bot
+<a name="new_Bot_new"></a>
+### new Bot()
+
+| Param | Type | Description |
+| --- | --- | --- |
+| options.username | <code>String</code> |  |
+| options.apiToken | <code>String</code> |  |
+| [options.incomingPath] | <code>String</code> | Set true to enable polling or set options |
+

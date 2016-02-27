@@ -13,6 +13,13 @@ let Bot = require('../index.js');
 const BOT_USERNAME = 'testbot';
 const BOT_API_KEY = 'ff467bf2-2837-477c-923d-c8148cb394d9';
 
+let messageCheck = () => {};
+let engine = nock('https://engine.apikik.com')
+    .post('/api/v1/message')
+    .reply(200, (err, body, cb) => {
+        messageCheck(err, body, cb);
+    });
+
 describe('Incoming handling', () => {
     it('rejects invalid signatures', (done) => {
         let bot = new Bot({
@@ -184,20 +191,102 @@ describe('Outoing messages', () => {
             skipSignatureCheck: true
         });
 
-        let engine = nock('https://engine.apikik.com')
-            .post('/api/v1/message')
-            .reply(200, (err, body, cb) => {
-                assert.deepEqual(body, {
-                    messages: [
-                        { body: 'Test', type: 'text', to: 'mpr' }
-                    ]
-                });
-                done();
+        messageCheck = (err, body, cb) => {
+            assert.deepEqual(body, {
+                messages: [
+                    { body: 'Test', type: 'text', to: 'mpr' }
+                ]
             });
+            done();
+        };
 
         bot.send('mpr', {
             type: 'text',
             body: 'Test'
+        });
+    });
+    it('are batched together', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+
+        messageCheck = (err, body, cb) => {
+            assert.deepEqual(body, {
+                messages: [
+                    { body: 'Test 1', type: 'text', to: 'mpr' },
+                    { body: 'Test 2', type: 'text', to: 'mpr' },
+                    { body: 'Test 3', type: 'text', to: 'mpr' }
+                ]
+            });
+            done();
+        };
+
+        bot.send('mpr', {
+            type: 'text',
+            body: 'Test 1'
+        });
+        bot.send('mpr', {
+            type: 'text',
+            body: 'Test 2'
+        });
+        bot.send('mpr', {
+            type: 'text',
+            body: 'Test 3'
+        });
+    });
+    it('are batched together by recipient', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+        let batch = 0;
+
+        messageCheck = (err, body, cb) => {
+            ++batch;
+
+            if (batch === 1) {
+                assert.deepEqual(body, {
+                    messages: [
+                        { body: 'Test 1', type: 'text', to: 'mpr' },
+                        { body: 'Test 4', type: 'text', to: 'mpr' }
+                    ]
+                });
+            }
+            else if (batch === 2) {
+                assert.deepEqual(body, {
+                    messages: [
+                        { body: 'Test 2', type: 'text', to: 'chris' }
+                    ]
+                });
+            }
+            else if (batch === 3) {
+                assert.deepEqual(body, {
+                    messages: [
+                        { body: 'Test 3', type: 'text', to: 'ted' }
+                    ]
+                });
+                done();
+            }
+        };
+
+        bot.send('mpr', {
+            type: 'text',
+            body: 'Test 1'
+        });
+        bot.send('chris', {
+            type: 'text',
+            body: 'Test 2'
+        });
+        bot.send('ted', {
+            type: 'text',
+            body: 'Test 3'
+        });
+        bot.send('mpr', {
+            type: 'text',
+            body: 'Test 4'
         });
     });
 });

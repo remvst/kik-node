@@ -6,6 +6,8 @@ let validator = require('validator');
 let crypto = require('crypto');
 let Message = require('./lib/message.js');
 let API = require('./lib/api.js');
+let UserProfile = require('./lib/user-profile.js');
+let ScanCode = require('./lib/scan-code.js');
 
 function isSignatureValid(body, apiKey, signature)
 {
@@ -21,6 +23,14 @@ function isSignatureValid(body, apiKey, signature)
         .toLowerCase();
 
     return expected === signatureToLowerCase;
+}
+
+class BotReply {
+
+    constructor(incomingMessage)
+    {
+        this.message = incomingMessage;
+    }
 }
 
 /**
@@ -89,26 +99,46 @@ class Bot {
         });
     }
 
-    handle(data, bot, done)
+    handle(msg, done)
     {
         let index = 0;
+        let finished = false;
+        let complete = (err) => {
+            finished = true;
+
+            if (done) {
+                done(err);
+            }
+        };
         let advance = (err) => {
+            if (finished) {
+                return;
+            }
+
             let layer = this.stack[index++];
 
             if (!layer) {
-                if (done) {
-                    done(err);
-                }
+                complete();
 
                 return;
             }
 
             try {
-                layer(data, bot, advance);
+                layer(msg, advance);
             }
             catch (e) {
                 advance(e);
             }
+        };
+        
+        msg.reply = (toSend) => {
+            complete();
+
+            return this.reply(msg, toSend);
+        };
+
+        msg.ignore = () => {
+            complete();
         };
 
         advance();
@@ -140,13 +170,24 @@ class Bot {
         return API.dataScanCode(this.username, data);
     }
 
-    lookupUserInfo(username)
+    getUserProfile(username)
     {
-        return API.userInfo(
-            this.apiDomain,
-            this.username,
-            this.apiKey,
-            username);
+        let fetch = (username) => {
+            return API.userInfo(
+                this.apiDomain,
+                this.username,
+                this.apiKey,
+                username)
+            .then((result) => {
+                return new UserProfile(username, result);
+            });
+        };
+
+        if (util.isArray(username)) {
+            return Promise.all(username.map(fetch));
+        }
+
+        return fetch(username);
     }
 
     reply(incoming, messages)
@@ -302,7 +343,9 @@ class Bot {
                 }
 
                 parsed.messages.forEach((json) => {
-                    this.handle(Message.fromJSON(json), this, checkDone);
+                    let msg = Message.fromJSON(json);
+
+                    this.handle(msg, checkDone);
                 });
 
                 checkDone();
@@ -312,14 +355,14 @@ class Bot {
 
     flush(forced)
     {
-        return new Promise((resolve, reject) => {
+        return new Promise((fulfill, reject) => {
             let pendingMessages = this.pendingMessages;
 
             if (!forced) {
                 if (!this.pendingFlush) {
                     this.pendingFlush = true;
 
-                    process.nextTick(() => resolve(this.flush(true)));
+                    process.nextTick(() => fulfill(this.flush(true)));
                 }
 
                 return;
@@ -346,7 +389,7 @@ class Bot {
 
                 while (batch.length > 0) {
                     // keep the remainder around to send after
-                    let nextBatch = pendingMessages.slice(this.maxMessagePerBatch, batch.length);
+                    let nextBatch = batch.slice(this.maxMessagePerBatch, batch.length);
 
                     // trim the batch to the max limit
                     batch.length = Math.min(batch.length, this.maxMessagePerBatch);
@@ -357,7 +400,7 @@ class Bot {
                 }
             });
 
-            resolve();
+            fulfill();
         });
     }
 }

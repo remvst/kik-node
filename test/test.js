@@ -76,7 +76,7 @@ describe('Incoming handling', () => {
             skipSignatureCheck: true
         });
 
-        bot.use((incoming, bot, next) => {
+        bot.use((incoming, next) => {
             assert.deepEqual(incoming.toJSON(), Bot.Message.text('Testing').toJSON());
 
             next();
@@ -101,7 +101,7 @@ describe('Incoming handling', () => {
             skipSignatureCheck: true,
         });
 
-        bot.textMessage((incoming, bot, next) => {
+        bot.textMessage((incoming, next) => {
             assert.deepEqual(incoming.toJSON(), Bot.Message.text('Testing').toJSON());
 
             next();
@@ -205,6 +205,7 @@ describe('Outoing messages', () => {
             body: 'Test'
         });
     });
+
     it('are batched together', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
@@ -236,6 +237,7 @@ describe('Outoing messages', () => {
             body: 'Test 3'
         });
     });
+
     it('are batched together by recipient', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
@@ -288,5 +290,129 @@ describe('Outoing messages', () => {
             type: 'text',
             body: 'Test 4'
         });
+    });
+
+    it('are limited to the max batch size', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            maxMessagePerBatch: 2,
+            skipSignatureCheck: true
+        });
+        let batch = 0;
+
+        messageCheck = (err, body, cb) => {
+            ++batch;
+
+            if (batch === 1) {
+                assert.deepEqual(body, {
+                    messages: [
+                        { body: 'Test 1', type: 'text', to: 'mpr' },
+                        { body: 'Test 2', type: 'text', to: 'mpr' }
+                    ]
+                });
+            }
+            else if (batch === 2) {
+                assert.deepEqual(body, {
+                    messages: [
+                        { body: 'Test 3', type: 'text', to: 'mpr' },
+                        { body: 'Test 4', type: 'text', to: 'mpr' }
+                    ]
+                });
+            }
+            else if (batch === 3) {
+                assert.deepEqual(body, {
+                    messages: [
+                        { body: 'Test 5', type: 'text', to: 'mpr' }
+                    ]
+                });
+            }
+            else if (batch === 4) {
+                assert.deepEqual(body, {
+                    messages: [
+                        { body: 'Test 1', type: 'text', to: 'chris' },
+                        { body: 'Test 2', type: 'text', to: 'chris' }
+                    ]
+                });
+                done();
+            }
+        };
+
+        bot.send('mpr', {
+            type: 'text',
+            body: 'Test 1'
+        });
+        bot.send('mpr', {
+            type: 'text',
+            body: 'Test 2'
+        });
+        bot.send('mpr', {
+            type: 'text',
+            body: 'Test 3'
+        });
+        bot.send('mpr', {
+            type: 'text',
+            body: 'Test 4'
+        });
+        bot.send('mpr', {
+            type: 'text',
+            body: 'Test 5'
+        });
+        bot.send('chris', {
+            type: 'text',
+            body: 'Test 1'
+        });
+        bot.send('chris', {
+            type: 'text',
+            body: 'Test 2'
+        });
+    });
+});
+
+describe('Get user profile info', () => {
+    it('fetches', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+
+        let engine = nock('https://engine.apikik.com')
+            .get('/api/v1/user/mpr')
+            .reply(200, {
+                firstName: 'Mike',
+                lastName: 'Roberts',
+            });
+
+        bot.getUserProfile('mpr')
+            .then((profile) => {
+                assert.equal(profile.username, 'mpr');
+                assert.equal(profile.displayName, 'Mike Roberts');
+                assert.equal(profile.firstName, 'Mike');
+                assert.equal(profile.lastName, 'Roberts');
+
+                done();
+            }, (err) => {
+                assert.fail(err);
+            });
+    });
+
+    it('fails when user does not exist', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+
+        let engine = nock('https://engine.apikik.com')
+            .get('/api/v1/user/mpr2')
+            .reply(404);
+
+        bot.getUserProfile('mpr2')
+            .then((profile) => {
+                assert.fail('Profile should not exist');
+            }, (err) => {
+                done();
+            });
     });
 });

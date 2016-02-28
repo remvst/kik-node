@@ -27,9 +27,16 @@ function isSignatureValid(body, apiKey, signature)
 
 class BotReply {
 
-    constructor(incomingMessage)
+    constructor()
     {
-        this.message = incomingMessage;
+    }
+
+    reply(message)
+    {
+    }
+
+    ignore()
+    {
     }
 }
 
@@ -75,7 +82,7 @@ class Bot {
         this.pendingMessages = [];
         this.pendingFlush = null;
 
-        this.textMessage((msg, bot, next) => {
+        this.onTextMessage((msg, bot, next) => {
             if (msg.body) {
                 let components = msg.body.split('|');
 
@@ -99,7 +106,7 @@ class Bot {
         });
     }
 
-    handle(msg, done)
+    handle(incoming, done)
     {
         let index = 0;
         let finished = false;
@@ -124,20 +131,73 @@ class Bot {
             }
 
             try {
-                layer(msg, advance);
+                layer(incoming, advance);
             }
             catch (e) {
                 advance(e);
             }
         };
         
-        msg.reply = (toSend) => {
+        incoming.reply = (messages) => {
             complete();
 
-            return this.reply(msg, toSend);
+            if (!incoming) {
+                throw 'Invalid recipient list';
+            }
+
+            if (!util.isArray(messages)) {
+                messages = [messages];
+            }
+
+
+            messages = messages.map((message) => {
+                if (util.isString(message)) {
+                    return {'type': 'text', 'body': message};
+                }
+
+                return message;
+            });
+
+            let members = incoming.members ? incoming.members : [incoming.from];
+
+            members.forEach((to, index) => {
+                let chat;
+
+                if (incoming.chats) {
+                    chat = incoming.chats[index];
+                }
+
+                if (chat) {
+                    this.send(to, messages.map((message) => {
+                        if (util.isFunction(message.toJSON)) {
+                            message = message.toJSON();
+                        }
+
+                        message = extend({}, message);
+
+                        let oldText = message.body;
+
+                        if (message.attribution) {
+                            oldText = message.attribution.name;
+                        }
+
+                        if (message.type === 'text') {
+                            message.body = oldText + '|' + chat;
+                        }
+                        else {
+                            message.attribution.name = oldText + '|' + chat;
+                        }
+
+                        return message;
+                    }));
+                }
+                else {
+                    this.send(to, messages);
+                }
+            });
         };
 
-        msg.ignore = () => {
+        incoming.ignore = () => {
             complete();
         };
 
@@ -149,7 +209,7 @@ class Bot {
         this.stack.push(handler);
     }
 
-    textMessage(handler)
+    onTextMessage(handler)
     {
         this.use((incoming, bot, next) => {
             if (incoming.type === 'text') {
@@ -188,63 +248,6 @@ class Bot {
         }
 
         return fetch(username);
-    }
-
-    reply(incoming, messages)
-    {
-        if (!incoming) {
-            throw 'Invalid recipient list';
-        }
-
-        if (!util.isArray(messages)) {
-            messages = [messages];
-        }
-
-        messages = messages.map((message) => {
-            if (util.isString(message)) {
-                return {'type': 'text', 'body': message};
-            }
-
-            return message;
-        });
-
-        let members = incoming.members ? incoming.members : [incoming.from];
-
-        members.forEach((to, index) => {
-            let chat;
-
-            if (incoming.chats) {
-                chat = incoming.chats[index];
-            }
-
-            if (chat) {
-                this.send(to, messages.map((message) => {
-                    if (util.isFunction(message.toJSON)) {
-                        message = message.toJSON();
-                    }
-
-                    message = extend({}, message);
-
-                    let oldText = message.body;
-
-                    if (message.attribution) {
-                        oldText = message.attribution.name;
-                    }
-
-                    if (message.type === 'text') {
-                        message.body = oldText + '|' + chat;
-                    }
-                    else {
-                        message.attribution.name = oldText + '|' + chat;
-                    }
-
-                    return message;
-                }));
-            }
-            else {
-                this.send(to, messages);
-            }
-        });
     }
 
     send(recipients, messages)

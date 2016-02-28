@@ -101,7 +101,7 @@ describe('Incoming handling', () => {
             skipSignatureCheck: true,
         });
 
-        bot.textMessage((incoming, next) => {
+        bot.onTextMessage((incoming, next) => {
             assert.deepEqual(incoming.toJSON(), Bot.Message.text('Testing').toJSON());
 
             next();
@@ -126,7 +126,7 @@ describe('Incoming handling', () => {
             skipSignatureCheck: true,
         });
 
-        bot.textMessage((incoming, bot, next) => {
+        bot.onTextMessage((incoming, bot, next) => {
             assert(false);
             next();
         });
@@ -414,5 +414,58 @@ describe('Get user profile info', () => {
             }, (err) => {
                 done();
             });
+    });
+});
+
+describe('Incoming routing', () => {
+    it('replies to message', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true,
+            incomingPath: '/incoming'
+        });
+
+        bot.use((incoming, next) => {
+            incoming.reply('Complete');
+        });
+
+        messageCheck = (err, body, cb) => {
+            assert.deepEqual(body, {
+                messages: [
+                    { body: 'Complete', type: 'text', to: 'mpr' }
+                ]
+            });
+            done();
+        };
+
+        request(bot.incoming())
+            .post('/incoming')
+            .send({
+                messages: [{ body: 'Test', type: 'text', from: 'mpr' }]
+            })
+            .expect(200)
+            .end(() => {});
+    });
+
+    it('ignores message but responds', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true,
+            incomingPath: '/incoming'
+        });
+
+        bot.use((incoming, next) => {
+            incoming.ignore();
+        });
+
+        request(bot.incoming())
+            .post('/incoming')
+            .send({
+                messages: [{ body: 'Test', type: 'text', from: 'mpr' }]
+            })
+            .expect(200)
+            .end(done);
     });
 });

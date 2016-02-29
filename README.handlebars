@@ -1,3 +1,5 @@
+[![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Codeship Build Status][codeship-image]][codeship-url]
+
 ## Example: Echo Bot
 
 ```javascript
@@ -44,6 +46,12 @@ bot.onTextMessage((message) => {
         });
 });
 ```
+
+[travis-image]: https://travis-ci.org/kikinteractive/node-kik-bot.svg?branch=master
+[travis-url]: https://travis-ci.org/kikinteractive/node-kik-bot
+
+[coveralls-image]: https://coveralls.io/repos/kikinteractive/node-kik-bot/badge.svg?branch=master&service=github
+[coveralls-url]: https://coveralls.io/github/kikinteractive/node-kik-bot?branch=master
 
 ## API Documentation
 

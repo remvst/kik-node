@@ -45,7 +45,7 @@ class BotReply {
  * This is a test
  * @constructor
  * @param {String} options.username
- * @param {String} options.apiToken
+ * @param {String} options.apiKey
  * @param {String} [options.incomingPath]="/incoming" Set true to enable polling or set options
  * @see https://engine.kik.com
  */

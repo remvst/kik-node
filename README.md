@@ -1,13 +1,27 @@
-[![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url]
+[![NPM Version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url]
 
-## Example: Echo Bot
+## Getting Started
+
+- Install with [npm](https://npmjs.org): `npm install kik-node`
+
+## Features
+
+## More information
+
+Here are other resources for using Kik node:
+
+- [stackoverflow.com][so] is a great place to get answers about Less.
+
+## How To
+
+### Echo Bot
 
 ```javascript
 'use strict';
 
 let util = require('util');
 let http = require('http');
-let Bot  = require('node-kik-bot');
+let Bot  = require('kik-node');
 
 // configure the bot API endpoint, details for your bot
 let bot = new Bot({
@@ -25,7 +39,7 @@ let server = http
     .listen(process.env.PORT || 8080);
 ```
 
-## Example: Sending a message to a specific user
+### Sending a message to a specific user
 
 ```javascript
 // To one user:
@@ -36,7 +50,7 @@ bot.send('user1', 'some text'); // shorthand for text messages
 bot.send(['user1', 'user2'], 'some text');
 ```
 
-## Example: Greeting a user by name
+### Greeting a user by name
 
 ```javascript
 bot.onTextMessage((message) => {
@@ -47,11 +61,16 @@ bot.onTextMessage((message) => {
 });
 ```
 
-[travis-image]: https://travis-ci.org/kikinteractive/node-kik-bot.svg?branch=master
-[travis-url]: https://travis-ci.org/kikinteractive/node-kik-bot
+## [License](LICENSE)
 
-[coveralls-image]: https://coveralls.io/repos/kikinteractive/node-kik-bot/badge.svg?branch=master&service=github
-[coveralls-url]: https://coveralls.io/github/kikinteractive/node-kik-bot?branch=master
+[travis-image]: https://travis-ci.org/kikinteractive/kik-node.svg?branch=master
+[travis-url]: https://travis-ci.org/kikinteractive/kik-node
+
+[coveralls-image]: https://coveralls.io/repos/kikinteractive/kik-node/badge.svg?branch=master&service=github
+[coveralls-url]: https://coveralls.io/github/kikinteractive/kik-node?branch=master
+
+[npm-image]: https://img.shields.io/npm/v/kik-node.svg?style=flat-square
+[npm-url]: https://www.npmjs.org/package/kik-node
 
 ## API Documentation
 
@@ -65,4 +84,3 @@ bot.onTextMessage((message) => {
 | options.username | <code>String</code> |  |
 | options.apiToken | <code>String</code> |  |
 | [options.incomingPath] | <code>String</code> | Set true to enable polling or set options |
-

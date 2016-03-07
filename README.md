@@ -82,5 +82,6 @@ bot.onTextMessage((message) => {
 | Param | Type | Description |
 | --- | --- | --- |
 | options.username | <code>String</code> |  |
-| options.apiToken | <code>String</code> |  |
+| options.apiKey | <code>String</code> |  |
 | [options.incomingPath] | <code>String</code> | Set true to enable polling or set options |
+

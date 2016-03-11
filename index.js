@@ -81,29 +81,6 @@ class Bot {
         this.stack = [];
         this.pendingMessages = [];
         this.pendingFlush = null;
-
-        this.onTextMessage((msg, bot, next) => {
-            if (msg.body) {
-                let components = msg.body.split('|');
-
-                if (components.length > 1) {
-                    msg.body = components[0];
-                    msg.chats = components[1].split(',');
-                    msg.members = components[2].split(',');
-                }
-
-                if (msg.body.indexOf('@') === 0) {
-                    let mentionComponents = /^(@[A-Za-z0-9._]{2,32})(.*)/.exec(msg.body);
-
-                    if (mentionComponents) {
-                        msg.body = mentionComponents[2].trim();
-                        msg.isMention = true;
-                    }
-                }
-            }
-
-            next();
-        });
     }
 
     handle(incoming, done)
@@ -149,52 +126,28 @@ class Bot {
                 messages = [messages];
             }
 
+            let chatId = incoming.chatId;
+            let to = incoming.from;
 
             messages = messages.map((message) => {
                 if (util.isString(message)) {
-                    return {'type': 'text', 'body': message};
+                    message = {'type': 'text', 'body': message};
                 }
+
+                if (util.isFunction(message.toJSON)) {
+                    message = message.toJSON();
+                }
+
+                message = extend({}, message);
 
                 return message;
             });
 
-            let members = incoming.members ? incoming.members : [incoming.from];
+            if (chatId) {
+                return this.send(to, chatId, messages);
+            }
 
-            members.forEach((to, index) => {
-                let chat;
-
-                if (incoming.chats) {
-                    chat = incoming.chats[index];
-                }
-
-                if (chat) {
-                    this.send(to, messages.map((message) => {
-                        if (util.isFunction(message.toJSON)) {
-                            message = message.toJSON();
-                        }
-
-                        message = extend({}, message);
-
-                        let oldText = message.body;
-
-                        if (message.attribution) {
-                            oldText = message.attribution.name;
-                        }
-
-                        if (message.type === 'text') {
-                            message.body = oldText + '|' + chat;
-                        }
-                        else {
-                            message.attribution.name = oldText + '|' + chat;
-                        }
-
-                        return message;
-                    }));
-                }
-                else {
-                    this.send(to, messages);
-                }
-            });
+            return this.send(to, messages);
         };
 
         incoming.ignore = () => {
@@ -250,7 +203,7 @@ class Bot {
         return fetch(username);
     }
 
-    send(recipients, messages)
+    broadcast(recipients, messages)
     {
         if (!recipients) {
             throw 'Invalid recipient list';
@@ -266,6 +219,8 @@ class Bot {
             messages = [messages];
         }
 
+        let pendingMessages = [];
+
         recipients.forEach((recipient) => {
             messages.forEach((message) => {
                 if (util.isFunction(message.toJSON)) {
@@ -276,8 +231,40 @@ class Bot {
 
                 message.to = recipient;
 
-                this.pendingMessages.push(message);
+                pendingMessages.push(message);
             });
+        });
+
+        return API.sendMessages(this.apiDomain, this.username, this.apiKey, messagses);
+    }
+
+    send(recipient, messages, chatId)
+    {
+        if (!recipient) {
+            throw 'Invalid recipient';
+        }
+
+        // force recipients to be an array
+        if (!!recipient && !util.isString(recipient)) {
+            throw 'Invalid recipient, must be a string';
+        }
+
+        // force messages to be an array
+        if (!!messages && !util.isArray(messages)) {
+            messages = [messages];
+        }
+
+        messages.forEach((message) => {
+            if (util.isFunction(message.toJSON)) {
+                message = message.toJSON();
+            }
+
+            message = extend({}, message);
+
+            message.to = recipient;
+            message.chatId = chatId;
+
+            this.pendingMessages.push(message);
         });
 
         return this.flush();

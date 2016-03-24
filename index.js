@@ -1,7 +1,6 @@
 'use strict';
 
 let util = require('util');
-let extend = util._extend;
 let validator = require('validator');
 let crypto = require('crypto');
 let Message = require('./lib/message.js');
@@ -9,8 +8,7 @@ let API = require('./lib/api.js');
 let UserProfile = require('./lib/user-profile.js');
 let ScanCode = require('./lib/scan-code.js');
 
-function isSignatureValid(body, apiKey, signature)
-{
+function isSignatureValid(body, apiKey, signature) {
     if (!signature) {
         return false;
     }
@@ -27,16 +25,13 @@ function isSignatureValid(body, apiKey, signature)
 
 class BotReply {
 
-    constructor()
-    {
+    constructor() {
     }
 
-    reply(message)
-    {
+    reply(message) {
     }
 
-    ignore()
-    {
+    ignore() {
     }
 }
 
@@ -51,8 +46,7 @@ class BotReply {
  */
 class Bot {
 
-    constructor(options)
-    {
+    constructor(options) {
         // default configuration
         this.apiDomain = 'https://engine.apikik.com';
         this.incomingPath = '/incoming';
@@ -83,8 +77,7 @@ class Bot {
         this.pendingFlush = null;
     }
 
-    handle(incoming, done)
-    {
+    handle(incoming, done) {
         let index = 0;
         let finished = false;
         let complete = (err) => {
@@ -94,6 +87,7 @@ class Bot {
                 done(err);
             }
         };
+
         let advance = (err) => {
             if (finished) {
                 return;
@@ -114,7 +108,7 @@ class Bot {
                 advance(e);
             }
         };
-        
+
         incoming.reply = (messages) => {
             complete();
 
@@ -131,20 +125,18 @@ class Bot {
 
             messages = messages.map((message) => {
                 if (util.isString(message)) {
-                    message = {'type': 'text', 'body': message};
+                    message = { 'type': 'text', 'body': message };
                 }
 
                 if (util.isFunction(message.toJSON)) {
                     message = message.toJSON();
                 }
 
-                message = extend({}, message);
-
                 return message;
             });
 
             if (chatId) {
-                return this.send(to, chatId, messages);
+                return this.send(to, messages, chatId);
             }
 
             return this.send(to, messages);
@@ -157,25 +149,21 @@ class Bot {
         advance();
     }
 
-    use(handler)
-    {
+    use(handler) {
         this.stack.push(handler);
     }
 
-    onTextMessage(handler)
-    {
+    onTextMessage(handler) {
         this.use((incoming, bot, next) => {
             if (incoming.type === 'text') {
                 handler(incoming, bot, next);
-            }
-            else {
+            } else {
                 next();
             }
         });
     }
 
-    scanCode(options)
-    {
+    scanCode(options) {
         if (!options || !options.data) {
             return API.usernameScanCode(this.username);
         }
@@ -183,8 +171,7 @@ class Bot {
         return API.dataScanCode(this.username, data);
     }
 
-    getUserProfile(username)
-    {
+    getUserProfile(username) {
         let fetch = (username) => {
             return API.userInfo(
                 this.apiDomain,
@@ -203,8 +190,7 @@ class Bot {
         return fetch(username);
     }
 
-    broadcast(recipients, messages)
-    {
+    broadcast(recipients, messages) {
         if (!recipients) {
             throw 'Invalid recipient list';
         }
@@ -227,8 +213,6 @@ class Bot {
                     message = message.toJSON();
                 }
 
-                message = extend({}, message);
-
                 message.to = recipient;
 
                 pendingMessages.push(message);
@@ -238,8 +222,7 @@ class Bot {
         return API.sendMessages(this.apiDomain, this.username, this.apiKey, messagses);
     }
 
-    send(recipient, messages, chatId)
-    {
+    send(recipient, messages, chatId) {
         if (!recipient) {
             throw 'Invalid recipient';
         }
@@ -259,8 +242,6 @@ class Bot {
                 message = message.toJSON();
             }
 
-            message = extend({}, message);
-
             message.to = recipient;
             message.chatId = chatId;
 
@@ -270,12 +251,11 @@ class Bot {
         return this.flush();
     }
 
-    incoming(incomingPath)
-    {
+    incoming(incomingPath) {
         incomingPath = incomingPath || this.incomingPath;
 
         return (req, res, next) => {
-            next = next || function() {};
+            next = next || (() => {});
 
             if (req.url !== incomingPath) {
                 return next();
@@ -343,8 +323,7 @@ class Bot {
         };
     }
 
-    flush(forced)
-    {
+    flush(forced) {
         return new Promise((fulfill, reject) => {
             let pendingMessages = this.pendingMessages;
 

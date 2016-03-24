@@ -13,11 +13,13 @@ let Bot = require('../index.js');
 const BOT_USERNAME = 'testbot';
 const BOT_API_KEY = 'ff467bf2-2837-477c-923d-c8148cb394d9';
 
-let messageCheck = () => {};
+let messageChecker;
 let engine = nock('https://engine.apikik.com')
     .post('/api/v1/message')
     .reply(200, (err, body, cb) => {
-        messageCheck(err, body, cb);
+        if (messageChecker) {
+            messageChecker(err, body, cb);
+        }
     });
 
 describe('Incoming handling', () => {
@@ -191,7 +193,7 @@ describe('Outoing messages', () => {
             skipSignatureCheck: true
         });
 
-        messageCheck = (err, body, cb) => {
+        messageChecker = (err, body, cb) => {
             assert.deepEqual(body, {
                 messages: [
                     { body: 'Test', type: 'text', to: 'mpr' }
@@ -213,7 +215,7 @@ describe('Outoing messages', () => {
             skipSignatureCheck: true
         });
 
-        messageCheck = (err, body, cb) => {
+        messageChecker = (err, body, cb) => {
             assert.deepEqual(body, {
                 messages: [
                     { body: 'Test 1', type: 'text', to: 'mpr' },
@@ -246,7 +248,7 @@ describe('Outoing messages', () => {
         });
         let batch = 0;
 
-        messageCheck = (err, body, cb) => {
+        messageChecker = (err, body, cb) => {
             ++batch;
 
             if (batch === 1) {
@@ -256,15 +258,13 @@ describe('Outoing messages', () => {
                         { body: 'Test 4', type: 'text', to: 'mpr' }
                     ]
                 });
-            }
-            else if (batch === 2) {
+            } else if (batch === 2) {
                 assert.deepEqual(body, {
                     messages: [
                         { body: 'Test 2', type: 'text', to: 'chris' }
                     ]
                 });
-            }
-            else if (batch === 3) {
+            } else if (batch === 3) {
                 assert.deepEqual(body, {
                     messages: [
                         { body: 'Test 3', type: 'text', to: 'ted' }
@@ -301,7 +301,7 @@ describe('Outoing messages', () => {
         });
         let batch = 0;
 
-        messageCheck = (err, body, cb) => {
+        messageChecker = (err, body, cb) => {
             ++batch;
 
             if (batch === 1) {
@@ -311,23 +311,20 @@ describe('Outoing messages', () => {
                         { body: 'Test 2', type: 'text', to: 'mpr' }
                     ]
                 });
-            }
-            else if (batch === 2) {
+            } else if (batch === 2) {
                 assert.deepEqual(body, {
                     messages: [
                         { body: 'Test 3', type: 'text', to: 'mpr' },
                         { body: 'Test 4', type: 'text', to: 'mpr' }
                     ]
                 });
-            }
-            else if (batch === 3) {
+            } else if (batch === 3) {
                 assert.deepEqual(body, {
                     messages: [
                         { body: 'Test 5', type: 'text', to: 'mpr' }
                     ]
                 });
-            }
-            else if (batch === 4) {
+            } else if (batch === 4) {
                 assert.deepEqual(body, {
                     messages: [
                         { body: 'Test 1', type: 'text', to: 'chris' },
@@ -430,7 +427,7 @@ describe('Incoming routing', () => {
             incoming.reply('Complete');
         });
 
-        messageCheck = (err, body, cb) => {
+        messageChecker = (err, body, cb) => {
             assert.deepEqual(body, {
                 messages: [
                     { body: 'Complete', type: 'text', to: 'mpr' }

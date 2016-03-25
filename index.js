@@ -10,6 +10,14 @@ const ScanCode = require('./lib/scan-code.js');
 const UsernameRegex = /^[A-Za-z0-9_.]{2,32}$/;
 const UuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
 
+/**
+ * A callback
+ * @callback MessageHandlerCallback
+ * @param {IncomingMessage} message
+ * @param {Bot} bot
+ * @param {function} next
+ */
+
 function isSignatureValid(body, apiKey, signature) {
     if (!signature) {
         return false;
@@ -23,8 +31,11 @@ function isSignatureValid(body, apiKey, signature) {
     return expected === signature.toLowerCase();
 }
 
+/**
+ * @class IncomingMessage
+ * This is a test
+ */
 class IncomingMessage extends Message {
-
     constructor(bot) {
         super('');
 
@@ -56,6 +67,10 @@ class IncomingMessage extends Message {
         return this.bot.send(messages, to, chatId);
     }
 
+    markRead() {
+        return this.reply(Message.readReceipt([this.id]));
+    }
+
     ignore() {
         this.completion();
     }
@@ -66,10 +81,6 @@ class IncomingMessage extends Message {
 
     stopTyping() {
         return this.reply(Message.isTyping(false));
-    }
-
-    markRead() {
-        return this.reply(Message.readReceipt([this.id]));
     }
 }
 
@@ -152,10 +163,33 @@ class Bot {
         advance();
     }
 
+    /**
+     *  @param {MessageHandlerCallback} handler
+     */
     use(handler) {
         this.stack.push(handler);
+        return this;
     }
 
+    /**
+     *  @param {MessageHandlerCallback} handler
+     *  @example
+     *  bot.onTextMessage((incoming, bot) => {
+     *      // reply handles the message and stops other handlers
+     *      // from being called for this message
+     *      incoming.reply(`Hi I'm ${bot.username}`);
+     *  });
+     *  @example
+     *  bot.onTextMessage((incoming, bot, next) => {
+     *      if (incoming.body !== 'Hi') {
+     *          // we only handle welcoming, let someone else deal with this
+     *          // message
+     *          return next();
+     *      }
+     *
+     *      // say hello...
+     *  });
+     */
     onTextMessage(handler) {
         this.use((incoming, bot, next) => {
             if (incoming.type === 'text') {
@@ -164,9 +198,13 @@ class Bot {
                 next();
             }
         });
+        return this;
     }
 
-    scanCode(options) {
+    /**
+     *  @return {promise.<ScanCode>}
+     **/
+    getScanCode(options) {
         if (!options || !options.data) {
             return API.usernameScanCode(this.username);
         }
@@ -174,6 +212,9 @@ class Bot {
         return API.dataScanCode(this.username, data);
     }
 
+    /**
+     *  @return {promise.<UserProfile>}
+     **/
     getUserProfile(username) {
         const fetch = (username) => {
             return API.userInfo(

@@ -31,7 +31,6 @@
     "supertest": "1.1.x"
   },
   "dependencies": {
-    "validator": "4.5.x",
     "request-promise": "1.0.2"
   }
 }

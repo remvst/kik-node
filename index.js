@@ -1,37 +1,75 @@
 'use strict';
 
-let util = require('util');
-let validator = require('validator');
-let crypto = require('crypto');
-let Message = require('./lib/message.js');
-let API = require('./lib/api.js');
-let UserProfile = require('./lib/user-profile.js');
-let ScanCode = require('./lib/scan-code.js');
+const util = require('util');
+const crypto = require('crypto');
+const Message = require('./lib/message.js');
+const API = require('./lib/api.js');
+const UserProfile = require('./lib/user-profile.js');
+const ScanCode = require('./lib/scan-code.js');
+
+const UsernameRegex = /^[A-Za-z0-9_.]{2,32}$/;
+const UuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
 
 function isSignatureValid(body, apiKey, signature) {
     if (!signature) {
         return false;
     }
 
-    let signatureToLowerCase = signature.toLowerCase();
-    let expected = crypto
-        .createHmac('sha1', apiKey)
+    const expected = crypto.createHmac('sha1', apiKey)
         .update(new Buffer(body))
         .digest('hex')
         .toLowerCase();
 
-    return expected === signatureToLowerCase;
+    return expected === signature.toLowerCase();
 }
 
-class BotReply {
+class IncomingMessage extends Message {
 
-    constructor() {
+    constructor(bot) {
+        super('');
+
+        this.bot = bot;
     }
 
-    reply(message) {
+    reply(messages) {
+        this.completion();
+
+        if (!util.isArray(messages)) {
+            messages = [messages];
+        }
+
+        let chatId = this.chatId;
+        let to = this.from;
+
+        messages = messages.map((message) => {
+            if (util.isString(message)) {
+                message = { 'type': 'text', 'body': message };
+            }
+
+            if (util.isFunction(message.toJSON)) {
+                message = message.toJSON();
+            }
+
+            return message;
+        });
+
+        return this.bot.send(messages, to, chatId);
     }
 
     ignore() {
+        this.completion();
+    }
+
+    startTyping() {
+        return this.reply(Message.isTyping(true));
+    }
+
+    stopTyping() {
+        return this.reply(Message.isTyping(false));
+    }
+
+    markRead() {
+        return this.reply(Message.readReceipt([this.id]));
     }
 }
 
@@ -42,7 +80,7 @@ class BotReply {
  * @param {String} options.username
  * @param {String} options.apiKey
  * @param {String} [options.incomingPath]="/incoming" Set true to enable polling or set options
- * @see https://engine.kik.com
+ * @see https://bots.kik.com
  */
 class Bot {
 
@@ -60,11 +98,11 @@ class Bot {
         // validate options
         let errors = [];
 
-        if (!validator.matches(this.username, /[A-Za-z0-9_.]{2,32}/)) {
+        if (!this.username || !this.username.match(UsernameRegex)) {
             errors.push('Option "username" must be a valid Kik username');
         }
 
-        if (validator.isHexadecimal(this.apiKey)) {
+        if (!this.apiKey || !this.apiKey.match(UuidRegex)) {
             errors.push('Option "apiKey" must be a Kik API key, see http://dev.kik.com/');
         }
 
@@ -80,7 +118,7 @@ class Bot {
     handle(incoming, done) {
         let index = 0;
         let finished = false;
-        let complete = (err) => {
+        const complete = (err) => {
             finished = true;
 
             if (done) {
@@ -88,7 +126,7 @@ class Bot {
             }
         };
 
-        let advance = (err) => {
+        const advance = (err) => {
             if (finished) {
                 return;
             }
@@ -109,42 +147,7 @@ class Bot {
             }
         };
 
-        incoming.reply = (messages) => {
-            complete();
-
-            if (!incoming) {
-                throw 'Invalid recipient list';
-            }
-
-            if (!util.isArray(messages)) {
-                messages = [messages];
-            }
-
-            let chatId = incoming.chatId;
-            let to = incoming.from;
-
-            messages = messages.map((message) => {
-                if (util.isString(message)) {
-                    message = { 'type': 'text', 'body': message };
-                }
-
-                if (util.isFunction(message.toJSON)) {
-                    message = message.toJSON();
-                }
-
-                return message;
-            });
-
-            if (chatId) {
-                return this.send(to, messages, chatId);
-            }
-
-            return this.send(to, messages);
-        };
-
-        incoming.ignore = () => {
-            complete();
-        };
+        incoming.completion = complete;
 
         advance();
     }
@@ -172,7 +175,7 @@ class Bot {
     }
 
     getUserProfile(username) {
-        let fetch = (username) => {
+        const fetch = (username) => {
             return API.userInfo(
                 this.apiDomain,
                 this.username,
@@ -205,7 +208,7 @@ class Bot {
             messages = [messages];
         }
 
-        let pendingMessages = [];
+        const pendingMessages = [];
 
         recipients.forEach((recipient) => {
             messages.forEach((message) => {
@@ -222,7 +225,7 @@ class Bot {
         return API.sendMessages(this.apiDomain, this.username, this.apiKey, messagses);
     }
 
-    send(recipient, messages, chatId) {
+    send(messages, recipient, chatId) {
         if (!recipient) {
             throw 'Invalid recipient';
         }
@@ -303,22 +306,15 @@ class Bot {
                 let remainingMessages = parsed.messages.length + 1;
 
                 function checkDone() {
-                    --remainingMessages;
-
-                    if (remainingMessages <= 0) {
-                        res.statusCode = 200;
-
-                        return res.end('OK');
-                    }
                 }
 
                 parsed.messages.forEach((json) => {
-                    let msg = Message.fromJSON(json);
-
-                    this.handle(msg, checkDone);
+                    this.handle(new IncomingMessage(this).parse(json), checkDone);
                 });
 
-                checkDone();
+                res.statusCode = 200;
+
+                return res.end('OK');
             });
         };
     }

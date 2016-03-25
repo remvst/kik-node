@@ -11,7 +11,7 @@ let defer = typeof setImmediate === 'function' ? setImmediate : (fn) => {
 let Bot = require('../index.js');
 
 const BOT_USERNAME = 'testbot';
-const BOT_API_KEY = 'ff467bf2-2837-477c-923d-c8148cb394d9';
+const BOT_API_KEY = '2042cd8e-638c-4183-aef4-d4bef6f01981';
 
 let messageChecker;
 let engine = nock('https://engine.apikik.com')
@@ -79,7 +79,7 @@ describe('Incoming handling', () => {
         });
 
         bot.use((incoming, next) => {
-            assert.deepEqual(incoming.toJSON(), Bot.Message.text('Testing').toJSON());
+            assert.equal(incoming.body, 'Testing');
 
             next();
             done();
@@ -104,7 +104,7 @@ describe('Incoming handling', () => {
         });
 
         bot.onTextMessage((incoming, next) => {
-            assert.deepEqual(incoming.toJSON(), Bot.Message.text('Testing').toJSON());
+            assert.equal(incoming.body, 'Testing');
 
             next();
             done();
@@ -196,16 +196,16 @@ describe('Outoing messages', () => {
         messageChecker = (err, body, cb) => {
             assert.deepEqual(body, {
                 messages: [
-                    { body: 'Test', type: 'text', to: 'mpr' }
+                    { body: 'Test', type: 'text', to: 'testuser1' }
                 ]
             });
             done();
         };
 
-        bot.send('mpr', {
+        bot.send({
             type: 'text',
             body: 'Test'
-        });
+        }, 'testuser1');
     });
 
     it('are batched together', (done) => {
@@ -218,26 +218,26 @@ describe('Outoing messages', () => {
         messageChecker = (err, body, cb) => {
             assert.deepEqual(body, {
                 messages: [
-                    { body: 'Test 1', type: 'text', to: 'mpr' },
-                    { body: 'Test 2', type: 'text', to: 'mpr' },
-                    { body: 'Test 3', type: 'text', to: 'mpr' }
+                    { body: 'Test 1', type: 'text', to: 'testuser1' },
+                    { body: 'Test 2', type: 'text', to: 'testuser1' },
+                    { body: 'Test 3', type: 'text', to: 'testuser1' }
                 ]
             });
             done();
         };
 
-        bot.send('mpr', {
+        bot.send({
             type: 'text',
             body: 'Test 1'
-        });
-        bot.send('mpr', {
+        }, 'testuser1');
+        bot.send({
             type: 'text',
             body: 'Test 2'
-        });
-        bot.send('mpr', {
+        }, 'testuser1');
+        bot.send({
             type: 'text',
             body: 'Test 3'
-        });
+        }, 'testuser1');
     });
 
     it('are batched together by recipient', (done) => {
@@ -254,8 +254,8 @@ describe('Outoing messages', () => {
             if (batch === 1) {
                 assert.deepEqual(body, {
                     messages: [
-                        { body: 'Test 1', type: 'text', to: 'mpr' },
-                        { body: 'Test 4', type: 'text', to: 'mpr' }
+                        { body: 'Test 1', type: 'text', to: 'testuser1' },
+                        { body: 'Test 4', type: 'text', to: 'testuser1' }
                     ]
                 });
             } else if (batch === 2) {
@@ -274,22 +274,22 @@ describe('Outoing messages', () => {
             }
         };
 
-        bot.send('mpr', {
+        bot.send({
             type: 'text',
             body: 'Test 1'
-        });
-        bot.send('chris', {
+        }, 'testuser1');
+        bot.send({
             type: 'text',
             body: 'Test 2'
-        });
-        bot.send('ted', {
+        }, 'chris');
+        bot.send({
             type: 'text',
             body: 'Test 3'
-        });
-        bot.send('mpr', {
+        }, 'ted');
+        bot.send({
             type: 'text',
             body: 'Test 4'
-        });
+        }, 'testuser1');
     });
 
     it('are limited to the max batch size', (done) => {
@@ -307,21 +307,21 @@ describe('Outoing messages', () => {
             if (batch === 1) {
                 assert.deepEqual(body, {
                     messages: [
-                        { body: 'Test 1', type: 'text', to: 'mpr' },
-                        { body: 'Test 2', type: 'text', to: 'mpr' }
+                        { body: 'Test 1', type: 'text', to: 'testuser1' },
+                        { body: 'Test 2', type: 'text', to: 'testuser1' }
                     ]
                 });
             } else if (batch === 2) {
                 assert.deepEqual(body, {
                     messages: [
-                        { body: 'Test 3', type: 'text', to: 'mpr' },
-                        { body: 'Test 4', type: 'text', to: 'mpr' }
+                        { body: 'Test 3', type: 'text', to: 'testuser1' },
+                        { body: 'Test 4', type: 'text', to: 'testuser1' }
                     ]
                 });
             } else if (batch === 3) {
                 assert.deepEqual(body, {
                     messages: [
-                        { body: 'Test 5', type: 'text', to: 'mpr' }
+                        { body: 'Test 5', type: 'text', to: 'testuser1' }
                     ]
                 });
             } else if (batch === 4) {
@@ -335,82 +335,34 @@ describe('Outoing messages', () => {
             }
         };
 
-        bot.send('mpr', {
+        bot.send({
             type: 'text',
             body: 'Test 1'
-        });
-        bot.send('mpr', {
+        }, 'testuser1');
+        bot.send({
             type: 'text',
             body: 'Test 2'
-        });
-        bot.send('mpr', {
+        }, 'testuser1');
+        bot.send({
             type: 'text',
             body: 'Test 3'
-        });
-        bot.send('mpr', {
+        }, 'testuser1');
+        bot.send({
             type: 'text',
             body: 'Test 4'
-        });
-        bot.send('mpr', {
+        }, 'testuser1');
+        bot.send({
             type: 'text',
             body: 'Test 5'
-        });
-        bot.send('chris', {
+        }, 'testuser1');
+        bot.send({
             type: 'text',
             body: 'Test 1'
-        });
-        bot.send('chris', {
+        }, 'chris');
+        bot.send({
             type: 'text',
             body: 'Test 2'
-        });
-    });
-});
-
-describe('Get user profile info', () => {
-    it('fetches', (done) => {
-        let bot = new Bot({
-            username: BOT_USERNAME,
-            apiKey: BOT_API_KEY,
-            skipSignatureCheck: true
-        });
-
-        let engine = nock('https://engine.apikik.com')
-            .get('/api/v1/user/mpr')
-            .reply(200, {
-                firstName: 'Mike',
-                lastName: 'Roberts',
-            });
-
-        bot.getUserProfile('mpr')
-            .then((profile) => {
-                assert.equal(profile.username, 'mpr');
-                assert.equal(profile.displayName, 'Mike Roberts');
-                assert.equal(profile.firstName, 'Mike');
-                assert.equal(profile.lastName, 'Roberts');
-
-                done();
-            }, (err) => {
-                assert.fail(err);
-            });
-    });
-
-    it('fails when user does not exist', (done) => {
-        let bot = new Bot({
-            username: BOT_USERNAME,
-            apiKey: BOT_API_KEY,
-            skipSignatureCheck: true
-        });
-
-        let engine = nock('https://engine.apikik.com')
-            .get('/api/v1/user/mpr2')
-            .reply(404);
-
-        bot.getUserProfile('mpr2')
-            .then((profile) => {
-                assert.fail('Profile should not exist');
-            }, (err) => {
-                done();
-            });
+        }, 'chris');
     });
 });
 
@@ -430,7 +382,7 @@ describe('Incoming routing', () => {
         messageChecker = (err, body, cb) => {
             assert.deepEqual(body, {
                 messages: [
-                    { body: 'Complete', type: 'text', to: 'mpr' }
+                    { body: 'Complete', type: 'text', to: 'testuser1' }
                 ]
             });
             done();
@@ -439,7 +391,7 @@ describe('Incoming routing', () => {
         request(bot.incoming())
             .post('/incoming')
             .send({
-                messages: [{ body: 'Test', type: 'text', from: 'mpr' }]
+                messages: [{ body: 'Test', type: 'text', from: 'testuser1' }]
             })
             .expect(200)
             .end(() => {});
@@ -460,7 +412,7 @@ describe('Incoming routing', () => {
         request(bot.incoming())
             .post('/incoming')
             .send({
-                messages: [{ body: 'Test', type: 'text', from: 'mpr' }]
+                messages: [{ body: 'Test', type: 'text', from: 'testuser1' }]
             })
             .expect(200)
             .end(done);

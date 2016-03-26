@@ -441,7 +441,7 @@ class Bot {
             });
         });
 
-        return API.sendMessages(this.apiDomain, this.username, this.apiKey, pendingMessages);
+        return API.broadcastMessages(this.apiDomain, this.username, this.apiKey, pendingMessages);
     }
 
     send(messages, recipient, chatId) {

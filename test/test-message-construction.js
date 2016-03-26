@@ -1,0 +1,135 @@
+'use strict';
+
+let nock = require('nock');
+let request = require('supertest');
+let assert = require('assert');
+let Bot = require('../index.js');
+
+describe('Message construction', () => {
+    it('of basic text message', () => {
+        const message = Bot.Message.text('body');
+        const expected = {
+            type: 'text',
+            body: 'body'
+        };
+
+        assert.deepEqual(message.toJSON(), expected);
+    });
+
+    it('of is typing', () => {
+        const message = Bot.Message.isTyping(true);
+        const expected = {
+            type: 'is-typing',
+            isTyping: true
+        };
+
+        assert.equal(message.type, expected.type);
+        assert.equal(message.isTyping, expected.isTyping);
+
+        assert(message.isIsTypingMessage());
+
+        assert.deepEqual(message.toJSON(), expected);
+    });
+    
+    it('of everything on a picture', () => {
+        const message = Bot.Message.picture('http://i.imgur.com/8QP4ZFt.jpg')
+            .setNoForward(true)
+            .setDelay(0)
+            .setTypeTime(12)
+            .setAttributionName('Imgur')
+            .setAttributionIcon('http://s.imgur.com/images/favicon-96x96.png');
+        const expected = {
+            type: 'picture',
+            picUrl: 'http://i.imgur.com/8QP4ZFt.jpg',
+            noForward: true,
+            attribution: {
+                name: 'Imgur',
+                iconUrl: 'http://s.imgur.com/images/favicon-96x96.png'
+            },
+            typeTime: 12,
+            delay: 0
+        };
+
+        assert.equal(message.type, expected.type);
+        assert.equal(message.picUrl, expected.picUrl);
+        assert.equal(message.attributionName, expected.attribution.name);
+        assert.equal(message.attributionIcon, expected.attribution.iconUrl);
+        assert.equal(message.typeTime, expected.typeTime);
+        assert.equal(message.delay, expected.delay);
+
+        assert(message.isPictureMessage());
+        
+        assert.deepEqual(message.toJSON(), expected);
+    });
+    
+    it('of everything on a video', () => {
+        const message = Bot.Message.video('http://i.imgur.com/XAFz40E.mp4')
+            .setLoop(true)
+            .setMuted(true)
+            .setAutoplay(true)
+            .setNoSave(true)
+            .setAttributionName('Imgur')
+            .setAttributionIcon('http://s.imgur.com/images/favicon-96x96.png');
+        const expected = {
+            type: 'video',
+            videoUrl: 'http://i.imgur.com/XAFz40E.mp4',
+            attribution: {
+                name: 'Imgur',
+                iconUrl: 'http://s.imgur.com/images/favicon-96x96.png'
+            },
+            loop: true,
+            muted: true,
+            autoplay: true,
+            noSave: true
+        };
+
+        assert.equal(message.type, expected.type);
+        assert.equal(message.videoUrl, expected.videoUrl);
+        assert.equal(message.loop, expected.loop);
+        assert.equal(message.muted, expected.muted);
+        assert.equal(message.autoplay, expected.autoplay);
+        assert.equal(message.noSave, expected.noSave);
+        assert.equal(message.attributionName, expected.attribution.name);
+        assert.equal(message.attributionIcon, expected.attribution.iconUrl);
+
+        assert(message.isVideoMessage());
+        
+        assert.deepEqual(message.toJSON(), expected);
+    });
+    
+    it('of everything on a link', () => {
+        const message = Bot.Message.link('http://imgur.com/8QP4ZFt')
+            .setPicUrl('http://i.imgur.com/8QP4ZFt.jpg')
+            .setTitle('Cute Dog')
+            .setText('Elvis')
+            .setKikJsData({ abc: 123 })
+            .setAttributionName('Imgur')
+            .setAttributionIcon('http://s.imgur.com/images/favicon-96x96.png');
+        const expected = {
+            type: 'link',
+            attribution: {
+                name: 'Imgur',
+                iconUrl: 'http://s.imgur.com/images/favicon-96x96.png'
+            },
+            kikJsData: { abc: 123 },
+            title: 'Cute Dog',
+            text: 'Elvis',
+            url: 'http://imgur.com/8QP4ZFt',
+            picUrl: 'http://i.imgur.com/8QP4ZFt.jpg'
+        };
+
+        assert.equal(message.type, expected.type);
+        assert.deepEqual(message.kikJsData, expected.kikJsData);
+        assert.equal(message.title, expected.title);
+        assert.equal(message.text, expected.text);
+        assert.equal(message.url, expected.url);
+        assert.equal(message.picUrl, expected.picUrl);
+        assert.equal(message.attributionName, expected.attribution.name);
+        assert.equal(message.attributionIcon, expected.attribution.iconUrl);
+
+        assert(message.isLinkMessage());
+
+        assert.deepEqual(message.toJSON(), expected);
+    });
+
+});

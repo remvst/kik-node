@@ -265,22 +265,22 @@ describe('Type handler', () => {
         ];
 
         bot.onTextMessage((incoming, next) => {
-            ++typeCounts['text'];
+            ++typeCounts.text;
             next();
         });
 
         bot.onLinkMessage((incoming, next) => {
-            ++typeCounts['link'];
+            ++typeCounts.link;
             next();
         });
 
         bot.onPictureMessage((incoming, next) => {
-            ++typeCounts['picture'];
+            ++typeCounts.picture;
             next();
         });
 
         bot.onVideoMessage((incoming, next) => {
-            ++typeCounts['video'];
+            ++typeCounts.video;
             next();
         });
 
@@ -295,7 +295,7 @@ describe('Type handler', () => {
         });
 
         bot.onStickerMessage((incoming, next) => {
-            ++typeCounts['sticker'];
+            ++typeCounts.sticker;
             next();
         });
 

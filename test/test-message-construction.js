@@ -16,6 +16,20 @@ describe('Message construction', () => {
         assert.deepEqual(message.toJSON(), expected);
     });
 
+    it('with suggested responses', () => {
+        const message = Bot.Message.text('body')
+            .addTextResponse('A')
+            .addTextResponse('B')
+            .addTextResponse('C');
+        const expected = {
+            type: 'text',
+            body: 'body',
+            suggestedResponses: ['A', 'B', 'C']
+        };
+
+        assert.deepEqual(message.toJSON(), expected);
+    });
+
     it('of is typing', () => {
         const message = Bot.Message.isTyping(true);
         const expected = {
@@ -30,7 +44,7 @@ describe('Message construction', () => {
 
         assert.deepEqual(message.toJSON(), expected);
     });
-    
+
     it('of everything on a picture', () => {
         const message = Bot.Message.picture('http://i.imgur.com/8QP4ZFt.jpg')
             .setNoForward(true)
@@ -59,10 +73,10 @@ describe('Message construction', () => {
         assert.equal(message.delay, expected.delay);
 
         assert(message.isPictureMessage());
-        
+
         assert.deepEqual(message.toJSON(), expected);
     });
-    
+
     it('of everything on a video', () => {
         const message = Bot.Message.video('http://i.imgur.com/XAFz40E.mp4')
             .setLoop(true)
@@ -94,10 +108,10 @@ describe('Message construction', () => {
         assert.equal(message.attributionIcon, expected.attribution.iconUrl);
 
         assert(message.isVideoMessage());
-        
+
         assert.deepEqual(message.toJSON(), expected);
     });
-    
+
     it('of everything on a link', () => {
         const message = Bot.Message.link('http://imgur.com/8QP4ZFt')
             .setPicUrl('http://i.imgur.com/8QP4ZFt.jpg')

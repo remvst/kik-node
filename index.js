@@ -11,11 +11,11 @@ const UsernameRegex = /^[A-Za-z0-9_.]{2,32}$/;
 const UuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
 
 /**
- * A callback
- * @callback MessageHandlerCallback
- * @param {IncomingMessage} message
- * @param {Bot} bot
- * @param {function} next
+ *  A callback
+ *  @callback MessageHandlerCallback
+ *  @param {IncomingMessage} message
+ *  @param {Bot} bot
+ *  @param {function} next
  */
 
 function isSignatureValid(body, apiKey, signature) {
@@ -31,9 +31,31 @@ function isSignatureValid(body, apiKey, signature) {
     return expected === signature.toLowerCase();
 }
 
+function prepareMessage(originalMessage, to, chatId) {
+    let message = originalMessage;
+    let result = {};
+
+    // allow easy-mode use case where the user just sent along text
+    if (util.isString(originalMessage)) {
+        message = { 'type': 'text', 'body': originalMessage };
+    }
+
+    // serialize a Message object down to its wire form
+    if (util.isFunction(originalMessage.toJSON)) {
+        message = originalMessage.toJSON();
+    }
+
+    // make a copy of the message in the degenerate case so
+    // we don't modify someone else along the way and add on
+    // the routing information
+    Object.assign(result, message, { 'to': to, 'chatId': chatId });
+
+    return result;
+}
+
 /**
- * @class IncomingMessage
- * This is a test
+ *  @class IncomingMessage
+ *  This is a test
  */
 class IncomingMessage extends Message {
     constructor(bot) {
@@ -42,56 +64,50 @@ class IncomingMessage extends Message {
         this.bot = bot;
     }
 
+    /**
+     *  @param {Message|array.<Message>}
+     *  @return {promise.<object>}
+     */
     reply(messages) {
-        this.completion();
+        this.finish();
 
-        if (!util.isArray(messages)) {
-            messages = [messages];
-        }
-
-        let chatId = this.chatId;
-        let to = this.from;
-
-        messages = messages.map((message) => {
-            if (util.isString(message)) {
-                message = { 'type': 'text', 'body': message };
-            }
-
-            if (util.isFunction(message.toJSON)) {
-                message = message.toJSON();
-            }
-
-            return message;
-        });
-
-        return this.bot.send(messages, to, chatId);
+        return this.bot.send(messages, this.from, this.chatId);
     }
 
+    /**
+     *  @return {promise.<object>}
+     */
     markRead() {
         return this.reply(Message.readReceipt([this.id]));
     }
 
     ignore() {
-        this.completion();
+        this.finish();
     }
 
+    /**
+     *  @return {promise.<object>}
+     */
     startTyping() {
         return this.reply(Message.isTyping(true));
     }
 
+    /**
+     *  @return {promise.<object>}
+     */
     stopTyping() {
         return this.reply(Message.isTyping(false));
     }
 }
 
 /**
- * @class Bot
- * This is a test
- * @constructor
- * @param {String} options.username
- * @param {String} options.apiKey
- * @param {String} [options.incomingPath]="/incoming" Set true to enable polling or set options
- * @see https://bots.kik.com
+ *  @class Bot
+ *  This is a test
+ *  @constructor
+ *  @param {String} options.username
+ *  @param {String} options.apiKey
+ *  @param {String} [options.incomingPath]="/incoming" Set true to enable polling or set options
+ *  @see https://bots.kik.com
  */
 class Bot {
 
@@ -129,7 +145,7 @@ class Bot {
     handle(incoming, done) {
         let index = 0;
         let finished = false;
-        const complete = (err) => {
+        const finish = (err) => {
             finished = true;
 
             if (done) {
@@ -145,7 +161,7 @@ class Bot {
             let layer = this.stack[index++];
 
             if (!layer) {
-                complete();
+                finish();
 
                 return;
             }
@@ -158,7 +174,7 @@ class Bot {
             }
         };
 
-        incoming.completion = complete;
+        incoming.finish = finish;
 
         advance();
     }
@@ -192,7 +208,7 @@ class Bot {
      */
     onTextMessage(handler) {
         this.use((incoming, bot, next) => {
-            if (incoming.type === 'text') {
+            if (incoming.isTextMessage()) {
                 handler(incoming, bot, next);
             } else {
                 next();
@@ -202,9 +218,139 @@ class Bot {
     }
 
     /**
-     *  @return {promise.<ScanCode>}
+     *  @param {MessageHandlerCallback} handler
+     */
+    onLinkMessage(handler) {
+        this.use((incoming, bot, next) => {
+            if (incoming.isLinkMessage()) {
+                handler(incoming, bot, next);
+            } else {
+                next();
+            }
+        });
+        return this;
+    }
+
+    /**
+     *  @param {MessageHandlerCallback} handler
+     */
+    onPictureMessage(handler) {
+        this.use((incoming, bot, next) => {
+            if (incoming.isPictureMessage()) {
+                handler(incoming, bot, next);
+            } else {
+                next();
+            }
+        });
+        return this;
+    }
+
+    /**
+     *  @param {MessageHandlerCallback} handler
+     */
+    onVideoMessage(handler) {
+        this.use((incoming, bot, next) => {
+            if (incoming.isVideoMessage()) {
+                handler(incoming, bot, next);
+            } else {
+                next();
+            }
+        });
+        return this;
+    }
+
+    /**
+     *  @param {MessageHandlerCallback} handler
+     */
+    onStartChattingMessage(handler) {
+        this.use((incoming, bot, next) => {
+            if (incoming.isStartChattingMessage()) {
+                handler(incoming, bot, next);
+            } else {
+                next();
+            }
+        });
+        return this;
+    }
+
+    /**
+     *  @param {MessageHandlerCallback} handler
+     */
+    onScanDataMessage(handler) {
+        this.use((incoming, bot, next) => {
+            if (incoming.isScanDataMessage()) {
+                handler(incoming, bot, next);
+            } else {
+                next();
+            }
+        });
+        return this;
+    }
+
+    /**
+     *  @param {MessageHandlerCallback} handler
+     */
+    onStickerMessage(handler) {
+        this.use((incoming, bot, next) => {
+            if (incoming.isStickerMessage()) {
+                handler(incoming, bot, next);
+            } else {
+                next();
+            }
+        });
+        return this;
+    }
+
+    /**
+     *  @param {MessageHandlerCallback} handler
+     */
+    onIsTypingMessage(handler) {
+        this.use((incoming, bot, next) => {
+            if (incoming.isIsTypingMessage()) {
+                handler(incoming, bot, next);
+            } else {
+                next();
+            }
+        });
+        return this;
+    }
+
+    /**
+     *  @param {MessageHandlerCallback} handler
+     */
+    onDeliveryReceiptMessage(handler) {
+        this.use((incoming, bot, next) => {
+            if (incoming.isDeliveryReceiptMessage()) {
+                handler(incoming, bot, next);
+            } else {
+                next();
+            }
+        });
+        return this;
+    }
+
+    /**
+     *  @param {MessageHandlerCallback} handler
+     */
+    onReadReceiptMessage(handler) {
+        this.use((incoming, bot, next) => {
+            if (incoming.isReadReceiptMessage()) {
+                handler(incoming, bot, next);
+            } else {
+                next();
+            }
+        });
+        return this;
+    }
+
+    /**
+     *  Creates a Kik Code with the intended options and returns the
+     *  URL of the Kik Code image. If the options specify a data Kik Code
+     *  this will hit the Kik Code service and store that data for you.
+     *  @param {string|object} [options.data]
+     *  @return {promise.<string>}
      **/
-    getScanCode(options) {
+    getKikCodeUrl(options) {
         if (!options || !options.data) {
             return API.usernameScanCode(this.username);
         }
@@ -251,19 +397,16 @@ class Bot {
 
         const pendingMessages = [];
 
+        // generate a message object for every receipient and every message
         recipients.forEach((recipient) => {
             messages.forEach((message) => {
-                if (util.isFunction(message.toJSON)) {
-                    message = message.toJSON();
-                }
-
-                message.to = recipient;
+                message = prepareMessage(message, recipient);
 
                 pendingMessages.push(message);
             });
         });
 
-        return API.sendMessages(this.apiDomain, this.username, this.apiKey, messagses);
+        return API.sendMessages(this.apiDomain, this.username, this.apiKey, pendingMessages);
     }
 
     send(messages, recipient, chatId) {
@@ -282,12 +425,9 @@ class Bot {
         }
 
         messages.forEach((message) => {
-            if (util.isFunction(message.toJSON)) {
-                message = message.toJSON();
-            }
-
-            message.to = recipient;
-            message.chatId = chatId;
+            // transform each message to allow for text and custom
+            // messages
+            message = prepareMessage(message, recipient, chatId);
 
             this.pendingMessages.push(message);
         });
@@ -299,10 +439,12 @@ class Bot {
         incomingPath = incomingPath || this.incomingPath;
 
         return (req, res, next) => {
-            next = next || (() => {});
-
             if (req.url !== incomingPath) {
-                return next();
+                if (next) {
+                    next();
+                }
+
+                return;
             }
 
             if (req.method !== 'POST') {

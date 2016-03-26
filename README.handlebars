@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-- Install with [npm](https://npmjs.org): `npm install kik-node`
+- Install with [`npm install @kikinteractive/kik`](npm-url)
 
 ## Features
 
@@ -10,7 +10,7 @@
 
 Here are other resources for using Kik node:
 
-- [stackoverflow.com][so] is a great place to get answers about Less.
+- [stackoverflow.com][stackoverflow-url] is a great place to get answers about building Kik chat bot.
 
 ## How To
 
@@ -21,7 +21,7 @@ Here are other resources for using Kik node:
 
 let util = require('util');
 let http = require('http');
-let Bot  = require('kik-node');
+let Bot  = require('@kikinteractive/kik');
 
 // configure the bot API endpoint, details for your bot
 let bot = new Bot({
@@ -30,7 +30,7 @@ let bot = new Bot({
 });
 
 bot.onTextMessage((message) => {
-    message.reply(Bot.Message.text(msg.body));
+    message.reply(message.body);
 });
 
 // set up your server and start listening
@@ -43,11 +43,11 @@ let server = http
 
 ```javascript
 // To one user:
-bot.send('user1', Bot.Message.text('some text'));
-bot.send('user1', 'some text'); // shorthand for text messages
+bot.send(Bot.Message.text('some text'), 'user1');
+bot.send('some text', 'user1'); // shorthand for text messages
 
 // To multiple users
-bot.send(['user1', 'user2'], 'some text');
+bot.send('some text', ['user1', 'user2']);
 ```
 
 ### Greeting a user by name
@@ -61,7 +61,7 @@ bot.onTextMessage((message) => {
 });
 ```
 
-## [License](LICENSE)
+## [License](LICENSE.md)
 
 [travis-image]: https://travis-ci.org/kikinteractive/kik-node.svg?branch=master
 [travis-url]: https://travis-ci.org/kikinteractive/kik-node
@@ -69,8 +69,10 @@ bot.onTextMessage((message) => {
 [coveralls-image]: https://coveralls.io/repos/kikinteractive/kik-node/badge.svg?branch=master&service=github
 [coveralls-url]: https://coveralls.io/github/kikinteractive/kik-node?branch=master
 
-[npm-image]: https://img.shields.io/npm/v/kik-node.svg?style=flat-square
-[npm-url]: https://www.npmjs.org/package/kik-node
+[npm-image]: https://img.shields.io/npm/v/@kikinteractive/kik.svg?style=flat-square
+[npm-url]: https://www.npmjs.org/package/@kikinteractive/kik
+
+[stackoverflow-url]: http://stackoverflow.com/questions/tagged/kik
 
 ## API Documentation
 

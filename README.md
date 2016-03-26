@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-- Install with [npm](https://npmjs.org): `npm install kik-node`
+- Install with [`npm install @kikinteractive/kik`](npm-url)
 
 ## Features
 
@@ -10,7 +10,7 @@
 
 Here are other resources for using Kik node:
 
-- [stackoverflow.com][so] is a great place to get answers about Less.
+- [stackoverflow.com][stackoverflow-url] is a great place to get answers about building Kik chat bot.
 
 ## How To
 
@@ -21,7 +21,7 @@ Here are other resources for using Kik node:
 
 let util = require('util');
 let http = require('http');
-let Bot  = require('kik-node');
+let Bot  = require('@kikinteractive/kik');
 
 // configure the bot API endpoint, details for your bot
 let bot = new Bot({
@@ -30,7 +30,7 @@ let bot = new Bot({
 });
 
 bot.onTextMessage((message) => {
-    message.reply(Bot.Message.text(msg.body));
+    message.reply(message.body);
 });
 
 // set up your server and start listening
@@ -43,11 +43,11 @@ let server = http
 
 ```javascript
 // To one user:
-bot.send('user1', Bot.Message.text('some text'));
-bot.send('user1', 'some text'); // shorthand for text messages
+bot.send(Bot.Message.text('some text'), 'user1');
+bot.send('some text', 'user1'); // shorthand for text messages
 
 // To multiple users
-bot.send(['user1', 'user2'], 'some text');
+bot.send('some text', ['user1', 'user2']);
 ```
 
 ### Greeting a user by name
@@ -61,7 +61,7 @@ bot.onTextMessage((message) => {
 });
 ```
 
-## [License](LICENSE)
+## [License](LICENSE.md)
 
 [travis-image]: https://travis-ci.org/kikinteractive/kik-node.svg?branch=master
 [travis-url]: https://travis-ci.org/kikinteractive/kik-node
@@ -69,15 +69,17 @@ bot.onTextMessage((message) => {
 [coveralls-image]: https://coveralls.io/repos/kikinteractive/kik-node/badge.svg?branch=master&service=github
 [coveralls-url]: https://coveralls.io/github/kikinteractive/kik-node?branch=master
 
-[npm-image]: https://img.shields.io/npm/v/kik-node.svg?style=flat-square
-[npm-url]: https://www.npmjs.org/package/kik-node
+[npm-image]: https://img.shields.io/npm/v/@kikinteractive/kik.svg?style=flat-square
+[npm-url]: https://www.npmjs.org/package/@kikinteractive/kik
+
+[stackoverflow-url]: http://stackoverflow.com/questions/tagged/kik
 
 ## API Documentation
 
 <a name="Bot"></a>
 ## Bot
 Bot
-This is a test
+ This is a test
 
 **Kind**: global class  
 **See**: https://bots.kik.com  
@@ -86,8 +88,17 @@ This is a test
     * [new Bot()](#new_Bot_new)
     * [.use(handler)](#Bot+use)
     * [.onTextMessage(handler)](#Bot+onTextMessage)
-    * [.getScanCode()](#Bot+getScanCode) ⇒ <code>promise.&lt;ScanCode&gt;</code>
-    * [.getUserProfile()](#Bot+getUserProfile) ⇒ <code>promise.&lt;UserProfile&gt;</code>
+    * [.onLinkMessage(handler)](#Bot+onLinkMessage)
+    * [.onPictureMessage(handler)](#Bot+onPictureMessage)
+    * [.onVideoMessage(handler)](#Bot+onVideoMessage)
+    * [.onStartChattingMessage(handler)](#Bot+onStartChattingMessage)
+    * [.onScanDataMessage(handler)](#Bot+onScanDataMessage)
+    * [.onStickerMessage(handler)](#Bot+onStickerMessage)
+    * [.onIsTypingMessage(handler)](#Bot+onIsTypingMessage)
+    * [.onDeliveryReceiptMessage(handler)](#Bot+onDeliveryReceiptMessage)
+    * [.onReadReceiptMessage(handler)](#Bot+onReadReceiptMessage)
+    * [.getKikCodeUrl()](#Bot+getKikCodeUrl) ⇒ <code>promise.&lt;string&gt;</code>
+    * [.getUserProfile()](#Bot+getUserProfile) ⇒ <code>[promise.&lt;UserProfile&gt;](#UserProfile)</code>
 
 <a name="new_Bot_new"></a>
 ### new Bot()
@@ -135,22 +146,157 @@ bot.onTextMessage((incoming, bot, next) => {
      // say hello...
  });
 ```
-<a name="Bot+getScanCode"></a>
-### bot.getScanCode() ⇒ <code>promise.&lt;ScanCode&gt;</code>
+<a name="Bot+onLinkMessage"></a>
+### bot.onLinkMessage(handler)
 **Kind**: instance method of <code>[Bot](#Bot)</code>  
+
+| Param | Type |
+| --- | --- |
+| handler | <code>[MessageHandlerCallback](#MessageHandlerCallback)</code> | 
+
+<a name="Bot+onPictureMessage"></a>
+### bot.onPictureMessage(handler)
+**Kind**: instance method of <code>[Bot](#Bot)</code>  
+
+| Param | Type |
+| --- | --- |
+| handler | <code>[MessageHandlerCallback](#MessageHandlerCallback)</code> | 
+
+<a name="Bot+onVideoMessage"></a>
+### bot.onVideoMessage(handler)
+**Kind**: instance method of <code>[Bot](#Bot)</code>  
+
+| Param | Type |
+| --- | --- |
+| handler | <code>[MessageHandlerCallback](#MessageHandlerCallback)</code> | 
+
+<a name="Bot+onStartChattingMessage"></a>
+### bot.onStartChattingMessage(handler)
+**Kind**: instance method of <code>[Bot](#Bot)</code>  
+
+| Param | Type |
+| --- | --- |
+| handler | <code>[MessageHandlerCallback](#MessageHandlerCallback)</code> | 
+
+<a name="Bot+onScanDataMessage"></a>
+### bot.onScanDataMessage(handler)
+**Kind**: instance method of <code>[Bot](#Bot)</code>  
+
+| Param | Type |
+| --- | --- |
+| handler | <code>[MessageHandlerCallback](#MessageHandlerCallback)</code> | 
+
+<a name="Bot+onStickerMessage"></a>
+### bot.onStickerMessage(handler)
+**Kind**: instance method of <code>[Bot](#Bot)</code>  
+
+| Param | Type |
+| --- | --- |
+| handler | <code>[MessageHandlerCallback](#MessageHandlerCallback)</code> | 
+
+<a name="Bot+onIsTypingMessage"></a>
+### bot.onIsTypingMessage(handler)
+**Kind**: instance method of <code>[Bot](#Bot)</code>  
+
+| Param | Type |
+| --- | --- |
+| handler | <code>[MessageHandlerCallback](#MessageHandlerCallback)</code> | 
+
+<a name="Bot+onDeliveryReceiptMessage"></a>
+### bot.onDeliveryReceiptMessage(handler)
+**Kind**: instance method of <code>[Bot](#Bot)</code>  
+
+| Param | Type |
+| --- | --- |
+| handler | <code>[MessageHandlerCallback](#MessageHandlerCallback)</code> | 
+
+<a name="Bot+onReadReceiptMessage"></a>
+### bot.onReadReceiptMessage(handler)
+**Kind**: instance method of <code>[Bot](#Bot)</code>  
+
+| Param | Type |
+| --- | --- |
+| handler | <code>[MessageHandlerCallback](#MessageHandlerCallback)</code> | 
+
+<a name="Bot+getKikCodeUrl"></a>
+### bot.getKikCodeUrl() ⇒ <code>promise.&lt;string&gt;</code>
+Creates a Kik Code with the intended options and returns the
+ URL of the Kik Code image. If the options specify a data Kik Code
+ this will hit the Kik Code service and store that data for you.
+
+**Kind**: instance method of <code>[Bot](#Bot)</code>  
+
+| Param | Type |
+| --- | --- |
+| [options.data] | <code>string</code> &#124; <code>object</code> | 
+
 <a name="Bot+getUserProfile"></a>
-### bot.getUserProfile() ⇒ <code>promise.&lt;UserProfile&gt;</code>
+### bot.getUserProfile() ⇒ <code>[promise.&lt;UserProfile&gt;](#UserProfile)</code>
 **Kind**: instance method of <code>[Bot](#Bot)</code>  
 
 <a name="IncomingMessage"></a>
 ## IncomingMessage
 IncomingMessage
-This is a test
+ This is a test
 
 **Kind**: global class  
 
+* [IncomingMessage](#IncomingMessage)
+    * [.reply(messages)](#IncomingMessage+reply) ⇒ <code>promise.&lt;object&gt;</code>
+    * [.markRead()](#IncomingMessage+markRead) ⇒ <code>promise.&lt;object&gt;</code>
+    * [.startTyping()](#IncomingMessage+startTyping) ⇒ <code>promise.&lt;object&gt;</code>
+    * [.stopTyping()](#IncomingMessage+stopTyping) ⇒ <code>promise.&lt;object&gt;</code>
 
-ERROR, Cannot find class.
+<a name="IncomingMessage+reply"></a>
+### incomingMessage.reply(messages) ⇒ <code>promise.&lt;object&gt;</code>
+**Kind**: instance method of <code>[IncomingMessage](#IncomingMessage)</code>  
+
+| Param | Type |
+| --- | --- |
+| messages | <code>[Message](#Message)</code> &#124; <code>[array.&lt;Message&gt;](#Message)</code> | 
+
+<a name="IncomingMessage+markRead"></a>
+### incomingMessage.markRead() ⇒ <code>promise.&lt;object&gt;</code>
+**Kind**: instance method of <code>[IncomingMessage](#IncomingMessage)</code>  
+<a name="IncomingMessage+startTyping"></a>
+### incomingMessage.startTyping() ⇒ <code>promise.&lt;object&gt;</code>
+**Kind**: instance method of <code>[IncomingMessage](#IncomingMessage)</code>  
+<a name="IncomingMessage+stopTyping"></a>
+### incomingMessage.stopTyping() ⇒ <code>promise.&lt;object&gt;</code>
+**Kind**: instance method of <code>[IncomingMessage](#IncomingMessage)</code>  
+
+
+<a name="UserProfile"></a>
+## UserProfile
+**Kind**: global class  
+
+* [UserProfile](#UserProfile)
+    * [.displayName](#UserProfile+displayName) ⇒ <code>string</code>
+    * [.username](#UserProfile+username) ⇒ <code>string</code>
+    * [.firstName](#UserProfile+firstName) ⇒ <code>string</code>
+    * [.lastName](#UserProfile+lastName) ⇒ <code>string</code>
+    * [.profilePicUrl](#UserProfile+profilePicUrl) ⇒ <code>string</code>
+    * [.profilePicLastModified](#UserProfile+profilePicLastModified) ⇒ <code>number</code>
+
+<a name="UserProfile+displayName"></a>
+### userProfile.displayName ⇒ <code>string</code>
+**Kind**: instance property of <code>[UserProfile](#UserProfile)</code>  
+<a name="UserProfile+username"></a>
+### userProfile.username ⇒ <code>string</code>
+**Kind**: instance property of <code>[UserProfile](#UserProfile)</code>  
+<a name="UserProfile+firstName"></a>
+### userProfile.firstName ⇒ <code>string</code>
+**Kind**: instance property of <code>[UserProfile](#UserProfile)</code>  
+<a name="UserProfile+lastName"></a>
+### userProfile.lastName ⇒ <code>string</code>
+**Kind**: instance property of <code>[UserProfile](#UserProfile)</code>  
+<a name="UserProfile+profilePicUrl"></a>
+### userProfile.profilePicUrl ⇒ <code>string</code>
+**Kind**: instance property of <code>[UserProfile](#UserProfile)</code>  
+<a name="UserProfile+profilePicLastModified"></a>
+### userProfile.profilePicLastModified ⇒ <code>number</code>
+**Kind**: instance property of <code>[UserProfile](#UserProfile)</code>  
+
 <a name="Message"></a>
 ## Message
 Message
@@ -166,6 +312,7 @@ This is a test
         * [.messageIds](#Message+messageIds) ⇒ <code>string</code>
         * [.readReceiptRequested](#Message+readReceiptRequested) ⇒ <code>string</code>
         * [.stickerPackId](#Message+stickerPackId) ⇒ <code>string</code>
+        * [.scanData](#Message+scanData) ⇒ <code>string</code>
         * [.stickerUrl](#Message+stickerUrl) ⇒ <code>string</code>
         * [.timestamp](#Message+timestamp) ⇒ <code>string</code>
         * [.to](#Message+to) ⇒ <code>string</code>
@@ -181,6 +328,8 @@ This is a test
         * [.videoUrl](#Message+videoUrl) ⇒ <code>string</code>
         * [.delay](#Message+delay) ⇒ <code>string</code>
         * [.typeTime](#Message+typeTime) ⇒ <code>string</code>
+        * [.attributionName](#Message+attributionName) ⇒ <code>string</code>
+        * [.attributionIcon](#Message+attributionIcon) ⇒ <code>string</code>
         * [.isTextMessage()](#Message+isTextMessage) ⇒ <code>boolean</code>
         * [.isLinkMessage()](#Message+isLinkMessage) ⇒ <code>boolean</code>
         * [.isPictureMessage()](#Message+isPictureMessage) ⇒ <code>boolean</code>
@@ -202,6 +351,8 @@ This is a test
         * [.setVideoUrl(videoUrl)](#Message+setVideoUrl) ⇒ <code>[Message](#Message)</code>
         * [.setDelay(delay)](#Message+setDelay) ⇒ <code>[Message](#Message)</code>
         * [.setTypeTime(typeTime)](#Message+setTypeTime) ⇒ <code>[Message](#Message)</code>
+        * [.setAttributionName(attributionName)](#Message+setAttributionName) ⇒ <code>string</code>
+        * [.setAttributionIcon(attributionIcon)](#Message+setAttributionIcon) ⇒ <code>string</code>
     * _static_
         * [.text()](#Message.text) ⇒ <code>[Message](#Message)</code>
         * [.link()](#Message.link) ⇒ <code>[Message](#Message)</code>
@@ -237,6 +388,11 @@ See https://bots.kik.com/docs/messages#readReceiptRequested
 <a name="Message+stickerPackId"></a>
 ### message.stickerPackId ⇒ <code>string</code>
 See https://bots.kik.com/docs/messages#stickerPackId
+
+**Kind**: instance property of <code>[Message](#Message)</code>  
+<a name="Message+scanData"></a>
+### message.scanData ⇒ <code>string</code>
+See https://bots.kik.com/docs/messages#scan-data
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+stickerUrl"></a>
@@ -312,6 +468,16 @@ See https://bots.kik.com/docs/messages#delay
 <a name="Message+typeTime"></a>
 ### message.typeTime ⇒ <code>string</code>
 See https://bots.kik.com/docs/messages#typeTime
+
+**Kind**: instance property of <code>[Message](#Message)</code>  
+<a name="Message+attributionName"></a>
+### message.attributionName ⇒ <code>string</code>
+See https://bots.kik.com/docs/messages#attribution
+
+**Kind**: instance property of <code>[Message](#Message)</code>  
+<a name="Message+attributionIcon"></a>
+### message.attributionIcon ⇒ <code>string</code>
+See https://bots.kik.com/docs/messages#attribution
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+isTextMessage"></a>
@@ -451,6 +617,22 @@ See https://bots.kik.com/docs/messages#read-receipt
 | Param | Type | Description |
 | --- | --- | --- |
 | typeTime | <code>String</code> | Description-y bits |
+
+<a name="Message+setAttributionName"></a>
+### message.setAttributionName(attributionName) ⇒ <code>string</code>
+**Kind**: instance method of <code>[Message](#Message)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| attributionName | <code>String</code> | Description-y bits |
+
+<a name="Message+setAttributionIcon"></a>
+### message.setAttributionIcon(attributionIcon) ⇒ <code>string</code>
+**Kind**: instance method of <code>[Message](#Message)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| attributionIcon | <code>String</code> | Description-y bits |
 
 <a name="Message.text"></a>
 ### Message.text() ⇒ <code>[Message](#Message)</code>

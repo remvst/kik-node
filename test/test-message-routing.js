@@ -238,6 +238,25 @@ describe('Outoing messages', () => {
         }, 'testuser1');
     });
 
+    it('are serialized from the message object', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+
+        messageChecker = (err, body, cb) => {
+            assert.deepEqual(body, {
+                messages: [
+                    { body: 'Test', type: 'text', to: 'testuser1' }
+                ]
+            });
+            done();
+        };
+
+        bot.send(Bot.Message.text('Test'), 'testuser1');
+    });
+
     it('are batched together', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,

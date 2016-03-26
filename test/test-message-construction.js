@@ -55,6 +55,7 @@ describe('Message construction', () => {
         assert.equal(message.attributionName, expected.attribution.name);
         assert.equal(message.attributionIcon, expected.attribution.iconUrl);
         assert.equal(message.typeTime, expected.typeTime);
+        assert.equal(message.noForward, expected.noForward);
         assert.equal(message.delay, expected.delay);
 
         assert(message.isPictureMessage());

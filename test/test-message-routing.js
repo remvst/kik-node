@@ -102,6 +102,36 @@ describe('Incoming handling', () => {
             .end();
     });
 
+    it('stops routing after being handled', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+
+        bot.use((incoming, next) => {
+            incoming.ignore();
+            done();
+        });
+
+        bot.use((incoming, next) => {
+            assert.fail();
+
+            next();
+            done();
+        });
+
+        request(bot.incoming())
+            .post(bot.incomingPath)
+            .send({
+                messages: [
+                    { type: 'text', body: 'Testing' }
+                ]
+            })
+            .expect(200)
+            .end();
+    });
+
     it('routes incoming messages to incoming', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
@@ -185,6 +215,123 @@ describe('Incoming handling', () => {
                 messages: [
                     { type: 'picture', picUrl: 'http://i.imgur.com/MxnW5UM.jpg' }
                 ]
+            })
+            .expect(200)
+            .end();
+    });
+});
+
+describe('Type handler', () => {
+    it('handles all message types', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true,
+        });
+        let messageCount = 0;
+        let typeCounts = {
+            'text': 0,
+            'link': 0,
+            'picture': 0,
+            'video': 0,
+            'start-chatting': 0,
+            'scan-data': 0,
+            'sticker': 0,
+            'is-typing': 0,
+            'delivery-receipt': 0,
+            'read-receipt': 0
+        };
+        const messages = [
+            { type: 'link' },
+            { type: 'text' },
+            { type: 'video' },
+            { type: 'delivery-receipt' },
+            { type: 'sticker' },
+            { type: 'text' },
+            { type: 'sticker' },
+            { type: 'is-typing' },
+            { type: 'picture' },
+            { type: 'read-receipt' },
+            { type: 'start-chatting' },
+            { type: 'is-typing' },
+            { type: 'video' },
+            { type: 'scan-data' },
+            { type: 'start-chatting' },
+            { type: 'delivery-receipt' },
+            { type: 'picture' },
+            { type: 'link' },
+            { type: 'scan-data' },
+            { type: 'read-receipt' }
+        ];
+
+        bot.onTextMessage((incoming, next) => {
+            ++typeCounts['text'];
+            next();
+        });
+
+        bot.onLinkMessage((incoming, next) => {
+            ++typeCounts['link'];
+            next();
+        });
+
+        bot.onPictureMessage((incoming, next) => {
+            ++typeCounts['picture'];
+            next();
+        });
+
+        bot.onVideoMessage((incoming, next) => {
+            ++typeCounts['video'];
+            next();
+        });
+
+        bot.onStartChattingMessage((incoming, next) => {
+            ++typeCounts['start-chatting'];
+            next();
+        });
+
+        bot.onScanDataMessage((incoming, next) => {
+            ++typeCounts['scan-data'];
+            next();
+        });
+
+        bot.onStickerMessage((incoming, next) => {
+            ++typeCounts['sticker'];
+            next();
+        });
+
+        bot.onIsTypingMessage((incoming, next) => {
+            ++typeCounts['is-typing'];
+            next();
+        });
+
+        bot.onDeliveryReceiptMessage((incoming, next) => {
+            ++typeCounts['delivery-receipt'];
+            next();
+        });
+
+        bot.onReadReceiptMessage((incoming, next) => {
+            ++typeCounts['read-receipt'];
+            next();
+        });
+
+        bot.use((incoming, next) => {
+            ++messageCount;
+
+            if (messageCount === messages.length) {
+                Object.keys(typeCounts).forEach((key) => {
+                    assert.equal(typeCounts[key], 2);
+                });
+
+                done();
+            }
+
+            next();
+        });
+
+        request(bot.incoming())
+            .post(bot.incomingPath)
+            .send({
+                messages: messages
             })
             .expect(200)
             .end();

@@ -45,6 +45,18 @@ describe('Message construction', () => {
         assert.deepEqual(message.toJSON(), expected);
     });
 
+    it('of read receipt', () => {
+        const message = Bot.Message.readReceipt(['6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f']);
+        const expected = {
+            type: 'read-receipt',
+            messageIds: ['6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f']
+        };
+
+        assert(message.isReadReceiptMessage());
+
+        assert.deepEqual(message.toJSON(), expected);
+    });
+
     it('of everything on a picture', () => {
         const message = Bot.Message.picture('http://i.imgur.com/8QP4ZFt.jpg')
             .setNoForward(true)
@@ -164,7 +176,8 @@ describe('Message parsing', () => {
         assert(message.isStickerMessage());
 
         assert.equal(message.stickerPackId, 'memes');
-        assert.equal(message.stickerUrl, 'http://cards-sticker-dev.herokuapp.com/stickers/memes/okay.png');
+        assert.equal(message.stickerUrl,
+            'http://cards-sticker-dev.herokuapp.com/stickers/memes/okay.png');
         assert.equal(message.id, '6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f');
         assert.equal(message.readReceiptRequested, true);
         assert.equal(message.timestamp, 123821943124);
@@ -182,6 +195,25 @@ describe('Message parsing', () => {
         assert(message.isScanDataMessage());
 
         assert.equal(message.scanData, '{\"store_id\": \"2538\"}');
+    });
+
+    it('handles delivery receipts', () => {
+        const message = Bot.Message.fromJSON({
+            "type": "delivery-receipt",
+            "from": "atestuser",
+            "id": "9a8764cb-3ae4-46fc-bb18-9871decfa11a",
+            "messageIds": [
+                "859537ca-3ae4-46fc-bb18-6e7ba3182c0f", "6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f"
+            ],
+            "timestamp": 1399303478832,
+            "readReceiptRequested": false
+        });
+
+        assert(message.isDeliveryReceiptMessage());
+
+        assert.deepEqual(message.messageIds, [
+            '859537ca-3ae4-46fc-bb18-6e7ba3182c0f', '6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f'
+        ]);
     });
 });
 

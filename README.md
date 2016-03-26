@@ -747,6 +747,29 @@ See https://bots.kik.com/docs/messages#receipts
 ## KikCode
 **Kind**: global class  
 <a name="KikCode.Colors"></a>
-### KikCode.Colors
-**Kind**: static class of <code>[KikCode](#KikCode)</code>  
+### KikCode.Colors : <code>enum</code>
+KikCode.Colors
+
+**Kind**: static enum property of <code>[KikCode](#KikCode)</code>  
+**Properties**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| KikBlue | <code>number</code> | <code>0</code> | #42B4E6 |
+| Turquoise | <code>number</code> | <code>1</code> | #42DFD8 |
+| Mint | <code>number</code> | <code>2</code> | #24D7A7 |
+| Forest | <code>number</code> | <code>3</code> | #25912B |
+| KikGreen | <code>number</code> | <code>4</code> | #87D300 |
+| Sunshine | <code>number</code> | <code>5</code> | #F8CB1C |
+| OrangeCreamsicle | <code>number</code> | <code>6</code> | #FC971B |
+| BloodOrange | <code>number</code> | <code>7</code> | #F9703A |
+| CandyAppleRed | <code>number</code> | <code>8</code> | #F7373C |
+| Salmon | <code>number</code> | <code>9</code> | #F88585 |
+| Coral | <code>number</code> | <code>10</code> | #F767C3 |
+| Cranberry | <code>number</code> | <code>11</code> | #940D65 |
+| Lavender | <code>number</code> | <code>12</code> | #CB94FF |
+| RoyalPurple | <code>number</code> | <code>13</code> | #8737F8 |
+| Marine | <code>number</code> | <code>14</code> | #353CD4 |
+| Steel | <code>number</code> | <code>15</code> | #5D7687 |
+
 

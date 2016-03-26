@@ -518,11 +518,11 @@ class Bot {
 
                 let remainingMessages = parsed.messages.length + 1;
 
-                function checkDone() {
+                function doNothing() {
                 }
 
                 parsed.messages.forEach((json) => {
-                    this.handle(new IncomingMessage(this).parse(json), checkDone);
+                    this.handle(new IncomingMessage(this).parse(json), doNothing);
                 });
 
                 res.statusCode = 200;

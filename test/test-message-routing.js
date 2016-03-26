@@ -224,7 +224,7 @@ describe('Outoing messages', () => {
                 skipSignatureCheck: true
             });
 
-            bot.send({ body: 'Whoops no recipient', type: 'text' })
+            bot.send({ body: 'Whoops no recipient', type: 'text' });
         });
     });
 
@@ -479,6 +479,25 @@ describe('Incoming routing', () => {
             .end(done);
     });
 
+    it('will not tolerate junk', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true,
+            incomingPath: '/incoming'
+        });
+
+        bot.use((incoming, next) => {
+            incoming.ignore();
+        });
+
+        request(bot.incoming())
+            .post('/incoming')
+            .send("messages: [{ body: 'Test', type: 'text', from: 'testuser1']")
+            .expect(400)
+            .end(done);
+    });
+
     it('only allows POST requests', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
@@ -486,7 +505,7 @@ describe('Incoming routing', () => {
             skipSignatureCheck: true,
             incomingPath: '/incoming'
         });
-        
+
         request(bot.incoming())
             .get('/incoming')
             .expect(405)
@@ -506,6 +525,7 @@ describe('Incoming routing', () => {
             let next = () => {
                 called = true;
             };
+
             bot.incoming()(req, res, next);
 
             assert(called);

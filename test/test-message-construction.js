@@ -148,3 +148,43 @@ describe('Message construction', () => {
     });
 
 });
+
+describe('Message parsing', () => {
+    it('handles stickers', () => {
+        const message = Bot.Message.fromJSON({
+            "type": "sticker",
+            "id": "6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f",
+            "timestamp": 123821943124,
+            "from": "atestuser",
+            "stickerPackId": "memes",
+            "stickerUrl": "http://cards-sticker-dev.herokuapp.com/stickers/memes/okay.png",
+            "readReceiptRequested": true
+        });
+
+        assert(message.isStickerMessage());
+
+        assert.equal(message.stickerPackId, 'memes');
+        assert.equal(message.stickerUrl, 'http://cards-sticker-dev.herokuapp.com/stickers/memes/okay.png');
+        assert.equal(message.id, '6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f');
+        assert.equal(message.readReceiptRequested, true);
+        assert.equal(message.timestamp, 123821943124);
+    });
+
+    it('handles scan data', () => {
+        const message = Bot.Message.fromJSON({
+            "type": "scan-data",
+            "from": "atestuser",
+            "id": "6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f",
+            "timestamp": 1399303478832,
+            "data": "{\"store_id\": \"2538\"}"
+        });
+
+        assert(message.isScanDataMessage());
+
+        assert.equal(message.scanData, '{\"store_id\": \"2538\"}');
+    });
+});
+
+
+
+        

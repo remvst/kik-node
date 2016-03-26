@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const Message = require('./lib/message.js');
 const API = require('./lib/api.js');
 const UserProfile = require('./lib/user-profile.js');
-const ScanCode = require('./lib/scan-code.js');
+const KikCode = require('./lib/scan-code.js');
 
 const UsernameRegex = /^[A-Za-z0-9_.]{2,32}$/;
 const UuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
@@ -380,11 +380,17 @@ class Bot {
      *  @return {promise.<string>}
      **/
     getKikCodeUrl(options) {
-        if (!options || !options.data) {
-            return API.usernameScanCode(this.username);
+        let result;
+
+        options = options || {};
+
+        if (!options.data) {
+            result = API.usernameScanCode(this.username, options);
+        } else {
+            result = API.dataScanCode(this.username, options);
         }
 
-        return API.dataScanCode(this.username, options);
+        return result.then((response) => response.url);
     }
 
     /**
@@ -583,6 +589,7 @@ class Bot {
 }
 
 Bot.Message = Message;
+Bot.KikCode = KikCode;
 Bot.API = API;
 
 module.exports = Bot;

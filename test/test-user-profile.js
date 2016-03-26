@@ -19,16 +19,26 @@ describe('Get user profile info', () => {
         let engine = nock('https://engine.apikik.com')
             .get('/api/v1/user/testuser1')
             .reply(200, {
-                firstName: 'Test',
-                lastName: 'Guy',
+                firstName: 'Gwendolyn',
+                lastName: 'Ferguson',
+                profilePicUrl: 'https://randomuser.me/api/portraits/women/21.jpg',
+                profilePicLastModified: 1458959883
             });
 
         bot.getUserProfile('testuser1')
             .then((profile) => {
-                assert.equal(profile.username, 'testuser1');
-                assert.equal(profile.displayName, 'Test Guy');
-                assert.equal(profile.firstName, 'Test');
-                assert.equal(profile.lastName, 'Guy');
+                assert.equal(profile.username,
+                    'testuser1');
+                assert.equal(profile.displayName,
+                    'Gwendolyn Ferguson');
+                assert.equal(profile.firstName,
+                    'Gwendolyn');
+                assert.equal(profile.lastName,
+                    'Ferguson');
+                assert.equal(profile.profilePicUrl,
+                    'https://randomuser.me/api/portraits/women/21.jpg');
+                assert.equal(profile.profilePicLastModified,
+                    1458959883);
 
                 done();
             }, (err) => {

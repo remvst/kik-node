@@ -87,7 +87,7 @@ Bot
 * [Bot](#Bot)
     * [new Bot()](#new_Bot_new)
     * [.use(handler)](#Bot+use)
-    * [.onTextMessage(handler)](#Bot+onTextMessage)
+    * [.onTextMessage([text], handler)](#Bot+onTextMessage)
     * [.onLinkMessage(handler)](#Bot+onLinkMessage)
     * [.onPictureMessage(handler)](#Bot+onPictureMessage)
     * [.onVideoMessage(handler)](#Bot+onVideoMessage)
@@ -118,11 +118,12 @@ Bot
 | handler | <code>[MessageHandlerCallback](#MessageHandlerCallback)</code> | 
 
 <a name="Bot+onTextMessage"></a>
-### bot.onTextMessage(handler)
+### bot.onTextMessage([text], handler)
 **Kind**: instance method of <code>[Bot](#Bot)</code>  
 
 | Param | Type |
 | --- | --- |
+| [text] | <code>string</code> &#124; <code>regexp</code> | 
 | handler | <code>[MessageHandlerCallback](#MessageHandlerCallback)</code> | 
 
 **Example**  
@@ -143,6 +144,13 @@ bot.onTextMessage((incoming, bot, next) => {
          return next();
      }
 
+     // say hello...
+ });
+ 
+```
+**Example**  
+```js
+bot.onTextMessage(/^hi|hello|bonjour$/i, (incoming, bot, next) => {
      // say hello...
  });
 ```

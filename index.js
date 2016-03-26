@@ -188,6 +188,7 @@ class Bot {
     }
 
     /**
+     *  @param {string|regexp} [text]
      *  @param {MessageHandlerCallback} handler
      *  @example
      *  bot.onTextMessage((incoming, bot) => {
@@ -205,10 +206,29 @@ class Bot {
      *
      *      // say hello...
      *  });
+     *  @example
+     *  bot.onTextMessage(/^hi|hello|bonjour$/i, (incoming, bot, next) => {
+     *      // say hello...
+     *  });
      */
-    onTextMessage(handler) {
+    onTextMessage(text, handler) {
+        const isString = util.isString(text);
+        const isRegExp = util.isRegExp(text);
+
+        // deal with optional param
+        if (!handler && util.isFunction(text)) {
+            handler = text;
+        }
+
         this.use((incoming, bot, next) => {
-            if (incoming.isTextMessage()) {
+            // if this isn't a text message, give up
+            // if we have text to match and it doesn't, give up
+            // if we have a reg ex to match and it doesn't, give up
+            // otherwise this is ours }:-)
+            if (incoming.isTextMessage()
+             && ((!isString && !isRegExp)
+              || (isString && incoming.body === text)
+              || (isRegExp && incoming.body.match(text)))) {
                 handler(incoming, bot, next);
             } else {
                 next();

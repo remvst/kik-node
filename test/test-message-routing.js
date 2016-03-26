@@ -20,6 +20,12 @@ let engine = nock('https://engine.apikik.com')
         if (messageChecker) {
             messageChecker(err, body, cb);
         }
+    })
+    .post('/api/v1/broadcast')
+    .reply(200, (err, body, cb) => {
+        if (messageChecker) {
+            messageChecker(err, body, cb);
+        }
     });
 
 describe('Incoming handling', () => {
@@ -182,6 +188,30 @@ describe('Incoming handling', () => {
             })
             .expect(200)
             .end();
+    });
+});
+
+describe('Outoing broadcast messages', () => {
+    it('are sent properly', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+
+        messageChecker = (err, body, cb) => {
+            assert.deepEqual(body, {
+                messages: [
+                    { body: 'Test', type: 'text', to: 'testuser1' }
+                ]
+            });
+            done();
+        };
+
+        bot.broadcast({
+            type: 'text',
+            body: 'Test'
+        }, 'testuser1');
     });
 });
 

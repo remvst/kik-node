@@ -415,7 +415,7 @@ class Bot {
         return fetch(username);
     }
 
-    broadcast(recipients, messages) {
+    broadcast(messages, recipients) {
         if (!recipients) {
             throw 'Invalid recipient list';
         }

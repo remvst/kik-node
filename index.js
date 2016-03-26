@@ -81,10 +81,6 @@ class IncomingMessage extends Message {
         return this.reply(Message.readReceipt([this.id]));
     }
 
-    ignore() {
-        this.finish();
-    }
-
     /**
      *  @return {promise.<object>}
      */
@@ -97,6 +93,13 @@ class IncomingMessage extends Message {
      */
     stopTyping() {
         return this.reply(Message.isTyping(false));
+    }
+
+    /**
+     *  @method
+     */
+    ignore() {
+        this.finish();
     }
 }
 
@@ -367,7 +370,13 @@ class Bot {
      *  Creates a Kik Code with the intended options and returns the
      *  URL of the Kik Code image. If the options specify a data Kik Code
      *  this will hit the Kik Code service and store that data for you.
-     *  @param {string|object} [options.data]
+     *  @param {string|object} [options.data] The data to be sent back to this bot after
+     *                                        the user scans
+     *  @param {number} [options.width] Width of the Kik code in the PNG image
+     *  @param {number} [options.height] Height of the Kik code in the PNG image
+     *  @param {number} [options.size] Helper for the width and height in the PNG image
+     *  @param {number} [options.color] The color which the user will see after scanning.
+     *                                  See {KikCode.Colors}
      *  @return {promise.<string>}
      **/
     getKikCodeUrl(options) {
@@ -375,7 +384,7 @@ class Bot {
             return API.usernameScanCode(this.username);
         }
 
-        return API.dataScanCode(this.username, data);
+        return API.dataScanCode(this.username, options);
     }
 
     /**

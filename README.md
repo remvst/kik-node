@@ -234,9 +234,13 @@ Creates a Kik Code with the intended options and returns the
 
 **Kind**: instance method of <code>[Bot](#Bot)</code>  
 
-| Param | Type |
-| --- | --- |
-| [options.data] | <code>string</code> &#124; <code>object</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| [options.data] | <code>string</code> &#124; <code>object</code> | The data to be sent back to this bot after                                        the user scans |
+| [options.width] | <code>number</code> | Width of the Kik code in the PNG image |
+| [options.height] | <code>number</code> | Height of the Kik code in the PNG image |
+| [options.size] | <code>number</code> | Helper for the width and height in the PNG image |
+| [options.color] | <code>number</code> | The color which the user will see after scanning.                                  See {KikCode.Colors} |
 
 <a name="Bot+getUserProfile"></a>
 ### bot.getUserProfile() ⇒ <code>[promise.&lt;UserProfile&gt;](#UserProfile)</code>
@@ -254,6 +258,7 @@ IncomingMessage
     * [.markRead()](#IncomingMessage+markRead) ⇒ <code>promise.&lt;object&gt;</code>
     * [.startTyping()](#IncomingMessage+startTyping) ⇒ <code>promise.&lt;object&gt;</code>
     * [.stopTyping()](#IncomingMessage+stopTyping) ⇒ <code>promise.&lt;object&gt;</code>
+    * [.ignore()](#IncomingMessage+ignore)
 
 <a name="IncomingMessage+reply"></a>
 ### incomingMessage.reply(messages) ⇒ <code>promise.&lt;object&gt;</code>
@@ -271,6 +276,9 @@ IncomingMessage
 **Kind**: instance method of <code>[IncomingMessage](#IncomingMessage)</code>  
 <a name="IncomingMessage+stopTyping"></a>
 ### incomingMessage.stopTyping() ⇒ <code>promise.&lt;object&gt;</code>
+**Kind**: instance method of <code>[IncomingMessage](#IncomingMessage)</code>  
+<a name="IncomingMessage+ignore"></a>
+### incomingMessage.ignore()
 **Kind**: instance method of <code>[IncomingMessage](#IncomingMessage)</code>  
 
 
@@ -667,4 +675,11 @@ See https://bots.kik.com/docs/messages#video
 See https://bots.kik.com/docs/messages#isTyping
 
 **Kind**: static method of <code>[Message](#Message)</code>  
+
+<a name="KikCode"></a>
+## KikCode
+**Kind**: global class  
+<a name="KikCode.Colors"></a>
+### KikCode.Colors
+**Kind**: static class of <code>[KikCode](#KikCode)</code>  
 

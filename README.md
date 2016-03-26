@@ -4,9 +4,7 @@
 
 - Install with [`npm install @kikinteractive/kik`](npm-url)
 
-## Features
-
-## More information
+## Getting Help
 
 Here are other resources for using Kik node:
 
@@ -63,10 +61,10 @@ bot.onTextMessage((message) => {
 
 ## [License](LICENSE.md)
 
-[travis-image]: https://travis-ci.org/kikinteractive/kik-node.svg?branch=master
-[travis-url]: https://travis-ci.org/kikinteractive/kik-node
+[travis-image]: https://travis-ci.com/kikinteractive/kik-node.svg?token=iHkQJ3F1VxtmX1aAG1ky&branch=master
+[travis-url]: https://travis-ci.com/kikinteractive/kik-node
 
-[coveralls-image]: https://coveralls.io/repos/kikinteractive/kik-node/badge.svg?branch=master&service=github
+[coveralls-image]: https://coveralls.io/repos/github/kikinteractive/kik-node/badge.svg?branch=master&t=4MPOax
 [coveralls-url]: https://coveralls.io/github/kikinteractive/kik-node?branch=master
 
 [npm-image]: https://img.shields.io/npm/v/@kikinteractive/kik.svg?style=flat-square
@@ -331,7 +329,6 @@ This is a test
         * [.scanData](#Message+scanData) ⇒ <code>string</code>
         * [.stickerUrl](#Message+stickerUrl) ⇒ <code>string</code>
         * [.timestamp](#Message+timestamp) ⇒ <code>string</code>
-        * [.to](#Message+to) ⇒ <code>string</code>
         * [.type](#Message+type) ⇒ <code>string</code>
         * [.kikJsData](#Message+kikJsData) ⇒ <code>string</code>
         * [.picUrl](#Message+picUrl) ⇒ <code>string</code>
@@ -346,6 +343,10 @@ This is a test
         * [.typeTime](#Message+typeTime) ⇒ <code>string</code>
         * [.attributionName](#Message+attributionName) ⇒ <code>string</code>
         * [.attributionIcon](#Message+attributionIcon) ⇒ <code>string</code>
+        * [.loop](#Message+loop) ⇒ <code>boolean</code>
+        * [.muted](#Message+muted) ⇒ <code>boolean</code>
+        * [.autoplay](#Message+autoplay) ⇒ <code>boolean</code>
+        * [.noSave](#Message+noSave) ⇒ <code>boolean</code>
         * [.isTextMessage()](#Message+isTextMessage) ⇒ <code>boolean</code>
         * [.isLinkMessage()](#Message+isLinkMessage) ⇒ <code>boolean</code>
         * [.isPictureMessage()](#Message+isPictureMessage) ⇒ <code>boolean</code>
@@ -360,6 +361,7 @@ This is a test
         * [.setPicUrl(picUrl)](#Message+setPicUrl) ⇒ <code>[Message](#Message)</code>
         * [.setNoForward(noForward)](#Message+setNoForward) ⇒ <code>[Message](#Message)</code>
         * [.setIsTyping(isTyping)](#Message+setIsTyping) ⇒ <code>[Message](#Message)</code>
+        * [.setMessageIds(messageIds)](#Message+setMessageIds) ⇒ <code>[Message](#Message)</code>
         * [.setBody(body)](#Message+setBody) ⇒ <code>[Message](#Message)</code>
         * [.setText(text)](#Message+setText) ⇒ <code>[Message](#Message)</code>
         * [.setTitle(title)](#Message+setTitle) ⇒ <code>[Message](#Message)</code>
@@ -367,14 +369,19 @@ This is a test
         * [.setVideoUrl(videoUrl)](#Message+setVideoUrl) ⇒ <code>[Message](#Message)</code>
         * [.setDelay(delay)](#Message+setDelay) ⇒ <code>[Message](#Message)</code>
         * [.setTypeTime(typeTime)](#Message+setTypeTime) ⇒ <code>[Message](#Message)</code>
-        * [.setAttributionName(attributionName)](#Message+setAttributionName) ⇒ <code>string</code>
-        * [.setAttributionIcon(attributionIcon)](#Message+setAttributionIcon) ⇒ <code>string</code>
+        * [.setAttributionName(attributionName)](#Message+setAttributionName) ⇒ <code>[Message](#Message)</code>
+        * [.setAttributionIcon(attributionIcon)](#Message+setAttributionIcon) ⇒ <code>[Message](#Message)</code>
+        * [.setLoop(loop)](#Message+setLoop) ⇒ <code>[Message](#Message)</code>
+        * [.setMuted(muted)](#Message+setMuted) ⇒ <code>[Message](#Message)</code>
+        * [.setAutoplay(autoplay)](#Message+setAutoplay) ⇒ <code>[Message](#Message)</code>
+        * [.setNoSave(noSave)](#Message+setNoSave) ⇒ <code>[Message](#Message)</code>
     * _static_
         * [.text()](#Message.text) ⇒ <code>[Message](#Message)</code>
         * [.link()](#Message.link) ⇒ <code>[Message](#Message)</code>
         * [.picture()](#Message.picture) ⇒ <code>[Message](#Message)</code>
         * [.video()](#Message.video) ⇒ <code>[Message](#Message)</code>
         * [.isTyping()](#Message.isTyping) ⇒ <code>[Message](#Message)</code>
+        * [.readReceipt()](#Message.readReceipt) ⇒ <code>[Message](#Message)</code>
 
 <a name="Message+from"></a>
 ### message.from ⇒ <code>string</code>
@@ -419,11 +426,6 @@ See https://bots.kik.com/docs/messages#stickerUrl
 <a name="Message+timestamp"></a>
 ### message.timestamp ⇒ <code>string</code>
 See https://bots.kik.com/docs/messages#timestamp
-
-**Kind**: instance property of <code>[Message](#Message)</code>  
-<a name="Message+to"></a>
-### message.to ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#to
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+type"></a>
@@ -496,6 +498,26 @@ See https://bots.kik.com/docs/messages#attribution
 See https://bots.kik.com/docs/messages#attribution
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
+<a name="Message+loop"></a>
+### message.loop ⇒ <code>boolean</code>
+See https://bots.kik.com/docs/messages#loop
+
+**Kind**: instance property of <code>[Message](#Message)</code>  
+<a name="Message+muted"></a>
+### message.muted ⇒ <code>boolean</code>
+See https://bots.kik.com/docs/messages#muted
+
+**Kind**: instance property of <code>[Message](#Message)</code>  
+<a name="Message+autoplay"></a>
+### message.autoplay ⇒ <code>boolean</code>
+See https://bots.kik.com/docs/messages#autoplay
+
+**Kind**: instance property of <code>[Message](#Message)</code>  
+<a name="Message+noSave"></a>
+### message.noSave ⇒ <code>boolean</code>
+See https://bots.kik.com/docs/messages#noSave
+
+**Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+isTextMessage"></a>
 ### message.isTextMessage() ⇒ <code>boolean</code>
 See https://bots.kik.com/docs/messages#text
@@ -552,7 +574,7 @@ See https://bots.kik.com/docs/messages#read-receipt
 
 | Param | Type | Description |
 | --- | --- | --- |
-| kikJsData | <code>String</code> | Description-y bits |
+| kikJsData | <code>string</code> | Description-y bits |
 
 <a name="Message+setPicUrl"></a>
 ### message.setPicUrl(picUrl) ⇒ <code>[Message](#Message)</code>
@@ -560,7 +582,7 @@ See https://bots.kik.com/docs/messages#read-receipt
 
 | Param | Type | Description |
 | --- | --- | --- |
-| picUrl | <code>String</code> | Description-y bits |
+| picUrl | <code>string</code> | Description-y bits |
 
 <a name="Message+setNoForward"></a>
 ### message.setNoForward(noForward) ⇒ <code>[Message](#Message)</code>
@@ -568,7 +590,7 @@ See https://bots.kik.com/docs/messages#read-receipt
 
 | Param | Type | Description |
 | --- | --- | --- |
-| noForward | <code>String</code> | Description-y bits |
+| noForward | <code>string</code> | Description-y bits |
 
 <a name="Message+setIsTyping"></a>
 ### message.setIsTyping(isTyping) ⇒ <code>[Message](#Message)</code>
@@ -576,7 +598,15 @@ See https://bots.kik.com/docs/messages#read-receipt
 
 | Param | Type | Description |
 | --- | --- | --- |
-| isTyping | <code>String</code> | Description-y bits |
+| isTyping | <code>string</code> | Description-y bits |
+
+<a name="Message+setMessageIds"></a>
+### message.setMessageIds(messageIds) ⇒ <code>[Message](#Message)</code>
+**Kind**: instance method of <code>[Message](#Message)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| messageIds | <code>array</code> | Description-y bits |
 
 <a name="Message+setBody"></a>
 ### message.setBody(body) ⇒ <code>[Message](#Message)</code>
@@ -584,7 +614,7 @@ See https://bots.kik.com/docs/messages#read-receipt
 
 | Param | Type | Description |
 | --- | --- | --- |
-| body | <code>String</code> | Description-y bits |
+| body | <code>string</code> | Description-y bits |
 
 <a name="Message+setText"></a>
 ### message.setText(text) ⇒ <code>[Message](#Message)</code>
@@ -592,7 +622,7 @@ See https://bots.kik.com/docs/messages#read-receipt
 
 | Param | Type | Description |
 | --- | --- | --- |
-| text | <code>String</code> | Description-y bits |
+| text | <code>string</code> | Description-y bits |
 
 <a name="Message+setTitle"></a>
 ### message.setTitle(title) ⇒ <code>[Message](#Message)</code>
@@ -600,7 +630,7 @@ See https://bots.kik.com/docs/messages#read-receipt
 
 | Param | Type | Description |
 | --- | --- | --- |
-| title | <code>String</code> | Description-y bits |
+| title | <code>string</code> | Description-y bits |
 
 <a name="Message+setUrl"></a>
 ### message.setUrl(url) ⇒ <code>[Message](#Message)</code>
@@ -608,7 +638,7 @@ See https://bots.kik.com/docs/messages#read-receipt
 
 | Param | Type | Description |
 | --- | --- | --- |
-| url | <code>String</code> | Description-y bits |
+| url | <code>string</code> | Description-y bits |
 
 <a name="Message+setVideoUrl"></a>
 ### message.setVideoUrl(videoUrl) ⇒ <code>[Message](#Message)</code>
@@ -616,7 +646,7 @@ See https://bots.kik.com/docs/messages#read-receipt
 
 | Param | Type | Description |
 | --- | --- | --- |
-| videoUrl | <code>String</code> | Description-y bits |
+| videoUrl | <code>string</code> | Description-y bits |
 
 <a name="Message+setDelay"></a>
 ### message.setDelay(delay) ⇒ <code>[Message](#Message)</code>
@@ -624,7 +654,7 @@ See https://bots.kik.com/docs/messages#read-receipt
 
 | Param | Type | Description |
 | --- | --- | --- |
-| delay | <code>String</code> | Description-y bits |
+| delay | <code>string</code> | Description-y bits |
 
 <a name="Message+setTypeTime"></a>
 ### message.setTypeTime(typeTime) ⇒ <code>[Message](#Message)</code>
@@ -632,23 +662,55 @@ See https://bots.kik.com/docs/messages#read-receipt
 
 | Param | Type | Description |
 | --- | --- | --- |
-| typeTime | <code>String</code> | Description-y bits |
+| typeTime | <code>string</code> | Description-y bits |
 
 <a name="Message+setAttributionName"></a>
-### message.setAttributionName(attributionName) ⇒ <code>string</code>
+### message.setAttributionName(attributionName) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| attributionName | <code>String</code> | Description-y bits |
+| attributionName | <code>string</code> | Description-y bits |
 
 <a name="Message+setAttributionIcon"></a>
-### message.setAttributionIcon(attributionIcon) ⇒ <code>string</code>
+### message.setAttributionIcon(attributionIcon) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| attributionIcon | <code>String</code> | Description-y bits |
+| attributionIcon | <code>string</code> | Description-y bits |
+
+<a name="Message+setLoop"></a>
+### message.setLoop(loop) ⇒ <code>[Message](#Message)</code>
+**Kind**: instance method of <code>[Message](#Message)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| loop | <code>boolean</code> | Description |
+
+<a name="Message+setMuted"></a>
+### message.setMuted(muted) ⇒ <code>[Message](#Message)</code>
+**Kind**: instance method of <code>[Message](#Message)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| muted | <code>boolean</code> | Description |
+
+<a name="Message+setAutoplay"></a>
+### message.setAutoplay(autoplay) ⇒ <code>[Message](#Message)</code>
+**Kind**: instance method of <code>[Message](#Message)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| autoplay | <code>boolean</code> | Description |
+
+<a name="Message+setNoSave"></a>
+### message.setNoSave(noSave) ⇒ <code>[Message](#Message)</code>
+**Kind**: instance method of <code>[Message](#Message)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| noSave | <code>boolean</code> | Description |
 
 <a name="Message.text"></a>
 ### Message.text() ⇒ <code>[Message](#Message)</code>
@@ -673,6 +735,11 @@ See https://bots.kik.com/docs/messages#video
 <a name="Message.isTyping"></a>
 ### Message.isTyping() ⇒ <code>[Message](#Message)</code>
 See https://bots.kik.com/docs/messages#isTyping
+
+**Kind**: static method of <code>[Message](#Message)</code>  
+<a name="Message.readReceipt"></a>
+### Message.readReceipt() ⇒ <code>[Message](#Message)</code>
+See https://bots.kik.com/docs/messages#receipts
 
 **Kind**: static method of <code>[Message](#Message)</code>  
 

@@ -216,6 +216,18 @@ describe('Outoing broadcast messages', () => {
 });
 
 describe('Outoing messages', () => {
+    it('throws without a recipient', () => {
+        assert.throws(() => {
+            let bot = new Bot({
+                username: BOT_USERNAME,
+                apiKey: BOT_API_KEY,
+                skipSignatureCheck: true
+            });
+
+            bot.send({ body: 'Whoops no recipient', type: 'text' })
+        });
+    });
+
     it('are sent properly', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
@@ -465,5 +477,41 @@ describe('Incoming routing', () => {
             })
             .expect(200)
             .end(done);
+    });
+
+    it('only allows POST requests', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true,
+            incomingPath: '/incoming'
+        });
+        
+        request(bot.incoming())
+            .get('/incoming')
+            .expect(405)
+            .end(done);
+    });
+
+    it('ignores other URLs', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true,
+            incomingPath: '/incoming'
+        });
+
+        request((req, res) => {
+            let called = false;
+            let next = () => {
+                called = true;
+            };
+            bot.incoming()(req, res, next);
+
+            assert(called);
+            done();
+        })
+            .post('/other')
+            .end();
     });
 });

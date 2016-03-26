@@ -446,12 +446,7 @@ class Bot {
 
     send(messages, recipient, chatId) {
         if (!recipient) {
-            throw 'Invalid recipient';
-        }
-
-        // force recipients to be an array
-        if (!!recipient && !util.isString(recipient)) {
-            throw 'Invalid recipient, must be a string';
+            throw 'You must specify a recipient to send a message';
         }
 
         // force messages to be an array

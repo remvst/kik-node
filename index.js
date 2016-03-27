@@ -10,6 +10,21 @@ const KikCode = require('./lib/scan-code.js');
 const UsernameRegex = /^[A-Za-z0-9_.]{2,32}$/;
 const UuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
 
+const OPTION_KEYS = {
+    'apiDomain': true,
+    'incomingPath': true,
+    'manifestPath': true,
+    'maxMessagePerBatch': true,
+    'automaticReadReceipts': true,
+    'receiveReadReceipts': true,
+    'receiveDeliveryReceipts': true,
+    'receiveIsTyping': true,
+    'inlineEnabled': true,
+    'username': true,
+    'apiKey': true,
+    'skipSignatureCheck': true
+};
+
 /**
  *  A callback
  *  @callback MessageHandlerCallback
@@ -107,9 +122,14 @@ class IncomingMessage extends Message {
  *  @class Bot
  *  This is a test
  *  @constructor
- *  @param {String} options.username
- *  @param {String} options.apiKey
- *  @param {String} [options.incomingPath]="/incoming" Set true to enable polling or set options
+ *  @param {string} options.username
+ *  @param {string} options.apiKey
+ *  @param {string} [options.incomingPath]="/incoming" Set true to enable polling or set options
+ *  @param {boolean} [options.automaticReadReceipts]=true
+ *  @param {boolean} [options.receiveReadReceipts]=false
+ *  @param {boolean} [options.receiveDeliveryReceipts]=false
+ *  @param {boolean} [options.receiveIsTyping]=false
+ *  @param {boolean} [options.inlineEnabled]=false
  *  @see https://bots.kik.com
  */
 class Bot {
@@ -118,10 +138,22 @@ class Bot {
         // default configuration
         this.apiDomain = 'https://engine.apikik.com';
         this.incomingPath = '/incoming';
+        this.manifestPath = '/bot.json';
         this.maxMessagePerBatch = 25;
+
+        this.automaticReadReceipts = true;
+        this.receiveReadReceipts = false;
+        this.receiveDeliveryReceipts = false;
+        this.receiveIsTyping = false;
+        this.inlineEnabled = false;
 
         // override any specified configuration
         Object.keys(options).forEach((key) => {
+            // only copy over the appropriate keys
+            if (!OPTION_KEYS[key]) {
+                return;
+            }
+
             this[key] = options[key];
         });
 
@@ -136,6 +168,10 @@ class Bot {
             errors.push('Option "apiKey" must be a Kik API key, see http://dev.kik.com/');
         }
 
+        if (!this.incomingPath || !util.isString(this.incomingPath)) {
+            errors.push('Option "incomingPath" must be path, see http://dev.kik.com/');
+        }
+
         if (errors.length > 0) {
             throw new Error(errors.join(', '));
         }
@@ -143,6 +179,19 @@ class Bot {
         this.stack = [];
         this.pendingMessages = [];
         this.pendingFlush = null;
+    }
+
+    get manifest() {
+        return {
+            webhooks: [this.incomingPath],
+            features: {
+                automaticReadReceipts: !!this.automaticReadReceipts,
+                receiveReadReceipts: !!this.receiveReadReceipts,
+                receiveDeliveryReceipts: !!this.receiveDeliveryReceipts,
+                receiveIsTyping: !!this.receiveIsTyping,
+                inlineEnabled: !!this.inlineEnabled
+            }
+        };
     }
 
     handle(incoming, done) {
@@ -465,70 +514,82 @@ class Bot {
         return this.flush();
     }
 
-    incoming(incomingPath) {
-        incomingPath = incomingPath || this.incomingPath;
-
+    incoming() {
         return (req, res, next) => {
-            if (req.url !== incomingPath) {
+            if (req.url === this.manifestPath) {
+                // the bot.json manifest only accepts GET requests
+                // requests, reject everything else
+                if (req.method !== 'GET') {
+                    res.statusCode = 405;
+
+                    return res.end(this.manifestPath + ' only accepts GET');
+                }
+
+                let manifestString = JSON.stringify(this.manifest);
+
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(manifestString);
+            } else if (req.url === this.incomingPath) {
+                // the incoming route for the bot only accepts POST
+                // requests, reject everything else
+                if (req.method !== 'POST') {
+                    res.statusCode = 405;
+
+                    return res.end(this.incomingPath + ' only accepts POST');
+                }
+
+                let body = '';
+
+                req.on('data', chunk => {
+                    body += chunk;
+                });
+
+                req.on('end', () => {
+                    if (!this.skipSignatureCheck) {
+                        if (!isSignatureValid(body, this.apiKey, req.headers['x-kik-signature'])) {
+                            // the request was not sent with a valid signature, so we reject it
+                            res.statusCode = 403;
+
+                            return res.end('Invalid signature');
+                        }
+                    }
+
+                    let parsed;
+
+                    try {
+                        parsed = JSON.parse(body);
+                    }
+                    catch (ex) {
+                        res.statusCode = 400;
+
+                        return res.end('Invalid body');
+                    }
+
+                    if (!parsed.messages || !util.isArray(parsed.messages)) {
+                        res.statusCode = 400;
+
+                        return res.end('Invalid body');
+                    }
+
+                    let remainingMessages = parsed.messages.length + 1;
+
+                    function doNothing() {
+                    }
+
+                    parsed.messages.forEach((json) => {
+                        this.handle(new IncomingMessage(this).parse(json), doNothing);
+                    });
+
+                    res.statusCode = 200;
+
+                    return res.end('OK');
+                });
+            } else {
                 if (next) {
                     next();
                 }
-
-                return;
             }
-
-            if (req.method !== 'POST') {
-                res.statusCode = 405;
-
-                return res.end(incomingPath + ' only accepts POST');
-            }
-
-            let body = '';
-
-            req.on('data', chunk => {
-                body += chunk;
-            });
-
-            req.on('end', () => {
-                if (!this.skipSignatureCheck) {
-                    if (!isSignatureValid(body, this.apiKey, req.headers['x-kik-signature'])) {
-                        // the request was not sent with a valid signature, so we reject it
-                        res.statusCode = 403;
-
-                        return res.end('Invalid signature');
-                    }
-                }
-
-                let parsed;
-
-                try {
-                    parsed = JSON.parse(body);
-                }
-                catch (ex) {
-                    res.statusCode = 400;
-
-                    return res.end('Invalid body');
-                }
-
-                if (!parsed.messages || !util.isArray(parsed.messages)) {
-                    res.statusCode = 400;
-
-                    return res.end('Invalid body');
-                }
-
-                let remainingMessages = parsed.messages.length + 1;
-
-                function doNothing() {
-                }
-
-                parsed.messages.forEach((json) => {
-                    this.handle(new IncomingMessage(this).parse(json), doNothing);
-                });
-
-                res.statusCode = 200;
-
-                return res.end('OK');
-            });
         };
     }
 

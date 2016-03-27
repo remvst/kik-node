@@ -392,6 +392,8 @@ This is a test
         * [.isIsTypingMessage()](#Message+isIsTypingMessage) ⇒ <code>boolean</code>
         * [.isDeliveryReceiptMessage()](#Message+isDeliveryReceiptMessage) ⇒ <code>boolean</code>
         * [.isReadReceiptMessage()](#Message+isReadReceiptMessage) ⇒ <code>boolean</code>
+        * [.addTextResponse(text)](#Message+addTextResponse) ⇒ <code>[Message](#Message)</code>
+        * [.addResponseKeyboard(suggestions, [isHidden], [user])](#Message+addResponseKeyboard) ⇒ <code>[Message](#Message)</code>
         * [.setKikJsData(kikJsData)](#Message+setKikJsData) ⇒ <code>[Message](#Message)</code>
         * [.setPicUrl(picUrl)](#Message+setPicUrl) ⇒ <code>[Message](#Message)</code>
         * [.setNoForward(noForward)](#Message+setNoForward) ⇒ <code>[Message](#Message)</code>
@@ -603,6 +605,24 @@ See https://bots.kik.com/docs/messages#delivery-receipt
 See https://bots.kik.com/docs/messages#read-receipt
 
 **Kind**: instance method of <code>[Message](#Message)</code>  
+<a name="Message+addTextResponse"></a>
+### message.addTextResponse(text) ⇒ <code>[Message](#Message)</code>
+**Kind**: instance method of <code>[Message](#Message)</code>  
+
+| Param | Type |
+| --- | --- |
+| text | <code>string</code> | 
+
+<a name="Message+addResponseKeyboard"></a>
+### message.addResponseKeyboard(suggestions, [isHidden], [user]) ⇒ <code>[Message](#Message)</code>
+**Kind**: instance method of <code>[Message](#Message)</code>  
+
+| Param | Type |
+| --- | --- |
+| suggestions | <code>array</code> | 
+| [isHidden] | <code>boolean</code> | 
+| [user] | <code>string</code> | 
+
 <a name="Message+setKikJsData"></a>
 ### message.setKikJsData(kikJsData) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  

@@ -59,7 +59,9 @@ bot.onTextMessage((message) => {
 });
 ```
 
-## [License](LICENSE.md)
+## License
+
+The Kik bot library is released under the terms of the MIT license. See [License](LICENSE.md) for more information or see https://opensource.org/licenses/MIT.
 
 [travis-image]: https://travis-ci.com/kikinteractive/kik-node.svg?token=iHkQJ3F1VxtmX1aAG1ky&branch=master
 [travis-url]: https://travis-ci.com/kikinteractive/kik-node

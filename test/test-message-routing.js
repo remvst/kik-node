@@ -17,14 +17,22 @@ let messageChecker;
 let engine = nock('https://engine.apikik.com')
     .post('/api/v1/message')
     .reply(200, (err, body, cb) => {
-        if (messageChecker) {
-            messageChecker(err, body, cb);
+        let currentMessageChecker = messageChecker;
+
+        messageChecker = null;
+
+        if (currentMessageChecker) {
+            currentMessageChecker(err, body, cb);
         }
     })
     .post('/api/v1/broadcast')
     .reply(200, (err, body, cb) => {
-        if (messageChecker) {
-            messageChecker(err, body, cb);
+        let currentMessageChecker = messageChecker;
+
+        messageChecker = null;
+
+        if (currentMessageChecker) {
+            currentMessageChecker(err, body, cb);
         }
     });
 
@@ -99,7 +107,7 @@ describe('Incoming handling', () => {
                 ]
             })
             .expect(200)
-            .end();
+            .end(() => {});
     });
 
     it('stops routing after being handled', (done) => {
@@ -129,7 +137,7 @@ describe('Incoming handling', () => {
                 ]
             })
             .expect(200)
-            .end();
+            .end(() => {});
     });
 
     it('routes incoming messages to incoming', (done) => {
@@ -154,7 +162,7 @@ describe('Incoming handling', () => {
                 ]
             })
             .expect(200)
-            .end();
+            .end(() => {});
     });
 
     it('does not route content messages to text', (done) => {
@@ -182,7 +190,7 @@ describe('Incoming handling', () => {
                 ]
             })
             .expect(200)
-            .end();
+            .end(() => {});
     });
 
     it('routing respects ordering', (done) => {
@@ -217,7 +225,7 @@ describe('Incoming handling', () => {
                 ]
             })
             .expect(200)
-            .end();
+            .end(() => {});
     });
 });
 
@@ -334,7 +342,7 @@ describe('Type handler', () => {
                 messages: messages
             })
             .expect(200)
-            .end();
+            .end(() => {});
     });
 });
 
@@ -466,32 +474,31 @@ describe('Outoing messages', () => {
             apiKey: BOT_API_KEY,
             skipSignatureCheck: true
         });
-        let batch = 0;
 
         messageChecker = (err, body, cb) => {
-            ++batch;
+            assert.deepEqual(body, {
+                messages: [
+                    { body: 'Test 1', type: 'text', to: 'testuser1' },
+                    { body: 'Test 4', type: 'text', to: 'testuser1' }
+                ]
+            });
 
-            if (batch === 1) {
-                assert.deepEqual(body, {
-                    messages: [
-                        { body: 'Test 1', type: 'text', to: 'testuser1' },
-                        { body: 'Test 4', type: 'text', to: 'testuser1' }
-                    ]
-                });
-            } else if (batch === 2) {
+            messageChecker = (err, body, cb) => {
                 assert.deepEqual(body, {
                     messages: [
                         { body: 'Test 2', type: 'text', to: 'chris' }
                     ]
                 });
-            } else if (batch === 3) {
-                assert.deepEqual(body, {
-                    messages: [
-                        { body: 'Test 3', type: 'text', to: 'ted' }
-                    ]
-                });
-                done();
-            }
+
+                messageChecker = (err, body, cb) => {
+                    assert.deepEqual(body, {
+                        messages: [
+                            { body: 'Test 3', type: 'text', to: 'ted' }
+                        ]
+                    });
+                    done();
+                };
+            };
         };
 
         bot.send({
@@ -519,40 +526,41 @@ describe('Outoing messages', () => {
             maxMessagePerBatch: 2,
             skipSignatureCheck: true
         });
-        let batch = 0;
 
         messageChecker = (err, body, cb) => {
-            ++batch;
+            assert.deepEqual(body, {
+                messages: [
+                    { body: 'Test 1', type: 'text', to: 'testuser1' },
+                    { body: 'Test 2', type: 'text', to: 'testuser1' }
+                ]
+            });
 
-            if (batch === 1) {
-                assert.deepEqual(body, {
-                    messages: [
-                        { body: 'Test 1', type: 'text', to: 'testuser1' },
-                        { body: 'Test 2', type: 'text', to: 'testuser1' }
-                    ]
-                });
-            } else if (batch === 2) {
+            messageChecker = (err, body, cb) => {
                 assert.deepEqual(body, {
                     messages: [
                         { body: 'Test 3', type: 'text', to: 'testuser1' },
                         { body: 'Test 4', type: 'text', to: 'testuser1' }
                     ]
                 });
-            } else if (batch === 3) {
-                assert.deepEqual(body, {
-                    messages: [
-                        { body: 'Test 5', type: 'text', to: 'testuser1' }
-                    ]
-                });
-            } else if (batch === 4) {
-                assert.deepEqual(body, {
-                    messages: [
-                        { body: 'Test 1', type: 'text', to: 'chris' },
-                        { body: 'Test 2', type: 'text', to: 'chris' }
-                    ]
-                });
-                done();
-            }
+
+                messageChecker = (err, body, cb) => {
+                    assert.deepEqual(body, {
+                        messages: [
+                            { body: 'Test 5', type: 'text', to: 'testuser1' }
+                        ]
+                    });
+
+                    messageChecker = (err, body, cb) => {
+                        assert.deepEqual(body, {
+                            messages: [
+                                { body: 'Test 1', type: 'text', to: 'chris' },
+                                { body: 'Test 2', type: 'text', to: 'chris' }
+                            ]
+                        });
+                        done();
+                    };
+                };
+            };
         };
 
         bot.send({
@@ -658,5 +666,97 @@ describe('Message routing', () => {
             })
             .expect(200)
             .end(done);
+    });
+});
+
+describe('Reply handling', () => {
+    it('can start typing', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+
+        bot.use((incoming, next) => {
+            incoming.startTyping();
+        });
+
+        messageChecker = (err, body, cb) => {
+            let message = Bot.Message.fromJSON(body.messages[0]);
+
+            assert.ok(message.isIsTypingMessage());
+            assert.ok(message.isTyping);
+
+            done();
+        };
+
+        request(bot.incoming())
+            .post('/incoming')
+            .send({
+                messages: [{ body: 'Test', type: 'text', from: 'testuser1' }]
+            })
+            .expect(200)
+            .end(() => {});
+    });
+    it('can stop typing', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+
+        bot.use((incoming, next) => {
+            incoming.stopTyping();
+        });
+
+        messageChecker = (err, body, cb) => {
+            let message = Bot.Message.fromJSON(body.messages[0]);
+
+            assert.ok(message.isIsTypingMessage());
+            assert.ifError(message.isTyping);
+
+            done();
+        };
+
+        request(bot.incoming())
+            .post('/incoming')
+            .send({
+                messages: [{ body: 'Test', type: 'text', from: 'testuser1' }]
+            })
+            .expect(200)
+            .end(() => {});
+    });
+    it('mark a message read', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+
+        bot.use((incoming, next) => {
+            incoming.markRead();
+        });
+
+        messageChecker = (err, body, cb) => {
+            let message = Bot.Message.fromJSON(body.messages[0]);
+
+            assert.ok(message.isReadReceiptMessage());
+            assert.deepEqual(message.messageIds, ['3652a09b-4be8-4006-ac56-5d8b31464078']);
+
+            done();
+        };
+
+        request(bot.incoming())
+            .post('/incoming')
+            .send({
+                messages: [{
+                    id: '3652a09b-4be8-4006-ac56-5d8b31464078',
+                    body: 'Test',
+                    type: 'text',
+                    from: 'testuser1'
+                }]
+            })
+            .expect(200)
+            .end(() => {});
     });
 });

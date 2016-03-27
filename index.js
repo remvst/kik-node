@@ -62,7 +62,11 @@ function prepareMessage(originalMessage, to, chatId) {
     // make a copy of the message in the degenerate case so
     // we don't modify someone else along the way and add on
     // the routing information
-    Object.assign(result, message, { 'to': to, 'chatId': chatId });
+    Object.assign(result, message, { 'to': to });
+
+    if (chatId) {
+        result.chatId = chatId;
+    }
 
     return result;
 }
@@ -99,6 +103,7 @@ class IncomingMessage extends Message {
      *  @return {promise.<object>}
      */
     startTyping() {
+
         return this.reply(Message.isTyping(true));
     }
 

@@ -637,4 +637,26 @@ describe('Message routing', () => {
             .expect(200)
             .end(done);
     });
+
+    it('does not break calling next too many times', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true,
+            incomingPath: '/incoming'
+        });
+
+        bot.use((incoming, next) => {
+            next();
+            next();
+        });
+
+        request(bot.incoming())
+            .post('/incoming')
+            .send({
+                messages: [{ body: 'Test', type: 'text', from: 'testuser1' }]
+            })
+            .expect(200)
+            .end(done);
+    });
 });

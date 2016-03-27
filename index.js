@@ -499,21 +499,17 @@ class Bot {
         function handle(incoming, done) {
             let index = 0;
             let finished = false;
-            const finish = (err) => {
+            const finish = () => {
                 finished = true;
 
                 if (done) {
-                    done(err);
+                    done();
                 }
             };
 
-            const advance = (err) => {
+            const advance = () => {
                 if (finished) {
                     return;
-                }
-
-                if (err) {
-                    finish(err);
                 }
 
                 let layer = stack[index++];

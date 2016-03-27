@@ -68,4 +68,34 @@ describe('Bot construction', () => {
             });
         });
     });
+
+    it('throws for an invalid path', () => {
+        assert.throws(() => {
+            let bot = new Bot({
+                username: 'abc-123',
+                apiKey: BOT_API_KEY,
+                incomingPath: 12
+            });
+        });
+    });
+
+    it('throws for an invalid manifest path', () => {
+        assert.throws(() => {
+            let bot = new Bot({
+                username: 'abc-123',
+                apiKey: BOT_API_KEY,
+                manifestPath: 12
+            });
+        });
+    });
+
+    it('does not copy over arbitrary option keys', () => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            otherKey: 'some value'
+        });
+
+        assert.ifError(bot.otherKey);
+    });
 });

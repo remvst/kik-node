@@ -97,6 +97,9 @@ Bot
     * [.onReadReceiptMessage(handler)](#Bot+onReadReceiptMessage)
     * [.getKikCodeUrl()](#Bot+getKikCodeUrl) ⇒ <code>promise.&lt;string&gt;</code>
     * [.getUserProfile()](#Bot+getUserProfile) ⇒ <code>[promise.&lt;UserProfile&gt;](#UserProfile)</code>
+    * [.broadcast(messages, recipients)](#Bot+broadcast)
+    * [.send(messages, recipient, [chatId])](#Bot+send)
+    * [.incoming()](#Bot+incoming)
 
 <a name="new_Bot_new"></a>
 ### new Bot()
@@ -140,7 +143,7 @@ bot.onTextMessage((incoming, bot) => {
 ```
 **Example**  
 ```js
-bot.onTextMessage((incoming, bot, next) => {
+bot.onTextMessage((incoming, next) => {
      if (incoming.body !== 'Hi') {
          // we only handle welcoming, let someone else deal with this
          // message
@@ -153,7 +156,7 @@ bot.onTextMessage((incoming, bot, next) => {
 ```
 **Example**  
 ```js
-bot.onTextMessage(/^hi|hello|bonjour$/i, (incoming, bot, next) => {
+bot.onTextMessage(/^hi|hello|bonjour$/i, (incoming, next) => {
      // say hello...
  });
 ```
@@ -247,6 +250,31 @@ Creates a Kik Code with the intended options and returns the
 
 <a name="Bot+getUserProfile"></a>
 ### bot.getUserProfile() ⇒ <code>[promise.&lt;UserProfile&gt;](#UserProfile)</code>
+**Kind**: instance method of <code>[Bot](#Bot)</code>  
+<a name="Bot+broadcast"></a>
+### bot.broadcast(messages, recipients)
+**Kind**: instance method of <code>[Bot](#Bot)</code>  
+
+| Param | Type |
+| --- | --- |
+| messages | <code>array</code> | 
+| recipients | <code>array</code> | 
+
+<a name="Bot+send"></a>
+### bot.send(messages, recipient, [chatId])
+**Kind**: instance method of <code>[Bot](#Bot)</code>  
+
+| Param | Type |
+| --- | --- |
+| messages | <code>array</code> | 
+| recipient | <code>string</code> | 
+| [chatId] | <code>string</code> | 
+
+<a name="Bot+incoming"></a>
+### bot.incoming()
+Handles the incoming requests for messages and for the bot.json
+ manifest.
+
 **Kind**: instance method of <code>[Bot](#Bot)</code>  
 
 <a name="IncomingMessage"></a>

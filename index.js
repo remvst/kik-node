@@ -9,8 +9,7 @@ const KikCode = require('./lib/scan-code.js');
 
 const UsernameRegex = /^[A-Za-z0-9_.]{2,32}$/;
 const UuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
-
-const OPTION_KEYS = {
+const BotOptionsKeys = {
     'apiDomain': true,
     'incomingPath': true,
     'manifestPath': true,
@@ -150,7 +149,7 @@ class Bot {
         // override any specified configuration
         Object.keys(options).forEach((key) => {
             // only copy over the appropriate keys
-            if (!OPTION_KEYS[key]) {
+            if (!BotOptionsKeys[key]) {
                 return;
             }
 
@@ -170,6 +169,10 @@ class Bot {
 
         if (!this.incomingPath || !util.isString(this.incomingPath)) {
             errors.push('Option "incomingPath" must be path, see http://dev.kik.com/');
+        }
+
+        if (!this.manifestPath || !util.isString(this.manifestPath)) {
+            errors.push('Option "manifestPath" must be path, see http://dev.kik.com/');
         }
 
         if (errors.length > 0) {
@@ -194,43 +197,6 @@ class Bot {
         };
     }
 
-    handle(incoming, done) {
-        let index = 0;
-        let finished = false;
-        const finish = (err) => {
-            finished = true;
-
-            if (done) {
-                done(err);
-            }
-        };
-
-        const advance = (err) => {
-            if (finished) {
-                return;
-            }
-
-            let layer = this.stack[index++];
-
-            if (!layer) {
-                finish();
-
-                return;
-            }
-
-            try {
-                layer(incoming, advance);
-            }
-            catch (e) {
-                advance(e);
-            }
-        };
-
-        incoming.finish = finish;
-
-        advance();
-    }
-
     /**
      *  @param {MessageHandlerCallback} handler
      */
@@ -249,7 +215,7 @@ class Bot {
      *      incoming.reply(`Hi I'm ${bot.username}`);
      *  });
      *  @example
-     *  bot.onTextMessage((incoming, bot, next) => {
+     *  bot.onTextMessage((incoming, next) => {
      *      if (incoming.body !== 'Hi') {
      *          // we only handle welcoming, let someone else deal with this
      *          // message
@@ -259,7 +225,7 @@ class Bot {
      *      // say hello...
      *  });
      *  @example
-     *  bot.onTextMessage(/^hi|hello|bonjour$/i, (incoming, bot, next) => {
+     *  bot.onTextMessage(/^hi|hello|bonjour$/i, (incoming, next) => {
      *      // say hello...
      *  });
      */
@@ -272,7 +238,7 @@ class Bot {
             handler = text;
         }
 
-        this.use((incoming, bot, next) => {
+        this.use((incoming, next) => {
             // if this isn't a text message, give up
             // if we have text to match and it doesn't, give up
             // if we have a reg ex to match and it doesn't, give up
@@ -281,7 +247,7 @@ class Bot {
              && ((!isString && !isRegExp)
               || (isString && incoming.body === text)
               || (isRegExp && incoming.body.match(text)))) {
-                handler(incoming, bot, next);
+                handler(incoming, next);
             } else {
                 next();
             }
@@ -293,9 +259,9 @@ class Bot {
      *  @param {MessageHandlerCallback} handler
      */
     onLinkMessage(handler) {
-        this.use((incoming, bot, next) => {
+        this.use((incoming, next) => {
             if (incoming.isLinkMessage()) {
-                handler(incoming, bot, next);
+                handler(incoming, next);
             } else {
                 next();
             }
@@ -307,9 +273,9 @@ class Bot {
      *  @param {MessageHandlerCallback} handler
      */
     onPictureMessage(handler) {
-        this.use((incoming, bot, next) => {
+        this.use((incoming, next) => {
             if (incoming.isPictureMessage()) {
-                handler(incoming, bot, next);
+                handler(incoming, next);
             } else {
                 next();
             }
@@ -321,9 +287,9 @@ class Bot {
      *  @param {MessageHandlerCallback} handler
      */
     onVideoMessage(handler) {
-        this.use((incoming, bot, next) => {
+        this.use((incoming, next) => {
             if (incoming.isVideoMessage()) {
-                handler(incoming, bot, next);
+                handler(incoming, next);
             } else {
                 next();
             }
@@ -335,9 +301,9 @@ class Bot {
      *  @param {MessageHandlerCallback} handler
      */
     onStartChattingMessage(handler) {
-        this.use((incoming, bot, next) => {
+        this.use((incoming, next) => {
             if (incoming.isStartChattingMessage()) {
-                handler(incoming, bot, next);
+                handler(incoming, next);
             } else {
                 next();
             }
@@ -349,9 +315,9 @@ class Bot {
      *  @param {MessageHandlerCallback} handler
      */
     onScanDataMessage(handler) {
-        this.use((incoming, bot, next) => {
+        this.use((incoming, next) => {
             if (incoming.isScanDataMessage()) {
-                handler(incoming, bot, next);
+                handler(incoming, next);
             } else {
                 next();
             }
@@ -363,9 +329,9 @@ class Bot {
      *  @param {MessageHandlerCallback} handler
      */
     onStickerMessage(handler) {
-        this.use((incoming, bot, next) => {
+        this.use((incoming, next) => {
             if (incoming.isStickerMessage()) {
-                handler(incoming, bot, next);
+                handler(incoming, next);
             } else {
                 next();
             }
@@ -377,9 +343,9 @@ class Bot {
      *  @param {MessageHandlerCallback} handler
      */
     onIsTypingMessage(handler) {
-        this.use((incoming, bot, next) => {
+        this.use((incoming, next) => {
             if (incoming.isIsTypingMessage()) {
-                handler(incoming, bot, next);
+                handler(incoming, next);
             } else {
                 next();
             }
@@ -391,9 +357,9 @@ class Bot {
      *  @param {MessageHandlerCallback} handler
      */
     onDeliveryReceiptMessage(handler) {
-        this.use((incoming, bot, next) => {
+        this.use((incoming, next) => {
             if (incoming.isDeliveryReceiptMessage()) {
-                handler(incoming, bot, next);
+                handler(incoming, next);
             } else {
                 next();
             }
@@ -405,9 +371,9 @@ class Bot {
      *  @param {MessageHandlerCallback} handler
      */
     onReadReceiptMessage(handler) {
-        this.use((incoming, bot, next) => {
+        this.use((incoming, next) => {
             if (incoming.isReadReceiptMessage()) {
-                handler(incoming, bot, next);
+                handler(incoming, next);
             } else {
                 next();
             }
@@ -464,9 +430,13 @@ class Bot {
         return fetch(username);
     }
 
+    /**
+     *  @param {array} messages
+     *  @param {array} recipients
+     */
     broadcast(messages, recipients) {
         if (!recipients) {
-            throw 'Invalid recipient list';
+            throw 'You must specify a recipient to send a message';
         }
 
         // force recipients to be an array
@@ -493,6 +463,11 @@ class Bot {
         return API.broadcastMessages(this.apiDomain, this.username, this.apiKey, pendingMessages);
     }
 
+    /**
+     *  @param {array} messages
+     *  @param {string} recipient
+     *  @param {string} [chatId]
+     */
     send(messages, recipient, chatId) {
         if (!recipient) {
             throw 'You must specify a recipient to send a message';
@@ -514,7 +489,49 @@ class Bot {
         return this.flush();
     }
 
+    /**
+     *  Handles the incoming requests for messages and for the bot.json
+     *  manifest.
+     */
     incoming() {
+        const stack = this.stack;
+
+        function handle(incoming, done) {
+            let index = 0;
+            let finished = false;
+            const finish = (err) => {
+                finished = true;
+
+                if (done) {
+                    done(err);
+                }
+            };
+
+            const advance = (err) => {
+                if (finished) {
+                    return;
+                }
+
+                if (err) {
+                    finish(err);
+                }
+
+                let layer = stack[index++];
+
+                if (!layer) {
+                    finish();
+
+                    return;
+                }
+
+                layer(incoming, advance);
+            };
+
+            incoming.finish = finish;
+
+            advance();
+        }
+
         return (req, res, next) => {
             if (req.url === this.manifestPath) {
                 // the bot.json manifest only accepts GET requests
@@ -578,7 +595,7 @@ class Bot {
                     }
 
                     parsed.messages.forEach((json) => {
-                        this.handle(new IncomingMessage(this).parse(json), doNothing);
+                        handle(new IncomingMessage(this).parse(json), doNothing);
                     });
 
                     res.statusCode = 200;

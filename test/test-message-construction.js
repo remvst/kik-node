@@ -27,9 +27,9 @@ describe('Message construction', () => {
             keyboards: [{
                 type: 'suggested',
                 responses: [
-                    { type: 'text', body: 'A'},
-                    { type: 'text', body: 'B'},
-                    { type: 'text', body: 'C'}
+                    { type: 'text', body: 'A' },
+                    { type: 'text', body: 'B' },
+                    { type: 'text', body: 'C' }
                 ]
             }]
         };
@@ -46,9 +46,9 @@ describe('Message construction', () => {
             keyboards: [{
                 type: 'suggested',
                 responses: [
-                    { type: 'text', body: 'A'},
-                    { type: 'text', body: 'B'},
-                    { type: 'text', body: 'C'}
+                    { type: 'text', body: 'A' },
+                    { type: 'text', body: 'B' },
+                    { type: 'text', body: 'C' }
                 ]
             }]
         };
@@ -67,9 +67,9 @@ describe('Message construction', () => {
                 to: 'sometestguy',
                 hidden: true,
                 responses: [
-                    { type: 'text', body: 'A'},
-                    { type: 'text', body: 'B'},
-                    { type: 'text', body: 'C'}
+                    { type: 'text', body: 'A' },
+                    { type: 'text', body: 'B' },
+                    { type: 'text', body: 'C' }
                 ]
             }]
         };
@@ -87,9 +87,9 @@ describe('Message construction', () => {
                 type: 'suggested',
                 hidden: true,
                 responses: [
-                    { type: 'text', body: 'A'},
-                    { type: 'text', body: 'B'},
-                    { type: 'text', body: 'C'}
+                    { type: 'text', body: 'A' },
+                    { type: 'text', body: 'B' },
+                    { type: 'text', body: 'C' }
                 ]
             }]
         };
@@ -106,9 +106,9 @@ describe('Message construction', () => {
             keyboards: [{
                 type: 'suggested',
                 responses: [
-                    { type: 'text', body: 'A'},
-                    { type: 'text', body: 'B'},
-                    { type: 'text', body: 'C'}
+                    { type: 'text', body: 'A' },
+                    { type: 'text', body: 'B' },
+                    { type: 'text', body: 'C' }
                 ]
             }]
         };

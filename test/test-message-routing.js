@@ -721,7 +721,12 @@ describe('Reply handling', () => {
         request(bot.incoming())
             .post('/incoming')
             .send({
-                messages: [{ body: 'Test', type: 'text', from: 'testuser1' }]
+                messages: [{
+                    body: 'Test',
+                    type: 'text',
+                    from: 'testuser1',
+                    chatId: '3652a09b4be84006ac56-5d8b31464078'
+                }]
             })
             .expect(200)
             .end(() => {});

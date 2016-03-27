@@ -1,19 +1,40 @@
 'use strict';
 
-let nock = require('nock');
-let request = require('supertest');
-let assert = require('assert');
-let EventEmitter = require('events').EventEmitter;
-let defer = typeof setImmediate === 'function' ? setImmediate : (fn) => {
+const nock = require('nock');
+const request = require('supertest');
+const assert = require('assert');
+const crypto = require('crypto');
+const EventEmitter = require('events').EventEmitter;
+const defer = typeof setImmediate === 'function' ? setImmediate : (fn) => {
     process.nextTick(fn.bind.apply(fn, arguments));
 };
 
-let Bot = require('../index.js');
+const Bot = require('../index.js');
 
 const BOT_USERNAME = 'testbot';
 const BOT_API_KEY = '2042cd8e-638c-4183-aef4-d4bef6f01981';
 
 describe('Incoming routing', () => {
+    it('verifies signature', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            incomingPath: '/incoming'
+        });
+
+        const data = '{"messages":[{"body":"Test", "type":"text", "from":"testuser1"}]}';
+        const signature = crypto.createHmac('sha1', BOT_API_KEY)
+            .update(new Buffer(data))
+            .digest('hex');
+
+        request(bot.incoming())
+            .post('/incoming')
+            .set('X-Kik-Signature', signature)
+            .send(data)
+            .expect(200)
+            .end(done);
+    });
+
     it('will not tolerate junk data', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,

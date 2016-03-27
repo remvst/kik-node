@@ -24,7 +24,93 @@ describe('Message construction', () => {
         const expected = {
             type: 'text',
             body: 'body',
-            suggestedResponses: ['A', 'B', 'C']
+            keyboards: [{
+                type: 'suggested',
+                responses: [
+                    { type: 'text', body: 'A'},
+                    { type: 'text', body: 'B'},
+                    { type: 'text', body: 'C'}
+                ]
+            }]
+        };
+
+        assert.deepEqual(message.toJSON(), expected);
+    });
+
+    it('with suggested responses with multi-add', () => {
+        const message = Bot.Message.text('body')
+            .addTextResponse('A', 'B', 'C');
+        const expected = {
+            type: 'text',
+            body: 'body',
+            keyboards: [{
+                type: 'suggested',
+                responses: [
+                    { type: 'text', body: 'A'},
+                    { type: 'text', body: 'B'},
+                    { type: 'text', body: 'C'}
+                ]
+            }]
+        };
+
+        assert.deepEqual(message.toJSON(), expected);
+    });
+
+    it('with suggested responses by keyboard methods', () => {
+        const message = Bot.Message.text('body')
+            .addResponseKeyboard(['A', 'B', 'C'], true, 'sometestguy');
+        const expected = {
+            type: 'text',
+            body: 'body',
+            keyboards: [{
+                type: 'suggested',
+                to: 'sometestguy',
+                hidden: true,
+                responses: [
+                    { type: 'text', body: 'A'},
+                    { type: 'text', body: 'B'},
+                    { type: 'text', body: 'C'}
+                ]
+            }]
+        };
+
+        assert.deepEqual(message.toJSON(), expected);
+    });
+
+    it('with suggested responses by keyboard methods without target user', () => {
+        const message = Bot.Message.text('body')
+            .addResponseKeyboard(['A', 'B', 'C'], true);
+        const expected = {
+            type: 'text',
+            body: 'body',
+            keyboards: [{
+                type: 'suggested',
+                hidden: true,
+                responses: [
+                    { type: 'text', body: 'A'},
+                    { type: 'text', body: 'B'},
+                    { type: 'text', body: 'C'}
+                ]
+            }]
+        };
+
+        assert.deepEqual(message.toJSON(), expected);
+    });
+
+    it('with suggested responses by keyboard methods without hidden', () => {
+        const message = Bot.Message.text('body')
+            .addResponseKeyboard(['A', 'B', 'C']);
+        const expected = {
+            type: 'text',
+            body: 'body',
+            keyboards: [{
+                type: 'suggested',
+                responses: [
+                    { type: 'text', body: 'A'},
+                    { type: 'text', body: 'B'},
+                    { type: 'text', body: 'C'}
+                ]
+            }]
         };
 
         assert.deepEqual(message.toJSON(), expected);

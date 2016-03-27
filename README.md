@@ -103,9 +103,14 @@ Bot
 
 | Param | Type | Description |
 | --- | --- | --- |
-| options.username | <code>String</code> |  |
-| options.apiKey | <code>String</code> |  |
-| [options.incomingPath] | <code>String</code> | Set true to enable polling or set options |
+| options.username | <code>string</code> |  |
+| options.apiKey | <code>string</code> |  |
+| [options.incomingPath] | <code>string</code> | Set true to enable polling or set options |
+| [options.automaticReadReceipts] | <code>boolean</code> |  |
+| [options.receiveReadReceipts] | <code>boolean</code> |  |
+| [options.receiveDeliveryReceipts] | <code>boolean</code> |  |
+| [options.receiveIsTyping] | <code>boolean</code> |  |
+| [options.inlineEnabled] | <code>boolean</code> |  |
 
 <a name="Bot+use"></a>
 ### bot.use(handler)

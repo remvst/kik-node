@@ -191,7 +191,7 @@ class Bot {
 
     get manifest() {
         return {
-            webhooks: [this.incomingPath],
+            webhook: '' + this.incomingPath,
             features: {
                 manuallySendReadReceipts: !!this.manuallySendReadReceipts,
                 receiveReadReceipts: !!this.receiveReadReceipts,

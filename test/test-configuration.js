@@ -20,7 +20,7 @@ describe('Bot manifest', () => {
             .expect((res) => {
                 assert.equal(res.statusCode, 200);
                 assert.deepEqual(res.body, {
-                    webhooks: ['/incoming'],
+                    webhook: '/incoming',
                     features: {
                         manuallySendReadReceipts: false,
                         receiveReadReceipts: false,

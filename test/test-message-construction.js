@@ -77,6 +77,25 @@ describe('Message construction', () => {
         assert.deepEqual(message.toJSON(), expected);
     });
 
+    it('with suggested responses by keyboard methods with one message', () => {
+        const message = Bot.Message.text('body')
+            .addResponseKeyboard('A', true, 'sometestguy');
+        const expected = {
+            type: 'text',
+            body: 'body',
+            keyboards: [{
+                type: 'suggested',
+                to: 'sometestguy',
+                hidden: true,
+                responses: [
+                    { type: 'text', body: 'A' }
+                ]
+            }]
+        };
+
+        assert.deepEqual(message.toJSON(), expected);
+    });
+
     it('with suggested responses by keyboard methods without target user', () => {
         const message = Bot.Message.text('body')
             .addResponseKeyboard(['A', 'B', 'C'], true);
@@ -90,6 +109,66 @@ describe('Message construction', () => {
                     { type: 'text', body: 'A' },
                     { type: 'text', body: 'B' },
                     { type: 'text', body: 'C' }
+                ]
+            }]
+        };
+
+        assert.deepEqual(message.toJSON(), expected);
+    });
+
+    it('with suggested responses by keyboard methods with duplicate users', () => {
+        const message = Bot.Message.text('body')
+            .addResponseKeyboard(['A', 'B', 'C'], true, 'sometestguy')
+            .addResponseKeyboard(['D', 'E', 'F'], true, 'sometestguy');
+        const expected = {
+            type: 'text',
+            body: 'body',
+            keyboards: [{
+                type: 'suggested',
+                to: 'sometestguy',
+                hidden: true,
+                responses: [
+                    { type: 'text', body: 'A' },
+                    { type: 'text', body: 'B' },
+                    { type: 'text', body: 'C' },
+                    { type: 'text', body: 'D' },
+                    { type: 'text', body: 'E' },
+                    { type: 'text', body: 'F' }
+                ]
+            }]
+        };
+
+        assert.deepEqual(message.toJSON(), expected);
+    });
+
+    it('with suggested responses by keyboard methods with duplicate users', () => {
+        const message = Bot.Message.text('body')
+            .addResponseKeyboard(['A', 'B', 'C'], true, 'sometestguy')
+            .addResponseKeyboard(['G', 'H', 'I'], true, 'sometestguy2')
+            .addResponseKeyboard(['D', 'E', 'F'], true, 'sometestguy');
+        const expected = {
+            type: 'text',
+            body: 'body',
+            keyboards: [{
+                type: 'suggested',
+                to: 'sometestguy',
+                hidden: true,
+                responses: [
+                    { type: 'text', body: 'A' },
+                    { type: 'text', body: 'B' },
+                    { type: 'text', body: 'C' },
+                    { type: 'text', body: 'D' },
+                    { type: 'text', body: 'E' },
+                    { type: 'text', body: 'F' }
+                ]
+            }, {
+                type: 'suggested',
+                to: 'sometestguy2',
+                hidden: true,
+                responses: [
+                    { type: 'text', body: 'G' },
+                    { type: 'text', body: 'H' },
+                    { type: 'text', body: 'I' }
                 ]
             }]
         };
@@ -126,7 +205,7 @@ describe('Message construction', () => {
         assert.equal(message.type, expected.type);
         assert.equal(message.isTyping, expected.isTyping);
 
-        assert(message.isIsTypingMessage());
+        assert.ok(message.isIsTypingMessage());
 
         assert.deepEqual(message.toJSON(), expected);
     });
@@ -138,7 +217,7 @@ describe('Message construction', () => {
             messageIds: ['6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f']
         };
 
-        assert(message.isReadReceiptMessage());
+        assert.ok(message.isReadReceiptMessage());
 
         assert.deepEqual(message.toJSON(), expected);
     });
@@ -170,7 +249,7 @@ describe('Message construction', () => {
         assert.equal(message.noForward, expected.noForward);
         assert.equal(message.delay, expected.delay);
 
-        assert(message.isPictureMessage());
+        assert.ok(message.isPictureMessage());
 
         assert.deepEqual(message.toJSON(), expected);
     });
@@ -205,7 +284,7 @@ describe('Message construction', () => {
         assert.equal(message.attributionName, expected.attribution.name);
         assert.equal(message.attributionIcon, expected.attribution.iconUrl);
 
-        assert(message.isVideoMessage());
+        assert.ok(message.isVideoMessage());
 
         assert.deepEqual(message.toJSON(), expected);
     });
@@ -240,7 +319,7 @@ describe('Message construction', () => {
         assert.equal(message.attributionName, expected.attribution.name);
         assert.equal(message.attributionIcon, expected.attribution.iconUrl);
 
-        assert(message.isLinkMessage());
+        assert.ok(message.isLinkMessage());
 
         assert.deepEqual(message.toJSON(), expected);
     });
@@ -259,7 +338,7 @@ describe('Message parsing', () => {
             'readReceiptRequested': true
         });
 
-        assert(message.isStickerMessage());
+        assert.ok(message.isStickerMessage());
 
         assert.equal(message.stickerPackId, 'memes');
         assert.equal(message.stickerUrl,
@@ -278,9 +357,39 @@ describe('Message parsing', () => {
             'data': '{"store_id": "2538"}'
         });
 
-        assert(message.isScanDataMessage());
+        assert.ok(message.isScanDataMessage());
 
         assert.equal(message.scanData, '{"store_id": "2538"}');
+    });
+
+    it('handles participants', () => {
+        const message = Bot.Message.fromJSON({
+            'type': 'text',
+            'from': 'atestuser',
+            'id': '6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f',
+            'timestamp': 1399303478832,
+            'participants': ['sometestguy', 'sometestguy2'],
+            'body': 'Test'
+        });
+
+        assert.ok(message.isTextMessage());
+
+        assert.deepEqual(message.participants, ['sometestguy', 'sometestguy2']);
+    });
+
+    it('handles mentions', () => {
+        const message = Bot.Message.fromJSON({
+            'type': 'text',
+            'from': 'atestuser',
+            'id': '6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f',
+            'timestamp': 1399303478832,
+            'mention': 'yourbot',
+            'body': 'Test'
+        });
+
+        assert.ok(message.isTextMessage());
+        assert.ok(message.isMention());
+        assert.equal(message.mention, 'yourbot');
     });
 
     it('handles delivery receipts', () => {
@@ -295,7 +404,7 @@ describe('Message parsing', () => {
             'readReceiptRequested': false
         });
 
-        assert(message.isDeliveryReceiptMessage());
+        assert.ok(message.isDeliveryReceiptMessage());
 
         assert.deepEqual(message.messageIds, [
             '859537ca-3ae4-46fc-bb18-6e7ba3182c0f', '6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f'

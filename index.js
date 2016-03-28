@@ -263,20 +263,6 @@ class Bot {
     /**
      *  @param {MessageHandlerCallback} handler
      */
-    onStartChattingMessage(handler) {
-        this.use((incoming, next) => {
-            if (incoming.isStartChattingMessage()) {
-                handler(incoming, next);
-            } else {
-                next();
-            }
-        });
-        return this;
-    }
-
-    /**
-     *  @param {MessageHandlerCallback} handler
-     */
     onLinkMessage(handler) {
         this.use((incoming, next) => {
             if (incoming.isLinkMessage()) {

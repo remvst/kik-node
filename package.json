@@ -1,6 +1,6 @@
 {
     "name": "@mproberts/node-kik-bot",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Kik bot API for Node.js",
     "main": "index.js",
     "engines": {

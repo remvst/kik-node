@@ -14,7 +14,7 @@ const BotOptionsKeys = {
     'incomingPath': true,
     'manifestPath': true,
     'maxMessagePerBatch': true,
-    'automaticReadReceipts': true,
+    'manuallySendReadReceipts': true,
     'receiveReadReceipts': true,
     'receiveDeliveryReceipts': true,
     'receiveIsTyping': true,
@@ -129,7 +129,7 @@ class IncomingMessage extends Message {
  *  @param {string} options.username
  *  @param {string} options.apiKey
  *  @param {string} [options.incomingPath]="/incoming" Set true to enable polling or set options
- *  @param {boolean} [options.automaticReadReceipts]=true
+ *  @param {boolean} [options.manuallySendReadReceipts]=false
  *  @param {boolean} [options.receiveReadReceipts]=false
  *  @param {boolean} [options.receiveDeliveryReceipts]=false
  *  @param {boolean} [options.receiveIsTyping]=false
@@ -145,7 +145,7 @@ class Bot {
         this.manifestPath = '/bot.json';
         this.maxMessagePerBatch = 25;
 
-        this.automaticReadReceipts = true;
+        this.manuallySendReadReceipts = false;
         this.receiveReadReceipts = false;
         this.receiveDeliveryReceipts = false;
         this.receiveIsTyping = false;
@@ -193,7 +193,7 @@ class Bot {
         return {
             webhooks: [this.incomingPath],
             features: {
-                automaticReadReceipts: !!this.automaticReadReceipts,
+                manuallySendReadReceipts: !!this.manuallySendReadReceipts,
                 receiveReadReceipts: !!this.receiveReadReceipts,
                 receiveDeliveryReceipts: !!this.receiveDeliveryReceipts,
                 receiveIsTyping: !!this.receiveIsTyping,
@@ -252,6 +252,20 @@ class Bot {
              && ((!isString && !isRegExp)
               || (isString && incoming.body === text)
               || (isRegExp && incoming.body.match(text)))) {
+                handler(incoming, next);
+            } else {
+                next();
+            }
+        });
+        return this;
+    }
+
+    /**
+     *  @param {MessageHandlerCallback} handler
+     */
+    onStartChattingMessage(handler) {
+        this.use((incoming, next) => {
+            if (incoming.isStartChattingMessage()) {
                 handler(incoming, next);
             } else {
                 next();
@@ -505,18 +519,16 @@ class Bot {
             let index = 0;
             let finished = false;
             const finish = () => {
-                finished = true;
+                if (!finished) {
+                    finished = true;
 
-                if (done) {
-                    done();
+                    if (done) {
+                        done();
+                    }
                 }
             };
 
             const advance = () => {
-                if (finished) {
-                    return;
-                }
-
                 let layer = stack[index++];
 
                 if (!layer) {

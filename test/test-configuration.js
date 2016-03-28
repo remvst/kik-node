@@ -22,7 +22,7 @@ describe('Bot manifest', () => {
                 assert.deepEqual(res.body, {
                     webhooks: ['/incoming'],
                     features: {
-                        automaticReadReceipts: true,
+                        manuallySendReadReceipts: false,
                         receiveReadReceipts: false,
                         receiveDeliveryReceipts: false,
                         receiveIsTyping: false,

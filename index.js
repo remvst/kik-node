@@ -6,11 +6,13 @@ const Message = require('./lib/message.js');
 const API = require('./lib/api.js');
 const UserProfile = require('./lib/user-profile.js');
 const KikCode = require('./lib/scan-code.js');
+const uuid = require('node-uuid');
 
 const UsernameRegex = /^[A-Za-z0-9_.]{2,32}$/;
 const UuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
 const BotOptionsKeys = {
     'apiDomain': true,
+    'scanCodePath': true,
     'incomingPath': true,
     'manifestPath': true,
     'maxMessagePerBatch': true,
@@ -141,6 +143,7 @@ class Bot {
     constructor(options) {
         // default configuration
         this.apiDomain = 'https://engine.apikik.com';
+        this.scanCodePath = 'kik-code.png';
         this.incomingPath = '/incoming';
         this.manifestPath = '/bot.json';
         this.maxMessagePerBatch = 25;
@@ -546,6 +549,18 @@ class Bot {
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
                 res.end(manifestString);
+            } else if (req.url === this.scanCodePath) {
+                // the bot.json manifest only accepts GET requests
+                // requests, reject everything else
+                if (req.method !== 'GET') {
+                    res.statusCode = 405;
+
+                    return res.end(this.scanCodePath + ' only accepts GET');
+                }
+
+                getKikCodeUrl().then((url) => {
+                    res.redirect(301, url);
+                });
             } else if (req.url === this.incomingPath) {
                 // the incoming route for the bot only accepts POST
                 // requests, reject everything else
@@ -639,6 +654,8 @@ class Bot {
                 batch.push(message);
             });
 
+            let promises = [];
+
             Object.keys(batches).forEach((key) => {
                 let batch = batches[key];
 
@@ -649,13 +666,13 @@ class Bot {
                     // trim the batch to the max limit
                     batch.length = Math.min(batch.length, this.maxMessagePerBatch);
 
-                    API.sendMessages(this.apiDomain, this.username, this.apiKey, batch);
+                    promises.push(API.sendMessages(this.apiDomain, this.username, this.apiKey, batch));
 
                     batch = nextBatch;
                 }
             });
 
-            fulfill();
+            fulfill(promises);
         });
     }
 }

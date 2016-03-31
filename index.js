@@ -7,6 +7,7 @@ const API = require('./lib/api.js');
 const UserProfile = require('./lib/user-profile.js');
 const KikCode = require('./lib/scan-code.js');
 const uuid = require('node-uuid');
+const url = require('url');
 
 const UsernameRegex = /^[A-Za-z0-9_.]{2,32}$/;
 const UuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
@@ -143,7 +144,7 @@ class Bot {
     constructor(options) {
         // default configuration
         this.apiDomain = 'https://engine.apikik.com';
-        this.scanCodePath = 'kik-code.png';
+        this.scanCodePath = '/kik-code.png';
         this.incomingPath = '/incoming';
         this.manifestPath = '/bot.json';
         this.maxMessagePerBatch = 25;
@@ -549,7 +550,7 @@ class Bot {
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
                 res.end(manifestString);
-            } else if (req.url === this.scanCodePath) {
+            } else if (req.url.indexOf(this.scanCodePath) === 0) {
                 // the bot.json manifest only accepts GET requests
                 // requests, reject everything else
                 if (req.method !== 'GET') {
@@ -558,9 +559,16 @@ class Bot {
                     return res.end(this.scanCodePath + ' only accepts GET');
                 }
 
-                getKikCodeUrl().then((url) => {
-                    res.redirect(301, url);
-                });
+                let urlComponents = url.parse(req.url, true);
+                let query = urlComponents.query;
+
+                query.width = query.width || 512;
+                query.height = query.height || 512;
+
+                this.getKikCodeUrl(query)
+                    .then((kikCodeUrl) => {
+                        res.redirect(301, kikCodeUrl);
+                    });
             } else if (req.url === this.incomingPath) {
                 // the incoming route for the bot only accepts POST
                 // requests, reject everything else

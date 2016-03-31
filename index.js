@@ -254,9 +254,17 @@ class Bot {
             // otherwise this is ours }:-)
             if (incoming.isTextMessage()
              && ((!isString && !isRegExp)
-              || (isString && incoming.body === text)
-              || (isRegExp && incoming.body.match(text)))) {
+              || (isString && incoming.body === text))) {
                 handler(incoming, next);
+            } else if (isRegExp) {
+                let matches = incoming.body.match(text);
+
+                if (matches) {
+                    incoming.matches = matches;
+                    handler(incoming, next);
+                } else {
+                    next();
+                }
             } else {
                 next();
             }

@@ -14,7 +14,7 @@ const BOT_USERNAME = 'testbot';
 const BOT_API_KEY = '2042cd8e-638c-4183-aef4-d4bef6f01981';
 
 let messageChecker;
-let engine = nock('https://engine.apikik.com')
+let engine = nock('https://api.kik.com')
     .post('/api/v1/message')
     .reply(200, (err, body, cb) => {
         let currentMessageChecker = messageChecker;

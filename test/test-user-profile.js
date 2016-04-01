@@ -16,7 +16,7 @@ describe('Get user profile info', () => {
             skipSignatureCheck: true
         });
 
-        let engine = nock('https://engine.apikik.com')
+        let engine = nock('https://api.kik.com')
             .get('/api/v1/user/testuser1')
             .reply(200, {
                 firstName: 'Gwendolyn',
@@ -53,7 +53,7 @@ describe('Get user profile info', () => {
             skipSignatureCheck: true
         });
 
-        let engine = nock('https://engine.apikik.com')
+        let engine = nock('https://api.kik.com')
             .get('/api/v1/user/testuser1')
             .reply(200, {
                 firstName: 'Test',
@@ -93,7 +93,7 @@ describe('Get user profile info', () => {
             skipSignatureCheck: true
         });
 
-        let engine = nock('https://engine.apikik.com')
+        let engine = nock('https://api.kik.com')
             .get('/api/v1/user/testuser12')
             .reply(404);
 

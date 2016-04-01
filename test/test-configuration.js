@@ -8,32 +8,6 @@ let Bot = require('../index.js');
 const BOT_USERNAME = 'testbot';
 const BOT_API_KEY = '2042cd8e-638c-4183-aef4-d4bef6f01981';
 
-describe('Bot manifest', () => {
-    it('gets served at the manifest path', (done) => {
-        let bot = new Bot({
-            username: BOT_USERNAME,
-            apiKey: BOT_API_KEY
-        });
-
-        request(bot.incoming())
-            .get(bot.manifestPath)
-            .expect((res) => {
-                assert.equal(res.statusCode, 200);
-                assert.deepEqual(res.body, {
-                    webhook: '/incoming',
-                    features: {
-                        manuallySendReadReceipts: false,
-                        receiveReadReceipts: false,
-                        receiveDeliveryReceipts: false,
-                        receiveIsTyping: false,
-                        inlineEnabled: false
-                    }
-                });
-            })
-            .end(done);
-    });
-});
-
 describe('Bot construction', () => {
     it('throws for a missing API key', () => {
         assert.throws(() => {

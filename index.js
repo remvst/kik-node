@@ -13,15 +13,14 @@ const UsernameRegex = /^[A-Za-z0-9_.]{2,32}$/;
 const UuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
 const BotOptionsKeys = {
     'apiDomain': true,
+    'baseUrl': true,
     'scanCodePath': true,
     'incomingPath': true,
-    'manifestPath': true,
     'maxMessagePerBatch': true,
     'manuallySendReadReceipts': true,
     'receiveReadReceipts': true,
     'receiveDeliveryReceipts': true,
     'receiveIsTyping': true,
-    'inlineEnabled': true,
     'username': true,
     'apiKey': true,
     'skipSignatureCheck': true
@@ -136,24 +135,21 @@ class IncomingMessage extends Message {
  *  @param {boolean} [options.receiveReadReceipts]=false
  *  @param {boolean} [options.receiveDeliveryReceipts]=false
  *  @param {boolean} [options.receiveIsTyping]=false
- *  @param {boolean} [options.inlineEnabled]=false
  *  @see https://bots.kik.com
  */
 class Bot {
 
     constructor(options) {
         // default configuration
-        this.apiDomain = 'https://engine.apikik.com';
+        this.apiDomain = 'https://api.kik.com';
         this.scanCodePath = '/kik-code.png';
         this.incomingPath = '/incoming';
-        this.manifestPath = '/bot.json';
         this.maxMessagePerBatch = 25;
 
         this.manuallySendReadReceipts = false;
         this.receiveReadReceipts = false;
         this.receiveDeliveryReceipts = false;
         this.receiveIsTyping = false;
-        this.inlineEnabled = false;
 
         // override any specified configuration
         Object.keys(options).forEach((key) => {
@@ -180,10 +176,6 @@ class Bot {
             errors.push('Option "incomingPath" must be path, see http://dev.kik.com/');
         }
 
-        if (!this.manifestPath || !util.isString(this.manifestPath)) {
-            errors.push('Option "manifestPath" must be path, see http://dev.kik.com/');
-        }
-
         if (errors.length > 0) {
             throw new Error(errors.join(', '));
         }
@@ -193,17 +185,20 @@ class Bot {
         this.pendingFlush = null;
     }
 
-    get manifest() {
+    get configuration() {
         return {
-            webhook: '' + this.incomingPath,
+            webhook: url.resolve(this.baseUrl, this.incomingPath),
             features: {
                 manuallySendReadReceipts: !!this.manuallySendReadReceipts,
                 receiveReadReceipts: !!this.receiveReadReceipts,
                 receiveDeliveryReceipts: !!this.receiveDeliveryReceipts,
-                receiveIsTyping: !!this.receiveIsTyping,
-                inlineEnabled: !!this.inlineEnabled
+                receiveIsTyping: !!this.receiveIsTyping
             }
         };
+    }
+
+    updateBotConfiguration() {
+        return API.updateConfiguration(this.username, this.apiKey, this.configuration);
     }
 
     /**
@@ -507,8 +502,8 @@ class Bot {
     }
 
     /**
-     *  Handles the incoming requests for messages and for the bot.json
-     *  manifest.
+     *  Handles the incoming requests for messages
+     *  configuration.
      */
     incoming() {
         const stack = this.stack;
@@ -544,22 +539,8 @@ class Bot {
         }
 
         return (req, res, next) => {
-            if (req.url === this.manifestPath) {
-                // the bot.json manifest only accepts GET requests
-                // requests, reject everything else
-                if (req.method !== 'GET') {
-                    res.statusCode = 405;
-
-                    return res.end(this.manifestPath + ' only accepts GET');
-                }
-
-                let manifestString = JSON.stringify(this.manifest);
-
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.end(manifestString);
-            } else if (req.url.indexOf(this.scanCodePath) === 0) {
-                // the bot.json manifest only accepts GET requests
+            if (req.url.indexOf(this.scanCodePath) === 0) {
+                // the kik code image only accepts GET requests
                 // requests, reject everything else
                 if (req.method !== 'GET') {
                     res.statusCode = 405;

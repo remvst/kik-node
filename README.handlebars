@@ -4,6 +4,10 @@
 
 - Install with [`npm install @kikinteractive/kik`](npm-url)
 
+## Contributing
+
+This project adheres to the Contributor Covenant [code of conduct](code-of-conduct-url). By participating, you are expected to uphold this code. Please report unacceptable behavior to bots@kik.com.
+
 ## Getting Help
 
 Here are other resources for using Kik node:
@@ -73,6 +77,8 @@ The Kik bot library is released under the terms of the MIT license. See [License
 [npm-url]: https://www.npmjs.org/package/@kikinteractive/kik
 
 [stackoverflow-url]: http://stackoverflow.com/questions/tagged/kik
+
+[code-of-conduct-url]: CODE_OF_CONDUCT.md
 
 ## API Documentation
 

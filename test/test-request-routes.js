@@ -64,19 +64,6 @@ describe('Incoming routing', () => {
             .end(done);
     });
 
-    it('only allows GET requests to bot manifest', (done) => {
-        let bot = new Bot({
-            username: BOT_USERNAME,
-            apiKey: BOT_API_KEY,
-            skipSignatureCheck: true
-        });
-
-        request(bot.incoming())
-            .post('/bot.json')
-            .expect(405)
-            .end(done);
-    });
-
     it('ignores other URLs', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,

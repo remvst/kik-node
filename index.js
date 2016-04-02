@@ -198,7 +198,11 @@ class Bot {
     }
 
     updateBotConfiguration() {
-        return API.updateConfiguration(this.username, this.apiKey, this.configuration);
+        return API.updateConfiguration(this.apiDomain, this.username, this.apiKey, this.configuration);
+    }
+
+    getBotConfiguration() {
+        return API.getConfiguration(this.apiDomain, this.username, this.apiKey);
     }
 
     /**
@@ -247,16 +251,19 @@ class Bot {
             // if we have text to match and it doesn't, give up
             // if we have a reg ex to match and it doesn't, give up
             // otherwise this is ours }:-)
-            if (incoming.isTextMessage()
-             && ((!isString && !isRegExp)
-              || (isString && incoming.body === text))) {
-                handler(incoming, next);
-            } else if (isRegExp) {
-                let matches = incoming.body.match(text);
-
-                if (matches) {
-                    incoming.matches = matches;
+            if (incoming.isTextMessage()) {
+                if ((!isString && !isRegExp)
+                  || (isString && incoming.body === text)) {
                     handler(incoming, next);
+                } else if (isRegExp && util.isString(incoming.body)) {
+                    let matches = incoming.body.match(text);
+
+                    if (matches) {
+                        incoming.matches = matches;
+                        handler(incoming, next);
+                    } else {
+                        next();
+                    }
                 } else {
                     next();
                 }

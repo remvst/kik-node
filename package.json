@@ -1,5 +1,5 @@
 {
-    "name": "@mproberts/node-kik-bot",
+    "name": "@mproberts/kik-node",
     "version": "0.1.8",
     "description": "Kik bot API for Node.js",
     "main": "index.js",
@@ -22,7 +22,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/kikinteractive/node-kik"
+        "url": "https://github.com/kikinteractive/kik-node"
     },
     "devDependencies": {
         "coveralls": "^2.11.8",

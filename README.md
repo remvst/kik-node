@@ -6,7 +6,7 @@
 
 ## Contributing
 
-This project adheres to the Contributor Covenant [code of conduct](code-of-conduct-url). By participating, you are expected to uphold this code. Please report unacceptable behavior to bots@kik.com.
+This project adheres to the Contributor Covenant [code of conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to bots@kik.com.
 
 ## Getting Help
 
@@ -78,8 +78,6 @@ The Kik bot library is released under the terms of the MIT license. See [License
 
 [stackoverflow-url]: http://stackoverflow.com/questions/tagged/kik
 
-[code-of-conduct-url]: CODE_OF_CONDUCT.md
-
 ## API Documentation
 
 <a name="Bot"></a>
@@ -117,11 +115,10 @@ Bot
 | options.username | <code>string</code> |  |
 | options.apiKey | <code>string</code> |  |
 | [options.incomingPath] | <code>string</code> | Set true to enable polling or set options |
-| [options.automaticReadReceipts] | <code>boolean</code> |  |
+| [options.manuallySendReadReceipts] | <code>boolean</code> |  |
 | [options.receiveReadReceipts] | <code>boolean</code> |  |
 | [options.receiveDeliveryReceipts] | <code>boolean</code> |  |
 | [options.receiveIsTyping] | <code>boolean</code> |  |
-| [options.inlineEnabled] | <code>boolean</code> |  |
 
 <a name="Bot+use"></a>
 ### bot.use(handler)
@@ -280,8 +277,8 @@ Creates a Kik Code with the intended options and returns the
 
 <a name="Bot+incoming"></a>
 ### bot.incoming()
-Handles the incoming requests for messages and for the bot.json
- manifest.
+Handles the incoming requests for messages
+ configuration.
 
 **Kind**: instance method of <code>[Bot](#Bot)</code>  
 
@@ -364,30 +361,32 @@ This is a test
         * [.from](#Message+from) ⇒ <code>string</code>
         * [.id](#Message+id) ⇒ <code>string</code>
         * [.chatId](#Message+chatId) ⇒ <code>string</code>
-        * [.messageIds](#Message+messageIds) ⇒ <code>string</code>
-        * [.readReceiptRequested](#Message+readReceiptRequested) ⇒ <code>string</code>
+        * [.messageIds](#Message+messageIds) ⇒ <code>array</code>
+        * [.readReceiptRequested](#Message+readReceiptRequested) ⇒ <code>boolean</code>
         * [.stickerPackId](#Message+stickerPackId) ⇒ <code>string</code>
         * [.scanData](#Message+scanData) ⇒ <code>string</code>
         * [.stickerUrl](#Message+stickerUrl) ⇒ <code>string</code>
-        * [.timestamp](#Message+timestamp) ⇒ <code>string</code>
+        * [.timestamp](#Message+timestamp) ⇒ <code>number</code>
         * [.type](#Message+type) ⇒ <code>string</code>
-        * [.kikJsData](#Message+kikJsData) ⇒ <code>string</code>
+        * [.kikJsData](#Message+kikJsData) ⇒ <code>object</code>
         * [.picUrl](#Message+picUrl) ⇒ <code>string</code>
-        * [.noForward](#Message+noForward) ⇒ <code>string</code>
-        * [.isTyping](#Message+isTyping) ⇒ <code>string</code>
+        * [.noForward](#Message+noForward) ⇒ <code>boolean</code>
+        * [.isTyping](#Message+isTyping) ⇒ <code>boolean</code>
         * [.body](#Message+body) ⇒ <code>string</code>
         * [.text](#Message+text) ⇒ <code>string</code>
         * [.title](#Message+title) ⇒ <code>string</code>
         * [.url](#Message+url) ⇒ <code>string</code>
         * [.videoUrl](#Message+videoUrl) ⇒ <code>string</code>
-        * [.delay](#Message+delay) ⇒ <code>string</code>
-        * [.typeTime](#Message+typeTime) ⇒ <code>string</code>
+        * [.delay](#Message+delay) ⇒ <code>number</code>
+        * [.typeTime](#Message+typeTime) ⇒ <code>number</code>
         * [.attributionName](#Message+attributionName) ⇒ <code>string</code>
         * [.attributionIcon](#Message+attributionIcon) ⇒ <code>string</code>
         * [.loop](#Message+loop) ⇒ <code>boolean</code>
         * [.muted](#Message+muted) ⇒ <code>boolean</code>
         * [.autoplay](#Message+autoplay) ⇒ <code>boolean</code>
         * [.noSave](#Message+noSave) ⇒ <code>boolean</code>
+        * [.participants](#Message+participants) ⇒ <code>array</code>
+        * [.mention](#Message+mention) ⇒ <code>string</code>
         * [.isTextMessage()](#Message+isTextMessage) ⇒ <code>boolean</code>
         * [.isLinkMessage()](#Message+isLinkMessage) ⇒ <code>boolean</code>
         * [.isPictureMessage()](#Message+isPictureMessage) ⇒ <code>boolean</code>
@@ -398,6 +397,8 @@ This is a test
         * [.isIsTypingMessage()](#Message+isIsTypingMessage) ⇒ <code>boolean</code>
         * [.isDeliveryReceiptMessage()](#Message+isDeliveryReceiptMessage) ⇒ <code>boolean</code>
         * [.isReadReceiptMessage()](#Message+isReadReceiptMessage) ⇒ <code>boolean</code>
+        * [.isMention()](#Message+isMention) ⇒ <code>boolean</code>
+        * [.toJSON()](#Message+toJSON) ⇒ <code>object</code>
         * [.addTextResponse(text)](#Message+addTextResponse) ⇒ <code>[Message](#Message)</code>
         * [.addResponseKeyboard(suggestions, [isHidden], [user])](#Message+addResponseKeyboard) ⇒ <code>[Message](#Message)</code>
         * [.setKikJsData(kikJsData)](#Message+setKikJsData) ⇒ <code>[Message](#Message)</code>
@@ -425,194 +426,218 @@ This is a test
         * [.video()](#Message.video) ⇒ <code>[Message](#Message)</code>
         * [.isTyping()](#Message.isTyping) ⇒ <code>[Message](#Message)</code>
         * [.readReceipt()](#Message.readReceipt) ⇒ <code>[Message](#Message)</code>
+        * [.fromJSON(json)](#Message.fromJSON) ⇒ <code>[Message](#Message)</code>
 
 <a name="Message+from"></a>
 ### message.from ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#from
+See https://dev.kik.com/#/docs/messaging#receiving-messages
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+id"></a>
 ### message.id ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#id
+See https://dev.kik.com/#/docs/messaging#receiving-messages
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+chatId"></a>
 ### message.chatId ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#chatId
+See https://dev.kik.com/#/docs/messaging#receiving-messages
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+messageIds"></a>
-### message.messageIds ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#messageIds
+### message.messageIds ⇒ <code>array</code>
+See https://dev.kik.com/#/docs/messaging#receipts
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+readReceiptRequested"></a>
-### message.readReceiptRequested ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#readReceiptRequested
+### message.readReceiptRequested ⇒ <code>boolean</code>
+See https://dev.kik.com/#/docs/messaging#receipts
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+stickerPackId"></a>
 ### message.stickerPackId ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#stickerPackId
+See https://dev.kik.com/#/docs/messaging#sticker
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+scanData"></a>
 ### message.scanData ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#scan-data
+See https://dev.kik.com/#/docs/messaging#kik-codes-api
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+stickerUrl"></a>
 ### message.stickerUrl ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#stickerUrl
+See https://dev.kik.com/#/docs/messaging#sticker
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+timestamp"></a>
-### message.timestamp ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#timestamp
+### message.timestamp ⇒ <code>number</code>
+See https://dev.kik.com/#/docs/messaging#common-fields
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+type"></a>
 ### message.type ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#type
+See https://dev.kik.com/#/docs/messaging#message-formats
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+kikJsData"></a>
-### message.kikJsData ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#kikJsData
+### message.kikJsData ⇒ <code>object</code>
+See https://dev.kik.com/#/docs/messaging#link
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+picUrl"></a>
 ### message.picUrl ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#picUrl
+See https://dev.kik.com/#/docs/messaging#link
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+noForward"></a>
-### message.noForward ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#noForward
+### message.noForward ⇒ <code>boolean</code>
+See https://dev.kik.com/#/docs/messaging#link
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+isTyping"></a>
-### message.isTyping ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#isTyping
+### message.isTyping ⇒ <code>boolean</code>
+See https://dev.kik.com/#/docs/messaging#is-typing
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+body"></a>
 ### message.body ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#body
+See https://dev.kik.com/#/docs/messaging#text
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+text"></a>
 ### message.text ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#text
+See https://dev.kik.com/#/docs/messaging#link
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+title"></a>
 ### message.title ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#title
+See https://dev.kik.com/#/docs/messaging#link
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+url"></a>
 ### message.url ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#url
+See https://dev.kik.com/#/docs/messaging#link
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+videoUrl"></a>
 ### message.videoUrl ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#videoUrl
+See https://dev.kik.com/#/docs/messaging#video
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+delay"></a>
-### message.delay ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#delay
+### message.delay ⇒ <code>number</code>
+See https://dev.kik.com/#/docs/messaging#common-fields
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+typeTime"></a>
-### message.typeTime ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#typeTime
+### message.typeTime ⇒ <code>number</code>
+See https://dev.kik.com/#/docs/messaging#text
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+attributionName"></a>
 ### message.attributionName ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#attribution
+See https://dev.kik.com/#/docs/messaging#attribution
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+attributionIcon"></a>
 ### message.attributionIcon ⇒ <code>string</code>
-See https://bots.kik.com/docs/messages#attribution
+See https://dev.kik.com/#/docs/messaging#attribution
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+loop"></a>
 ### message.loop ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#loop
+See https://dev.kik.com/#/docs/messaging#video
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+muted"></a>
 ### message.muted ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#muted
+See https://dev.kik.com/#/docs/messaging#video
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+autoplay"></a>
 ### message.autoplay ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#autoplay
+See https://dev.kik.com/#/docs/messaging#video
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+noSave"></a>
 ### message.noSave ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#noSave
+See https://dev.kik.com/#/docs/messaging#video
+
+**Kind**: instance property of <code>[Message](#Message)</code>  
+<a name="Message+participants"></a>
+### message.participants ⇒ <code>array</code>
+See https://dev.kik.com/#/docs/messaging#participants
+
+**Kind**: instance property of <code>[Message](#Message)</code>  
+<a name="Message+mention"></a>
+### message.mention ⇒ <code>string</code>
+See https://dev.kik.com/#/docs/messaging#mention
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+isTextMessage"></a>
 ### message.isTextMessage() ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#text
+See https://dev.kik.com/#/docs/messaging#text
 
 **Kind**: instance method of <code>[Message](#Message)</code>  
 <a name="Message+isLinkMessage"></a>
 ### message.isLinkMessage() ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#link
+See https://dev.kik.com/#/docs/messaging#link
 
 **Kind**: instance method of <code>[Message](#Message)</code>  
 <a name="Message+isPictureMessage"></a>
 ### message.isPictureMessage() ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#picture
+See https://dev.kik.com/#/docs/messaging#picture
 
 **Kind**: instance method of <code>[Message](#Message)</code>  
 <a name="Message+isVideoMessage"></a>
 ### message.isVideoMessage() ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#video
+See https://dev.kik.com/#/docs/messaging#video
 
 **Kind**: instance method of <code>[Message](#Message)</code>  
 <a name="Message+isStartChattingMessage"></a>
 ### message.isStartChattingMessage() ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#start-chatting
+See https://dev.kik.com/#/docs/messaging#start-chatting
 
 **Kind**: instance method of <code>[Message](#Message)</code>  
 <a name="Message+isScanDataMessage"></a>
 ### message.isScanDataMessage() ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#scan-data
+See https://dev.kik.com/#/docs/messaging#scan-data
 
 **Kind**: instance method of <code>[Message](#Message)</code>  
 <a name="Message+isStickerMessage"></a>
 ### message.isStickerMessage() ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#sticker
+See https://dev.kik.com/#/docs/messaging#sticker
 
 **Kind**: instance method of <code>[Message](#Message)</code>  
 <a name="Message+isIsTypingMessage"></a>
 ### message.isIsTypingMessage() ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#is-typing
+See https://dev.kik.com/#/docs/messaging#is-typing
 
 **Kind**: instance method of <code>[Message](#Message)</code>  
 <a name="Message+isDeliveryReceiptMessage"></a>
 ### message.isDeliveryReceiptMessage() ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#delivery-receipt
+See https://dev.kik.com/#/docs/messaging#receipts
 
 **Kind**: instance method of <code>[Message](#Message)</code>  
 <a name="Message+isReadReceiptMessage"></a>
 ### message.isReadReceiptMessage() ⇒ <code>boolean</code>
-See https://bots.kik.com/docs/messages#read-receipt
+See https://dev.kik.com/#/docs/messaging#receipts
+
+**Kind**: instance method of <code>[Message](#Message)</code>  
+<a name="Message+isMention"></a>
+### message.isMention() ⇒ <code>boolean</code>
+See https://dev.kik.com/#/docs/messaging#mentions
+
+**Kind**: instance method of <code>[Message](#Message)</code>  
+<a name="Message+toJSON"></a>
+### message.toJSON() ⇒ <code>object</code>
+Constructs a JSON payload ready to be sent to the
+ bot messaging API
 
 **Kind**: instance method of <code>[Message](#Message)</code>  
 <a name="Message+addTextResponse"></a>
 ### message.addTextResponse(text) ⇒ <code>[Message](#Message)</code>
+See https://dev.kik.com/#/docs/messaging#keyboards
+
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
 | Param | Type |
@@ -621,6 +646,8 @@ See https://bots.kik.com/docs/messages#read-receipt
 
 <a name="Message+addResponseKeyboard"></a>
 ### message.addResponseKeyboard(suggestions, [isHidden], [user]) ⇒ <code>[Message](#Message)</code>
+See https://dev.kik.com/#/docs/messaging#keyboards
+
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
 | Param | Type |
@@ -633,176 +660,187 @@ See https://bots.kik.com/docs/messages#read-receipt
 ### message.setKikJsData(kikJsData) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| kikJsData | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| kikJsData | <code>object</code> | 
 
 <a name="Message+setPicUrl"></a>
 ### message.setPicUrl(picUrl) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| picUrl | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| picUrl | <code>string</code> | 
 
 <a name="Message+setNoForward"></a>
 ### message.setNoForward(noForward) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| noForward | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| noForward | <code>boolean</code> | 
 
 <a name="Message+setIsTyping"></a>
 ### message.setIsTyping(isTyping) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| isTyping | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| isTyping | <code>boolean</code> | 
 
 <a name="Message+setMessageIds"></a>
 ### message.setMessageIds(messageIds) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| messageIds | <code>array</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| messageIds | <code>array</code> | 
 
 <a name="Message+setBody"></a>
 ### message.setBody(body) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| body | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| body | <code>string</code> | 
 
 <a name="Message+setText"></a>
 ### message.setText(text) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| text | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| text | <code>string</code> | 
 
 <a name="Message+setTitle"></a>
 ### message.setTitle(title) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| title | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| title | <code>string</code> | 
 
 <a name="Message+setUrl"></a>
 ### message.setUrl(url) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| url | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| url | <code>string</code> | 
 
 <a name="Message+setVideoUrl"></a>
 ### message.setVideoUrl(videoUrl) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| videoUrl | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| videoUrl | <code>string</code> | 
 
 <a name="Message+setDelay"></a>
 ### message.setDelay(delay) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| delay | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| delay | <code>number</code> | 
 
 <a name="Message+setTypeTime"></a>
 ### message.setTypeTime(typeTime) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| typeTime | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| typeTime | <code>number</code> | 
 
 <a name="Message+setAttributionName"></a>
 ### message.setAttributionName(attributionName) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| attributionName | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| attributionName | <code>string</code> | 
 
 <a name="Message+setAttributionIcon"></a>
 ### message.setAttributionIcon(attributionIcon) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| attributionIcon | <code>string</code> | Description-y bits |
+| Param | Type |
+| --- | --- |
+| attributionIcon | <code>string</code> | 
 
 <a name="Message+setLoop"></a>
 ### message.setLoop(loop) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| loop | <code>boolean</code> | Description |
+| Param | Type |
+| --- | --- |
+| loop | <code>boolean</code> | 
 
 <a name="Message+setMuted"></a>
 ### message.setMuted(muted) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| muted | <code>boolean</code> | Description |
+| Param | Type |
+| --- | --- |
+| muted | <code>boolean</code> | 
 
 <a name="Message+setAutoplay"></a>
 ### message.setAutoplay(autoplay) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| autoplay | <code>boolean</code> | Description |
+| Param | Type |
+| --- | --- |
+| autoplay | <code>boolean</code> | 
 
 <a name="Message+setNoSave"></a>
 ### message.setNoSave(noSave) ⇒ <code>[Message](#Message)</code>
 **Kind**: instance method of <code>[Message](#Message)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| noSave | <code>boolean</code> | Description |
+| Param | Type |
+| --- | --- |
+| noSave | <code>boolean</code> | 
 
 <a name="Message.text"></a>
 ### Message.text() ⇒ <code>[Message](#Message)</code>
-See https://bots.kik.com/docs/messages#text
+See https://dev.kik.com/#/docs/messaging#text
 
 **Kind**: static method of <code>[Message](#Message)</code>  
 <a name="Message.link"></a>
 ### Message.link() ⇒ <code>[Message](#Message)</code>
-See https://bots.kik.com/docs/messages#link
+See https://dev.kik.com/#/docs/messaging#link
 
 **Kind**: static method of <code>[Message](#Message)</code>  
 <a name="Message.picture"></a>
 ### Message.picture() ⇒ <code>[Message](#Message)</code>
-See https://bots.kik.com/docs/messages#picture
+See https://dev.kik.com/#/docs/messaging#picture
 
 **Kind**: static method of <code>[Message](#Message)</code>  
 <a name="Message.video"></a>
 ### Message.video() ⇒ <code>[Message](#Message)</code>
-See https://bots.kik.com/docs/messages#video
+See https://dev.kik.com/#/docs/messaging#video
 
 **Kind**: static method of <code>[Message](#Message)</code>  
 <a name="Message.isTyping"></a>
 ### Message.isTyping() ⇒ <code>[Message](#Message)</code>
-See https://bots.kik.com/docs/messages#isTyping
+See https://dev.kik.com/#/docs/messaging#is-typing
 
 **Kind**: static method of <code>[Message](#Message)</code>  
 <a name="Message.readReceipt"></a>
 ### Message.readReceipt() ⇒ <code>[Message](#Message)</code>
-See https://bots.kik.com/docs/messages#receipts
+See https://dev.kik.com/#/docs/messaging#receipts
 
 **Kind**: static method of <code>[Message](#Message)</code>  
+<a name="Message.fromJSON"></a>
+### Message.fromJSON(json) ⇒ <code>[Message](#Message)</code>
+Constructs a new {Message} object from a JSON-encoded payload
+ See https://dev.kik.com/#/docs
+
+**Kind**: static method of <code>[Message](#Message)</code>  
+
+| Param | Type |
+| --- | --- |
+| json | <code>object</code> | 
+
 
 <a name="KikCode"></a>
 ## KikCode

@@ -198,7 +198,11 @@ class Bot {
     }
 
     updateBotConfiguration() {
-        return API.updateConfiguration(this.apiDomain, this.username, this.apiKey, this.configuration);
+        return API.updateConfiguration(
+            this.apiDomain,
+            this.username,
+            this.apiKey,
+            this.configuration);
     }
 
     getBotConfiguration() {
@@ -670,7 +674,12 @@ class Bot {
                     // trim the batch to the max limit
                     batch.length = Math.min(batch.length, this.maxMessagePerBatch);
 
-                    promises.push(API.sendMessages(this.apiDomain, this.username, this.apiKey, batch));
+                    promises.push(API.sendMessages(
+                        this.apiDomain,
+                        this.username,
+                        this.apiKey,
+                        batch)
+                    );
 
                     batch = nextBatch;
                 }

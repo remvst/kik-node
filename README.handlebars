@@ -15,7 +15,7 @@ If you're looking to contribute the the `kik` package, check out the [Contributi
 Here are other resources for using Kik node:
 
 - [stackoverflow.com][stackoverflow-url] is a great place to get answers about building a Kik chat bot.
-- [dev.kik.com][dev-kik-url] to get started building a bot, scan the code at dev.kik.com and talk to Botsworth.
+- Go to [dev.kik.com][dev-kik-url] to get started building a bot, scan the code at dev.kik.com and talk to Botsworth.
 
 ## How To
 
@@ -42,7 +42,8 @@ let Bot  = require('@kikinteractive/kik');
 // Configure the bot API endpoint, details for your bot
 let bot = new Bot({
     username: 'echo.bot',
-    apiKey: '7b939d69-e840-4d22-aab8-4188c2198f8a'
+    apiKey: '7b939d69-e840-4d22-aab8-4188c2198f8a',
+    baseUrl: 'kik-echobot.ngrok.io'
 });
 
 bot.onTextMessage((message) => {

@@ -16,7 +16,18 @@ Here are other resources for using Kik node:
 
 ## How To
 
-### Echo Bot
+Creating a basic Kik bot is simple:
+
+1. Import `@kikinteractive/kik`
+2. Create a bot with the username and API key you got from https://dev.kik.com/
+3. Add the bot as middleware to your server with `bot.incoming()`
+4. Start your web server
+
+You can use any node-style web server to host your Kik bot. Add handlers to your bot by calling `bot.onTextMessage(...)` and get notified whenever a user messages you. Take action on the messages as they come in and call `message.reply(...)` to respond to the message within the chat the message was sent from.
+
+Check out the full API documentation for more advanced uses.
+
+### Your first echo bot
 
 ```javascript
 'use strict';
@@ -25,7 +36,7 @@ let util = require('util');
 let http = require('http');
 let Bot  = require('@kikinteractive/kik');
 
-// configure the bot API endpoint, details for your bot
+// Configure the bot API endpoint, details for your bot
 let bot = new Bot({
     username: 'echo.bot',
     apiKey: '7b939d69-e840-4d22-aab8-4188c2198f8a'
@@ -35,7 +46,7 @@ bot.onTextMessage((message) => {
     message.reply(message.body);
 });
 
-// set up your server and start listening
+// Set up your server and start listening
 let server = http
     .createServer(bot.incoming())
     .listen(process.env.PORT || 8080);
@@ -43,22 +54,54 @@ let server = http
 
 ### Sending a message to a specific user
 
-```javascript
-// To one user:
-bot.send(Bot.Message.text('some text'), 'user1');
-bot.send('some text', 'user1'); // shorthand for text messages
+You can send a targeted message to a user once they have subscribed to your bot. If you want to send someone a message, just call `bot.send(...)` with their username. You don't need to specify a chat ID here since you are sending it directly to the user, not within a specific chat.
 
-// To multiple users
-bot.send('some text', ['user1', 'user2']);
+```javascript
+// To one user (a.username)
+bot.send(Bot.Message.text('Hey, nice to meet you!'), 'a.username');
+
+// You can use a shorthand for text messages to keep things a bit cleaner
+bot.send('Getting started is super easy!', 'a.username');
 ```
 
 ### Greeting a user by name
 
+Whenever a user subscribes to your bot, your bot will receive a `start-chatting` message. This message gives you the chance to say hello to the user and let them know what your bot is about.
+
+You might want to greet your new user by name. You can use the `bot.getUserProfile(...)` method to request information about users who have subscribed to your bot.
+
 ```javascript
-bot.onTextMessage((message) => {
+bot.onStartChatting((message) => {
     bot.getUserProfile(message.from)
         .then((user) => {
             message.reply(`Hey ${user.firstName}!`);
+        });
+});
+```
+
+### Adding multiple handlers
+
+Separating different states into multiple message handlers can keep your bot logic under control. If you call `next` from within your handler, you allow the next handler in the chain to run, otherwise, handling of the incoming message will end with the current handler.
+
+```javascript
+bot.onTextMessage((message, next) => {
+    const userState = getUserState(message.from);
+
+    if (!userState.inIntroState) {
+        // Send the user the intro state
+        ...
+
+        return;
+    }
+
+    // Allow the next handler take over
+    next();
+});
+
+bot.onTextMessage((message) => {
+    searchFor(message.body)
+        .then((result) => {
+            message.reply(result);
         });
 });
 ```

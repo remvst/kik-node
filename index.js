@@ -130,6 +130,7 @@ class IncomingMessage extends Message {
  *  @constructor
  *  @param {string} options.username
  *  @param {string} options.apiKey
+ *  @param {string} [options.baseUrl]
  *  @param {string} [options.incomingPath]="/incoming" Set true to enable polling or set options
  *  @param {boolean} [options.manuallySendReadReceipts]=false
  *  @param {boolean} [options.receiveReadReceipts]=false

@@ -80,8 +80,8 @@ If you want to send a photo to a user you can send a `picture` message. The API 
 
 ```javascript
 bot.send(Bot.Message.picture('http://i.imgur.com/oalyVlU.jpg')
-    .attributionName('Imgur')
-    .attributionIcon('http://s.imgur.com/images/favicon-96x96.png'),
+    .setAttributionName('Imgur')
+    .setAttributionIcon('http://s.imgur.com/images/favicon-96x96.png'),
     'a.username');
 ```
 
@@ -92,7 +92,7 @@ Whenever a user subscribes to your bot, your bot will receive a `start-chatting`
 You might want to greet your new user by name. You can use the `bot.getUserProfile(...)` method to request information about users who have subscribed to your bot.
 
 ```javascript
-bot.onStartChatting((message) => {
+bot.onStartChattingMessage((message) => {
     bot.getUserProfile(message.from)
         .then((user) => {
             message.reply(`Hey ${user.firstName}!`);
@@ -110,7 +110,7 @@ bot.onTextMessage((message, next) => {
 
     if (!userState.inIntroState) {
         // Send the user the intro state
-        ...
+        // ...
 
         return;
     }

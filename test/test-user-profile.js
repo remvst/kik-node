@@ -104,4 +104,37 @@ describe('Get user profile info', () => {
                 done();
             });
     });
+
+    it('can be converted to JSON after being fetched', (done) => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+
+        let engine = nock('https://api.kik.com')
+            .get('/api/v1/user/testuser1')
+            .reply(200, {
+                firstName: 'Gwendolyn',
+                lastName: 'Ferguson',
+                profilePicUrl: 'https://randomuser.me/api/portraits/women/21.jpg',
+                profilePicLastModified: 1458959883
+            });
+
+        bot.getUserProfile('testuser1')
+            .then((profile) => {
+                let json = profile.toJSON();
+
+                assert.deepEqual(json, {
+                    firstName: 'Gwendolyn',
+                    lastName: 'Ferguson',
+                    profilePicUrl: 'https://randomuser.me/api/portraits/women/21.jpg',
+                    profilePicLastModified: 1458959883
+                });
+
+                done();
+            }, (err) => {
+                assert.fail(err);
+            });
+    });
 });

@@ -1,7 +1,5 @@
 'use strict';
 
-let nock = require('nock');
-let request = require('supertest');
 let assert = require('assert');
 let Bot = require('../index.js');
 

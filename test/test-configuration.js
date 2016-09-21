@@ -9,7 +9,7 @@ const BOT_API_KEY = '2042cd8e-638c-4183-aef4-d4bef6f01981';
 describe('Bot construction', () => {
     it('throws for a missing API key', () => {
         assert.throws(() => {
-            let bot = new Bot({
+            new Bot({
                 username: BOT_USERNAME
             });
         });
@@ -17,7 +17,7 @@ describe('Bot construction', () => {
 
     it('throws for an invalid API key', () => {
         assert.throws(() => {
-            let bot = new Bot({
+            new Bot({
                 username: BOT_USERNAME,
                 apiKey: '123123123y'
             });
@@ -26,7 +26,7 @@ describe('Bot construction', () => {
 
     it('throws for a missing username', () => {
         assert.throws(() => {
-            let bot = new Bot({
+            new Bot({
                 apiKey: BOT_API_KEY
             });
         });
@@ -34,7 +34,7 @@ describe('Bot construction', () => {
 
     it('throws for an invalid username', () => {
         assert.throws(() => {
-            let bot = new Bot({
+            new Bot({
                 username: 'abc-123',
                 apiKey: BOT_API_KEY
             });
@@ -43,7 +43,7 @@ describe('Bot construction', () => {
 
     it('throws for an invalid path', () => {
         assert.throws(() => {
-            let bot = new Bot({
+            new Bot({
                 username: BOT_USERNAME,
                 apiKey: BOT_API_KEY,
                 incomingPath: 12

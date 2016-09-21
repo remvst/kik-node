@@ -3,11 +3,11 @@
 const util = require('util');
 const crypto = require('crypto');
 const Message = require('./lib/message.js');
-const Response = require('./lib/response.js')
+const Response = require('./lib/response.js');
+const ResponseKeyboard = require('./lib/response-keyboard.js');
 const API = require('./lib/api.js');
 const UserProfile = require('./lib/user-profile.js');
 const KikCode = require('./lib/scan-code.js');
-const uuid = require('node-uuid');
 const url = require('url');
 
 const UsernameRegex = /^[A-Za-z0-9_.]{2,32}$/;
@@ -24,7 +24,8 @@ const BotOptionsKeys = {
     'receiveIsTyping': true,
     'username': true,
     'apiKey': true,
-    'skipSignatureCheck': true
+    'skipSignatureCheck': true,
+    'staticKeyboard': null
 };
 
 /**
@@ -106,7 +107,6 @@ class IncomingMessage extends Message {
      *  @return {promise.<object>}
      */
     startTyping() {
-
         return this.reply(Message.isTyping(true));
     }
 
@@ -190,7 +190,7 @@ class Bot {
     }
 
     get configuration() {
-        return {
+        const config = {
             webhook: url.resolve(this.baseUrl, this.incomingPath),
             features: {
                 manuallySendReadReceipts: !!this.manuallySendReadReceipts,
@@ -199,6 +199,12 @@ class Bot {
                 receiveIsTyping: !!this.receiveIsTyping
             }
         };
+
+        if (this.staticKeyboard) {
+            config.staticKeyboard = this.staticKeyboard.toJSON();
+        }
+
+        return config;
     }
 
     updateBotConfiguration() {
@@ -756,5 +762,6 @@ Bot.KikCode = KikCode;
 Bot.API = API;
 Bot.UserProfile = UserProfile;
 Bot.Response = Response;
+Bot.ResponseKeyboard = ResponseKeyboard;
 
 module.exports = Bot;

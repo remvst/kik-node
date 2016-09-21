@@ -30,7 +30,8 @@ describe('Message construction', () => {
                     { type: 'text', body: 'A' },
                     { type: 'text', body: 'B' },
                     { type: 'text', body: 'C' }
-                ]
+                ],
+                hidden: false
             }]
         };
 
@@ -49,7 +50,8 @@ describe('Message construction', () => {
                     { type: 'text', body: 'A' },
                     { type: 'text', body: 'B' },
                     { type: 'text', body: 'C' }
-                ]
+                ],
+                hidden: false
             }]
         };
 
@@ -188,7 +190,8 @@ describe('Message construction', () => {
                     { type: 'text', body: 'A' },
                     { type: 'text', body: 'B' },
                     { type: 'text', body: 'C' }
-                ]
+                ],
+                hidden: false
             }]
         };
 
@@ -343,7 +346,8 @@ describe('Message construction', () => {
                     { type: 'text', body: 'A' },
                     { type: 'text', body: 'B' },
                     { type: 'text', body: 'C' }
-                ]
+                ],
+                hidden: false
             }]
         };
 

@@ -25,7 +25,7 @@ const BotOptionsKeys = {
     'username': true,
     'apiKey': true,
     'skipSignatureCheck': true,
-    'staticKeyboard': null
+    'staticKeyboard': true
 };
 
 /**

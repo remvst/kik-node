@@ -201,7 +201,7 @@ class Bot {
         };
 
         if (this.staticKeyboard) {
-            config.staticKeyboard = this.staticKeyboard.toJSON();
+            config.staticKeyboard = this.staticKeyboard.toJSON ? this.staticKeyboard.toJSON() : this.staticKeyboard;
         }
 
         return config;

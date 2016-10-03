@@ -171,4 +171,25 @@ describe('Bot configuration', () => {
             staticKeyboard: keyboard.toJSON()
         });
     });
+
+    it('can have a JSON keyboard specified', () => {
+        expectConfig({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            baseUrl: 'http://foo.bar',
+            incomingPath: 'inc',
+            staticKeyboard: {
+                foo: 'bar'
+            }
+        }, {
+            webhook: 'http://foo.bar/inc',
+            features: {
+                manuallySendReadReceipts: false,
+                receiveReadReceipts: false,
+                receiveDeliveryReceipts: false,
+                receiveIsTyping: false
+            },
+            staticKeyboard: { foo: 'bar' }
+        });
+    });
 });

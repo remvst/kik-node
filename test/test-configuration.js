@@ -63,7 +63,7 @@ describe('Bot construction', () => {
 });
 
 describe('Bot configuration', () => {
-    function expectConfig(botParams, expectedConfig){
+    function expectConfig(botParams, expectedConfig) {
         const bot = new Bot(botParams);
         assert.deepEqual(bot.configuration, expectedConfig);
     }

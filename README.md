@@ -132,6 +132,19 @@ bot.onTextMessage((message) => {
 });
 ```
 
+### Setting a static keyboard
+
+You can specify a [static keyboard](https://dev.kik.com/#/docs/messaging#static-keyboard) for your bot when a user starts mentioning it in a conversation:
+
+```javascript
+let bot = new Bot({
+    username: 'echo.bot',
+    apiKey: '7b939d69-e840-4d22-aab8-4188c2198f8a',
+    baseUrl: 'https://kik-echobot.ngrok.io/',
+    staticKeyboard: new Bot.ResponseKeyboard(['Option 1', 'Option 2'])
+});
+```
+
 [travis-image]: https://travis-ci.org/kikinteractive/kik-node.svg?branch=master
 [travis-url]: https://travis-ci.org/kikinteractive/kik-node
 
@@ -194,6 +207,7 @@ Parses user messages sent from Kik's server. Use the [.incoming()](#Bot+incoming
 | [options.receiveDeliveryReceipts] | <code>boolean</code> |  |
 | [options.receiveIsTyping] | <code>boolean</code> |  |
 | [options.skipSignatureCheck] | <code>boolean</code> | Verify the authenticity of inbound requests. **For testing only, do not disable for a bot in production.** |
+| [options.staticKeyboard] | <code>ResponseKeyboard</code> | Static keyboard for your bot |
 
 <a name="Bot+use"></a>
 
@@ -1074,6 +1088,50 @@ Constructs a new {Message} object from a JSON-encoded payload
 | --- | --- |
 | json | <code>object</code> |
 
+<a name="ResponseKeyboard"></a>
+
+## ResponseKeyboard
+
+* [Bot.ResponseKeyboard](#ResponseKeyboard)
+    * [new Bot.ResponseKeyboard(responses, hidden, to)](#new_Bot_ResponseKeyboard)
+    * [.addResponse(resonse)](#ResponseKeyboard+addResponse)
+
+<a name="new_Bot_ResponseKeyboard"></a>
+
+### new Bot.ResponseKeyboard([responses], [hidden], [to])
+
+| Param | Type |
+| --- | --- |
+| [responses] | <code>array</code> |
+| [hidden] | <code>boolean</code> |
+| [to] | <code>string</code> |
+
+**Example**  
+```js
+let keyboard = new Bot.ResponseKeyboard(['Option 1', 'Option 2']);
+```
+
+**Example**  
+```js
+let keyboard = new Bot.ResponseKeyboard(['Option 1', 'Option 2'], true, 'kikteam');
+```
+
+<a name="ResponseKeyboard+addResponse"></a>
+
+### message.addResponse(response) ⇒ <code>[ResponseKeyboard](#ResponseKeyboard)</code>
+**Kind**: instance method of <code>[ResponseKeyboard](#Message)</code>  
+
+| Param | Type |
+| --- | --- |
+| response | <code>string</code> &#124; <strong>object</strong> |
+
+**Example**  
+```js
+let keyboard = new Bot.ResponseKeyboard();
+keyboard.addResponse(Bot.Response.friendPicker('Pick a friend'));
+keyboard.addResponse('Option 1');
+keyboard.addResponse('Option 2');
+```
 
 <a name="KikCode"></a>
 

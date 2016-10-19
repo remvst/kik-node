@@ -1,13 +1,8 @@
 'use strict';
 
-const nock = require('nock');
 const request = require('supertest');
 const assert = require('assert');
 const crypto = require('crypto');
-const EventEmitter = require('events').EventEmitter;
-const defer = typeof setImmediate === 'function' ? setImmediate : (fn) => {
-    process.nextTick(fn.bind.apply(fn, arguments));
-};
 
 const Bot = require('../index.js');
 

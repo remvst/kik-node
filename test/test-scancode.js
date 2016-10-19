@@ -1,7 +1,6 @@
 'use strict';
 
 let nock = require('nock');
-let request = require('supertest');
 let assert = require('assert');
 let Bot = require('../index.js');
 
@@ -16,7 +15,7 @@ describe('Data scan code', () => {
             skipSignatureCheck: true
         });
 
-        let engine = nock('https://api.kik.com')
+        nock('https://api.kik.com')
             .post('/v1/codes')
             .reply(200, { 'id': '54bd91bf1a2044abcde7c9d87378cf32572bd927' });
 

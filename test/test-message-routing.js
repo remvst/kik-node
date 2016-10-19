@@ -3,10 +3,6 @@
 let nock = require('nock');
 let request = require('supertest');
 let assert = require('assert');
-let EventEmitter = require('events').EventEmitter;
-let defer = typeof setImmediate === 'function' ? setImmediate : (fn) => {
-    process.nextTick(fn.bind.apply(fn, arguments));
-};
 
 let Bot = require('../index.js');
 
@@ -14,7 +10,7 @@ const BOT_USERNAME = 'testbot';
 const BOT_API_KEY = '2042cd8e-638c-4183-aef4-d4bef6f01981';
 
 let messageChecker;
-let engine = nock('https://api.kik.com')
+nock('https://api.kik.com')
     .post('/v1/message')
     .reply(200, (err, body, cb) => {
         let currentMessageChecker = messageChecker;
@@ -374,7 +370,7 @@ describe('Outgoing broadcast messages', () => {
             skipSignatureCheck: true
         });
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             assert.deepEqual(body, {
                 messages: [
                     { body: 'Test', type: 'text', to: 'testuser1' }
@@ -401,10 +397,10 @@ describe('Outgoing broadcast messages', () => {
             users.push('testuser' + i);
         }
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             assert.equal(body.messages.length, 100);
 
-            messageChecker = (err, body, cb) => {
+            messageChecker = (err, body) => {
                 assert.equal(body.messages.length, 2);
                 done();
             };
@@ -440,7 +436,7 @@ describe('Outgoing messages', () => {
             skipSignatureCheck: true
         });
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             assert.deepEqual(body, {
                 messages: [
                     { body: 'Test', type: 'text', to: 'testuser1' }
@@ -462,7 +458,7 @@ describe('Outgoing messages', () => {
             skipSignatureCheck: true
         });
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             assert.deepEqual(body, {
                 messages: [
                     { body: 'Test', type: 'text', to: 'testuser1' }
@@ -481,7 +477,7 @@ describe('Outgoing messages', () => {
             skipSignatureCheck: true
         });
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             assert.deepEqual(body, {
                 messages: [
                     { body: 'Test 1', type: 'text', to: 'testuser1' },
@@ -513,7 +509,7 @@ describe('Outgoing messages', () => {
             skipSignatureCheck: true
         });
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             assert.deepEqual(body, {
                 messages: [
                     { body: 'Test 1', type: 'text', to: 'testuser1' },
@@ -521,14 +517,14 @@ describe('Outgoing messages', () => {
                 ]
             });
 
-            messageChecker = (err, body, cb) => {
+            messageChecker = (err, body) => {
                 assert.deepEqual(body, {
                     messages: [
                         { body: 'Test 2', type: 'text', to: 'chris' }
                     ]
                 });
 
-                messageChecker = (err, body, cb) => {
+                messageChecker = (err, body) => {
                     assert.deepEqual(body, {
                         messages: [
                             { body: 'Test 3', type: 'text', to: 'ted' }
@@ -565,7 +561,7 @@ describe('Outgoing messages', () => {
             skipSignatureCheck: true
         });
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             assert.deepEqual(body, {
                 messages: [
                     { body: 'Test 1', type: 'text', to: 'testuser1' },
@@ -573,7 +569,7 @@ describe('Outgoing messages', () => {
                 ]
             });
 
-            messageChecker = (err, body, cb) => {
+            messageChecker = (err, body) => {
                 assert.deepEqual(body, {
                     messages: [
                         { body: 'Test 3', type: 'text', to: 'testuser1' },
@@ -581,14 +577,14 @@ describe('Outgoing messages', () => {
                     ]
                 });
 
-                messageChecker = (err, body, cb) => {
+                messageChecker = (err, body) => {
                     assert.deepEqual(body, {
                         messages: [
                             { body: 'Test 5', type: 'text', to: 'testuser1' }
                         ]
                     });
 
-                    messageChecker = (err, body, cb) => {
+                    messageChecker = (err, body) => {
                         assert.deepEqual(body, {
                             messages: [
                                 { body: 'Test 1', type: 'text', to: 'chris' },
@@ -641,11 +637,11 @@ describe('Message routing', () => {
             incomingPath: '/incoming'
         });
 
-        bot.use((incoming, next) => {
+        bot.use(incoming => {
             incoming.reply('Complete');
         });
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             assert.deepEqual(body, {
                 messages: [
                     { body: 'Complete', type: 'text', to: 'testuser1' }
@@ -671,7 +667,7 @@ describe('Message routing', () => {
             incomingPath: '/incoming'
         });
 
-        bot.use((incoming, next) => {
+        bot.use(incoming => {
             incoming.ignore();
         });
 
@@ -715,11 +711,11 @@ describe('Reply handling', () => {
             skipSignatureCheck: true
         });
 
-        bot.use((incoming, next) => {
+        bot.use(incoming => {
             incoming.startTyping();
         });
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             let message = Bot.Message.fromJSON(body.messages[0]);
 
             assert.ok(message.isIsTypingMessage());
@@ -743,11 +739,11 @@ describe('Reply handling', () => {
             skipSignatureCheck: true
         });
 
-        bot.use((incoming, next) => {
+        bot.use(incoming => {
             incoming.stopTyping();
         });
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             let message = Bot.Message.fromJSON(body.messages[0]);
 
             assert.ok(message.isIsTypingMessage());
@@ -776,11 +772,11 @@ describe('Reply handling', () => {
             skipSignatureCheck: true
         });
 
-        bot.use((incoming, next) => {
+        bot.use(incoming => {
             incoming.markRead();
         });
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             let message = Bot.Message.fromJSON(body.messages[0]);
 
             assert.ok(message.isReadReceiptMessage());
@@ -809,7 +805,7 @@ describe('Reply handling', () => {
             skipSignatureCheck: true
         });
 
-        bot.use((incoming, next) => {
+        bot.use(incoming => {
             incoming.reply('Hi');
         });
 
@@ -823,9 +819,9 @@ describe('Reply handling', () => {
             next();
         });
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             let message = Bot.Message.fromJSON(body.messages[0]);
-            assert.equal(message.body, 'Hifoobar')
+            assert.equal(message.body, 'Hifoobar');
 
             done();
         };
@@ -866,7 +862,7 @@ describe('Reply handling', () => {
             next();
         });
 
-        messageChecker = (err, body, cb) => {
+        messageChecker = (err, body) => {
             assert.equal(body.messages[0].body, 'Hifoobar');
             assert.equal(body.messages[1].body, 'Therefoobar');
             done();

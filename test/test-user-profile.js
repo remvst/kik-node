@@ -1,7 +1,6 @@
 'use strict';
 
 let nock = require('nock');
-let request = require('supertest');
 let assert = require('assert');
 let Bot = require('../index.js');
 
@@ -16,7 +15,7 @@ describe('Get user profile info', () => {
             skipSignatureCheck: true
         });
 
-        let engine = nock('https://api.kik.com')
+        nock('https://api.kik.com')
             .get('/v1/user/testuser1')
             .reply(200, {
                 firstName: 'Gwendolyn',
@@ -53,7 +52,7 @@ describe('Get user profile info', () => {
             skipSignatureCheck: true
         });
 
-        let engine = nock('https://api.kik.com')
+        nock('https://api.kik.com')
             .get('/v1/user/testuser1')
             .reply(200, {
                 firstName: 'Test',
@@ -93,14 +92,14 @@ describe('Get user profile info', () => {
             skipSignatureCheck: true
         });
 
-        let engine = nock('https://api.kik.com')
+        nock('https://api.kik.com')
             .get('/v1/user/testuser12')
             .reply(404);
 
         bot.getUserProfile('testuser12')
-            .then((profile) => {
+            .then(() => {
                 assert.fail('Profile should not exist');
-            }, (err) => {
+            }, () => {
                 done();
             });
     });
@@ -112,7 +111,7 @@ describe('Get user profile info', () => {
             skipSignatureCheck: true
         });
 
-        let engine = nock('https://api.kik.com')
+        nock('https://api.kik.com')
             .get('/v1/user/testuser1')
             .reply(200, {
                 firstName: 'Gwendolyn',

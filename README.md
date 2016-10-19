@@ -132,6 +132,19 @@ bot.onTextMessage((message) => {
 });
 ```
 
+### Setting a static keyboard
+
+You can specify a [static keyboard](TODO) for your bot when a user starts mentioning it in a conversation:
+
+```javascript
+let bot = new Bot({
+    username: 'echo.bot',
+    apiKey: '7b939d69-e840-4d22-aab8-4188c2198f8a',
+    baseUrl: 'https://kik-echobot.ngrok.io/',
+    staticKeyboard: new Bot.ResponseKeyboard(['Option 1', 'Option 2'])
+});
+```
+
 [travis-image]: https://travis-ci.org/kikinteractive/kik-node.svg?branch=master
 [travis-url]: https://travis-ci.org/kikinteractive/kik-node
 
@@ -1115,6 +1128,7 @@ let keyboard = new Bot.Keyboard(['Option 1', 'Option 2'], true, 'kikteam');
 **Example**  
 ```js
 let keyboard = new Bot.Keyboard();
+keyboard.addResponse(Bot.Response.friendPicker('Pick a friend'));
 keyboard.addResponse('Option 1');
 keyboard.addResponse('Option 2');
 ```

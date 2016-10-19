@@ -134,7 +134,7 @@ bot.onTextMessage((message) => {
 
 ### Setting a static keyboard
 
-You can specify a [static keyboard](TODO) for your bot when a user starts mentioning it in a conversation:
+You can specify a [static keyboard](https://dev.kik.com/#/docs/messaging#static-keyboard) for your bot when a user starts mentioning it in a conversation:
 
 ```javascript
 let bot = new Bot({

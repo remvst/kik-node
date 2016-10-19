@@ -1108,12 +1108,12 @@ Constructs a new {Message} object from a JSON-encoded payload
 
 **Example**  
 ```js
-let keyboard = new Bot.Keyboard(['Option 1', 'Option 2']);
+let keyboard = new Bot.ResponseKeyboard(['Option 1', 'Option 2']);
 ```
 
 **Example**  
 ```js
-let keyboard = new Bot.Keyboard(['Option 1', 'Option 2'], true, 'kikteam');
+let keyboard = new Bot.ResponseKeyboard(['Option 1', 'Option 2'], true, 'kikteam');
 ```
 
 <a name="ResponseKeyboard+addResponse"></a>
@@ -1127,7 +1127,7 @@ let keyboard = new Bot.Keyboard(['Option 1', 'Option 2'], true, 'kikteam');
 
 **Example**  
 ```js
-let keyboard = new Bot.Keyboard();
+let keyboard = new Bot.ResponseKeyboard();
 keyboard.addResponse(Bot.Response.friendPicker('Pick a friend'));
 keyboard.addResponse('Option 1');
 keyboard.addResponse('Option 2');

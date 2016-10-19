@@ -4,8 +4,8 @@
     "description": "Kik bot API for Node.js",
     "main": "index.js",
     "engines": {
-        "node": "5.x.x",
-        "npm": "3.x.x"
+        "node": ">=5",
+        "npm": ">=3"
     },
     "keywords": [
         "kik",

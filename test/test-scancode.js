@@ -21,8 +21,8 @@ describe('Data scan code', () => {
 
         bot.getKikCodeUrl({ 'data': { abc: 123 } })
             .then((url) => {
-                assert.equal(url, 'https://scancode.kik.com/api/v1/images/remote/'
-                           + '54bd91bf1a2044abcde7c9d87378cf32572bd927' + '/1200x1200.png');
+                assert.equal(url, 'https://scancode.kik.com/api/v1/images/remote/' +
+                           '54bd91bf1a2044abcde7c9d87378cf32572bd927' + '/1200x1200.png');
                 done();
             });
     });
@@ -38,8 +38,8 @@ describe('Username scan code', () => {
 
         bot.getKikCodeUrl()
             .then((url) => {
-                assert.equal(url, 'https://scancode.kik.com/api/v1/images/username/'
-                           + BOT_USERNAME + '/1200x1200.png');
+                assert.equal(url, 'https://scancode.kik.com/api/v1/images/username/' +
+                           BOT_USERNAME + '/1200x1200.png');
                 done();
             });
     });
@@ -52,8 +52,8 @@ describe('Username scan code', () => {
 
         bot.getKikCodeUrl({ 'width': 128, 'height': 256 })
             .then((url) => {
-                assert.equal(url, 'https://scancode.kik.com/api/v1/images/username/'
-                           + BOT_USERNAME + '/128x256.png');
+                assert.equal(url, 'https://scancode.kik.com/api/v1/images/username/' +
+                           BOT_USERNAME + '/128x256.png');
                 done();
             });
     });
@@ -66,8 +66,8 @@ describe('Username scan code', () => {
 
         bot.getKikCodeUrl({ 'color': Bot.KikCode.Colors.Sunshine })
             .then((url) => {
-                assert.equal(url, 'https://scancode.kik.com/api/v1/images/username/'
-                           + BOT_USERNAME + '/1200x1200.png?c=5');
+                assert.equal(url, 'https://scancode.kik.com/api/v1/images/username/' +
+                           BOT_USERNAME + '/1200x1200.png?c=5');
                 done();
             });
     });

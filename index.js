@@ -201,7 +201,11 @@ class Bot {
         };
 
         if (this.staticKeyboard) {
-            config.staticKeyboard = this.staticKeyboard.toJSON ? this.staticKeyboard.toJSON() : this.staticKeyboard;
+            if (this.staticKeyboard.toJSON) {
+                config.staticKeyboard = this.staticKeyboard.toJSON();
+            } else {
+                config.staticKeyboard = this.staticKeyboard;
+            }
         }
 
         return config;
@@ -274,8 +278,7 @@ class Bot {
             // if we have a reg ex to match and it doesn't, give up
             // otherwise this is ours }:-)
             if (incoming.isTextMessage()) {
-                if ((!isString && !isRegExp)
-                  || (isString && incoming.body === text)) {
+                if ((!isString && !isRegExp) || (isString && incoming.body === text)) {
                     handler(incoming, next);
                 } else if (isRegExp && util.isString(incoming.body)) {
                     let matches = incoming.body.match(text);
@@ -516,7 +519,7 @@ class Bot {
         });
 
         let promises = [];
-        for(let i = 0 ; i < pendingMessages.length ; i += this.maxMessagePerBroadcast) {
+        for (let i = 0; i < pendingMessages.length; i += this.maxMessagePerBroadcast) {
             let slice = pendingMessages.slice(i, i + this.maxMessagePerBroadcast);
             promises.push(API.broadcastMessages(this.apiDomain, this.username, this.apiKey, slice));
         }
@@ -649,8 +652,6 @@ class Bot {
                         return res.end('Invalid body');
                     }
 
-                    let remainingMessages = parsed.messages.length + 1;
-
                     function doNothing() {
                     }
 
@@ -675,7 +676,7 @@ class Bot {
      *  @return {promise.<object>}
      */
     postProcessMessage(message) {
-        return new Promise((fulfill, reject) => {
+        return new Promise((fulfill) => {
             const outgoingStack = this.outgoingStack.slice(0);
 
             function runNextHandler() {

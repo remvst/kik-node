@@ -14,7 +14,7 @@
     ],
     "license": "MIT",
     "scripts": {
-        "lint": "jscs index.js lib/*.js test/*.js",
+        "lint": "jscs index.js lib/*.js test/*.js && jshint index.js lib/*.js test/*.js",
         "test": "mocha",
         "doc": "./node_modules/.bin/jsdoc2md --src index.js lib/*.js -t README.handlebars > README.md",
         "cover": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec",

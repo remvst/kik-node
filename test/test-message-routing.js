@@ -113,7 +113,7 @@ describe('Incoming handling', () => {
             skipSignatureCheck: true
         });
 
-        bot.use((incoming, next) => {
+        bot.use((incoming) => {
             incoming.ignore();
             done();
         });
@@ -393,7 +393,7 @@ describe('Outgoing broadcast messages', () => {
         });
 
         let users = [];
-        for(let i = 0 ; i < 51 ; i++){
+        for (let i = 0; i < 51; i++) {
             users.push('testuser' + i);
         }
 

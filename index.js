@@ -2,13 +2,15 @@
 
 const util = require('util');
 const crypto = require('crypto');
+const url = require('url');
+
 const Message = require('./lib/message.js');
 const Response = require('./lib/response.js');
 const ResponseKeyboard = require('./lib/response-keyboard.js');
 const API = require('./lib/api.js');
 const UserProfile = require('./lib/user-profile.js');
 const KikCode = require('./lib/scan-code.js');
-const url = require('url');
+const IncomingMessage = require('./lib/incoming-message');
 
 const UsernameRegex = /^[A-Za-z0-9_.]{2,32}$/;
 const UuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
@@ -73,56 +75,6 @@ function prepareMessage(originalMessage, to, chatId) {
     }
 
     return result;
-}
-
-/**
- *  @class IncomingMessage
- *  This is a test
- */
-class IncomingMessage extends Message {
-    constructor(bot) {
-        super('');
-
-        this.bot = bot;
-    }
-
-    /**
-     *  @param {Message|array.<Message>}
-     *  @return {promise.<object>}
-     */
-    reply(messages) {
-        this.finish();
-
-        return this.bot.send(messages, this.from, this.chatId);
-    }
-
-    /**
-     *  @return {promise.<object>}
-     */
-    markRead() {
-        return this.reply(Message.readReceipt([this.id]));
-    }
-
-    /**
-     *  @return {promise.<object>}
-     */
-    startTyping() {
-        return this.reply(Message.isTyping(true));
-    }
-
-    /**
-     *  @return {promise.<object>}
-     */
-    stopTyping() {
-        return this.reply(Message.isTyping(false));
-    }
-
-    /**
-     *  @method
-     */
-    ignore() {
-        this.finish();
-    }
 }
 
 /**

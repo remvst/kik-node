@@ -363,6 +363,18 @@ describe('Outgoing broadcast messages', () => {
         });
     });
 
+    it('throws for invalid usernames', () => {
+        assert.throws(() => {
+            let bot = new Bot({
+                username: BOT_USERNAME,
+                apiKey: BOT_API_KEY,
+                skipSignatureCheck: true
+            });
+
+            bot.broadcast({ body: 'remvst was here too', type: 'text' }, ['valid', 'invalid here']);
+        });
+    });
+
     it('are sent properly', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
@@ -426,6 +438,18 @@ describe('Outgoing messages', () => {
             });
 
             bot.send({ body: 'Whoops no recipient', type: 'text' });
+        });
+    });
+
+    it('throws if username is invalid', () => {
+        assert.throws(() => {
+            let bot = new Bot({
+                username: BOT_USERNAME,
+                apiKey: BOT_API_KEY,
+                skipSignatureCheck: true
+            });
+
+            bot.send({ body: 'remi was here', type: 'text' }, 'r');
         });
     });
 

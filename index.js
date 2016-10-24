@@ -8,10 +8,9 @@ const ResponseKeyboard = require('./lib/response-keyboard.js');
 const API = require('./lib/api.js');
 const UserProfile = require('./lib/user-profile.js');
 const KikCode = require('./lib/scan-code.js');
+const Const = require('./lib/const.js');
 const url = require('url');
 
-const UsernameRegex = /^[A-Za-z0-9_.]{2,32}$/;
-const UuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
 const BotOptionsKeys = {
     'apiDomain': true,
     'baseUrl': true,
@@ -167,11 +166,11 @@ class Bot {
         // validate options
         let errors = [];
 
-        if (!this.username || !this.username.match(UsernameRegex)) {
+        if (!this.username || !this.username.match(Const.USERNAME_REGEX)) {
             errors.push('Option "username" must be a valid Kik username');
         }
 
-        if (!this.apiKey || !this.apiKey.match(UuidRegex)) {
+        if (!this.apiKey || !this.apiKey.match(Const.UUID_REGEX)) {
             errors.push('Option "apiKey" must be a Kik API key, see http://dev.kik.com/');
         }
 
@@ -502,6 +501,12 @@ class Bot {
             recipients = [recipients];
         }
 
+        recipients.forEach(recipient => {
+            if (!recipient.match(Const.USERNAME_REGEX)) {
+                throw new Error(`"${recipient}" is not a valid username`);
+            }
+        });
+
         // force messages to be an array
         if (!!messages && !util.isArray(messages)) {
             messages = [messages];
@@ -534,7 +539,11 @@ class Bot {
      */
     send(messages, recipient, chatId) {
         if (!recipient) {
-            throw 'You must specify a recipient to send a message';
+            throw new Error('You must specify a recipient to send a message');
+        }
+
+        if (!recipient.match(Const.USERNAME_REGEX)) {
+            throw new Error(`"${recipient}" is not a valid username`);
         }
 
         // force messages to be an array

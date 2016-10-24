@@ -501,6 +501,12 @@ class Bot {
             recipients = [recipients];
         }
 
+        recipients.forEach(recipient => {
+            if (!recipient.match(Const.USERNAME_REGEX)) {
+                throw new Error(`"${recipient}" is not a valid username`);
+            }
+        });
+
         // force messages to be an array
         if (!!messages && !util.isArray(messages)) {
             messages = [messages];
@@ -533,7 +539,11 @@ class Bot {
      */
     send(messages, recipient, chatId) {
         if (!recipient) {
-            throw 'You must specify a recipient to send a message';
+            throw new Error('You must specify a recipient to send a message');
+        }
+
+        if (!recipient.match(Const.USERNAME_REGEX)) {
+            throw new Error(`"${recipient}" is not a valid username`);
         }
 
         // force messages to be an array

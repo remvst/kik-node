@@ -62,6 +62,12 @@ describe('response keyboard', () => {
         });
     });
 
+    it('cannot be created with an invalid username', () => {
+        assert.throws(() => {
+            new Bot.ResponseKeyboard(['1', '2'], null, 'r');
+        });
+    });
+
     it('can get new responses after being created', () => {
         let kb = new Bot.ResponseKeyboard();
         kb.addResponse('1');

@@ -6,6 +6,8 @@
     "strict": true,
     "globals": {
         "it": true,
-        "describe": true
+        "describe": true,
+        "beforeEach": true,
+        "afterEach": true
     }
 }

@@ -10,29 +10,39 @@ const BOT_USERNAME = 'testbot';
 const BOT_API_KEY = '2042cd8e-638c-4183-aef4-d4bef6f01981';
 
 let messageChecker;
-nock('https://api.kik.com')
-    .post('/v1/message')
-    .reply(200, (err, body, cb) => {
-        let currentMessageChecker = messageChecker;
 
-        messageChecker = null;
+function setupNock() {
+    nock('https://api.kik.com')
+        .post('/v1/message')
+        .reply(200, (err, body, cb) => {
+            let currentMessageChecker = messageChecker;
 
-        if (currentMessageChecker) {
-            currentMessageChecker(err, body, cb);
-        }
-    })
-    .post('/v1/broadcast')
-    .reply(200, (err, body, cb) => {
-        let currentMessageChecker = messageChecker;
+            messageChecker = null;
 
-        messageChecker = null;
+            if (currentMessageChecker) {
+                currentMessageChecker(err, body, cb);
+            }
+        })
+        .post('/v1/broadcast')
+        .reply(200, (err, body, cb) => {
+            let currentMessageChecker = messageChecker;
 
-        if (currentMessageChecker) {
-            currentMessageChecker(err, body, cb);
-        }
-    });
+            messageChecker = null;
+
+            if (currentMessageChecker) {
+                currentMessageChecker(err, body, cb);
+            }
+        });
+}
+
+function tearDownNock() {
+    nock.cleanAll();
+}
 
 describe('Incoming handling', () => {
+    beforeEach(setupNock);
+    afterEach(tearDownNock);
+
     it('rejects invalid signatures', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
@@ -226,6 +236,9 @@ describe('Incoming handling', () => {
 });
 
 describe('Type handler', () => {
+    beforeEach(setupNock);
+    afterEach(tearDownNock);
+
     it('handles all message types', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
@@ -351,6 +364,9 @@ describe('Type handler', () => {
 });
 
 describe('Outgoing broadcast messages', () => {
+    beforeEach(setupNock);
+    afterEach(tearDownNock);
+
     it('throws without a recipient', () => {
         assert.throws(() => {
             let bot = new Bot({
@@ -429,6 +445,9 @@ describe('Outgoing broadcast messages', () => {
 });
 
 describe('Outgoing messages', () => {
+    beforeEach(setupNock);
+    afterEach(tearDownNock);
+
     it('throws without a recipient', () => {
         assert.throws(() => {
             let bot = new Bot({
@@ -653,6 +672,9 @@ describe('Outgoing messages', () => {
 });
 
 describe('Message routing', () => {
+    beforeEach(setupNock);
+    afterEach(tearDownNock);
+
     it('replies to message', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
@@ -728,6 +750,9 @@ describe('Message routing', () => {
 });
 
 describe('Reply handling', () => {
+    beforeEach(setupNock);
+    afterEach(tearDownNock);
+
     it('can start typing', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,

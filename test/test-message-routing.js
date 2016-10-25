@@ -361,6 +361,54 @@ describe('Type handler', () => {
             .expect(200)
             .end(() => {});
     });
+
+    it('works with regexes for text messages', done => {
+        const bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+
+        const caughtMessages = [];
+
+        let receiveCount = 0;
+        let messages = [{
+            'type': 'text'
+        }, {
+            'type': 'text',
+            'body': 'bar'
+        }, {
+            'type': 'text',
+            'body': 'hello foo'
+        }, {
+            'type': 'text',
+            'body': 'hello bar'
+        }];
+
+        bot.onTextMessage(/^hello/, (msg, next) => {
+            caughtMessages.push(msg);
+            next();
+        });
+
+        bot.use((incoming, next) => {
+            if (++receiveCount === messages.length) {
+                assert.equal(caughtMessages.length, 2);
+                assert.equal(caughtMessages[0].body, 'hello foo');
+                assert.equal(caughtMessages[1].body, 'hello bar');
+                done();
+            }
+
+            next();
+        });
+
+        request(bot.incoming())
+            .post(bot.incomingPath)
+            .send({
+                'messages': messages
+            })
+            .expect(200)
+            .end(() => {});
+    });
 });
 
 describe('Outgoing broadcast messages', () => {

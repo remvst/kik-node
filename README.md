@@ -549,6 +549,7 @@ Object that stores a specific message that can be sent to/received from a user. 
         * [.participants](#Message+participants) ⇒ <code>array</code>
         * [.mention](#Message+mention) ⇒ <code>string</code>
         * [.picked](#Message+picked) ⇒ <code>array</code>
+        * [.metadata](#Message+metadata) ⇒ <code>object</code>
         * [.isTextMessage()](#Message+isTextMessage) ⇒ <code>boolean</code>
         * [.isLinkMessage()](#Message+isLinkMessage) ⇒ <code>boolean</code>
         * [.isPictureMessage()](#Message+isPictureMessage) ⇒ <code>boolean</code>
@@ -762,6 +763,11 @@ See https://dev.kik.com/#/docs/messaging#mention
 
 ### message.picked ⇒ <code>string</code>
 See https://dev.kik.com/#/docs/messaging#friend-picker
+
+**Kind**: instance property of <code>[Message](#Message)</code>  
+<a name="Message+isTextMessage"></a>
+
+### message.metadata ⇒ <code>object</code>
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+isTextMessage"></a>
@@ -1167,25 +1173,25 @@ See https://dev.kik.com/#/docs/messaging#kik-code-colors
 | Marine | <code>number</code> | <code>14</code> | #353CD4 |
 | Steel | <code>number</code> | <code>15</code> | #5D7687 |
 
+<a name="Response"></a>
 ## Response
 See https://dev.kik.com/#/docs/messaging#suggested-response-keyboard
-<a name="Response"></a>
 
 **Kind**: global class  
 
+<a name="Response.text"></a>
 ### Response.text(body) ⇒ <code>[Response](#Response)</code>
 
 **Kind**: static method of <code>[Response](#Response)</code>
-<a name="Response.text"></a>
 
 | Param | Type |
 | --- | --- |
 | body | <code>string</code> |
 
+<a name="Response.friendPicker"></a>
 ### Response.friendPicker([body], [min], [max], [preselected]) ⇒ <code>[Response](#Response)</code>
 
 **Kind**: static method of <code>[Response](#Response)</code>
-<a name="Response.friendPicker"></a>
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -1193,3 +1199,13 @@ See https://dev.kik.com/#/docs/messaging#suggested-response-keyboard
 | [min] | <code>int</code> | |
 | [max] | <code>int</code>| |
 | [preselected] | <code>array</code> | array of strings |
+
+<a name="Response.picture"></a>
+### Response.picture(picUrl, metadata) ⇒ <code>[Response](#Response)</code>
+
+**Kind**: static method of <code>[Response](#Response)</code>
+
+| Param | Type |
+| --- | --- |
+| [picUrl] | <code>string</code> |
+| [metadata] | <code>object</code> |

@@ -88,16 +88,6 @@ describe('responses', () => {
     });
 
     describe('picture', () => {
-        it('can be initialized with just a picture URL', () => {
-            const response = Bot.Response.picture('yolo');
-
-            assert.deepEqual(response, {
-                'type': 'picture',
-                'picUrl': 'yolo',
-                'metadata': {}
-            });
-        });
-
         it('can be initialized with a picture URL and metadata', () => {
             const response = Bot.Response.picture('remi', { 'was': 'here' });
 

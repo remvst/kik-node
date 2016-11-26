@@ -591,7 +591,9 @@ class Bot {
         }
 
         return (req, res, next) => {
-            if (req.url.indexOf(this.scanCodePath) === 0) {
+            let reqUrl = req.originalUrl || req.url;
+
+            if (reqUrl.indexOf(this.scanCodePath) === 0) {
                 // the kik code image only accepts GET requests
                 // requests, reject everything else
                 if (req.method !== 'GET') {
@@ -600,7 +602,7 @@ class Bot {
                     return res.end(this.scanCodePath + ' only accepts GET');
                 }
 
-                let urlComponents = url.parse(req.url, true);
+                let urlComponents = url.parse(reqUrl, true);
                 let query = urlComponents.query;
 
                 query.width = query.width || 512;
@@ -610,7 +612,7 @@ class Bot {
                     .then((kikCodeUrl) => {
                         res.redirect(301, kikCodeUrl);
                     });
-            } else if (req.url === this.incomingPath) {
+            } else if (reqUrl === this.incomingPath) {
                 // the incoming route for the bot only accepts POST
                 // requests, reject everything else
                 if (req.method !== 'POST') {

@@ -1,6 +1,8 @@
 'use strict';
 
 const assert = require('assert');
+const nock = require('nock');
+
 const Bot = require('../index.js');
 
 const BOT_USERNAME = 'testbot';
@@ -190,6 +192,53 @@ describe('Bot configuration', () => {
                 receiveIsTyping: false
             },
             staticKeyboard: { foo: 'bar' }
+        });
+    });
+});
+
+describe('Bot configuration API', () => {
+    afterEach(() => {
+        nock.cleanAll();
+    });
+
+    it('can be updated', done => {
+        nock('https://api.kik.com')
+            .post('/v1/config')
+            .reply(200, (url, body) => {
+                assert.deepEqual(body, bot.configuration);
+                return '{"foo": "bar"}';
+            });
+
+        const bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true,
+            baseUrl: 'http://example.com'
+        });
+
+        bot.updateBotConfiguration().then(result => {
+            assert.deepEqual(result, { 'foo': 'bar' });
+            done();
+        });
+    });
+
+    it('can be fetched', done => {
+        nock('https://api.kik.com')
+            .get('/v1/config')
+            .reply(200, () => {
+                return '{"foo": "bar"}';
+            });
+
+        const bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true,
+            baseUrl: 'http://example.com'
+        });
+
+        bot.getBotConfiguration().then(result => {
+            assert.deepEqual(result, { 'foo': 'bar' });
+            done();
         });
     });
 });

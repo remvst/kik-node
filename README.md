@@ -476,6 +476,7 @@ See https://dev.kik.com/#/docs/messaging#user-profiles
     * [.lastName](#UserProfile+lastName) ⇒ <code>string</code>
     * [.profilePicUrl](#UserProfile+profilePicUrl) ⇒ <code>string</code>
     * [.profilePicLastModified](#UserProfile+profilePicLastModified) ⇒ <code>number</code>
+    * [.timezone](#UserProfile+timezone) ⇒ <code>string</code>
 
 <a name="UserProfile+displayName"></a>
 
@@ -501,6 +502,11 @@ See https://dev.kik.com/#/docs/messaging#user-profiles
 
 ### userProfile.profilePicLastModified ⇒ <code>number</code>
 **Kind**: instance property of <code>[UserProfile](#UserProfile)</code>  
+<a name="UserProfile+timezone"></a>
+
+### userProfile.timezone ⇒ <code>string</code>
+**Kind**: instance property of <code>[UserProfile](#UserProfile)</code>  
+
 
 <a name="Message"></a>
 

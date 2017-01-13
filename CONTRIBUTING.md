@@ -18,4 +18,3 @@ These changes will include a bug-fix version bump.
 Never include breaking changes in a bug-fix pull request, as it is very likely that it won't be accepted into distribution, and will be recommended to be moved to a feature-addition pull request. 
 
 These changes should be equally tested as those that are submitted into `dev`.
-

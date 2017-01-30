@@ -1207,5 +1207,5 @@ See https://dev.kik.com/#/docs/messaging#suggested-response-keyboard
 
 | Param | Type |
 | --- | --- |
-| [picUrl] | <code>string</code> |
-| [metadata] | <code>object</code> |
+| picUrl | <code>string</code> |
+| metadata | <code>object</code> |

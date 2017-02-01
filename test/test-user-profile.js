@@ -21,7 +21,8 @@ describe('Get user profile info', () => {
                 firstName: 'Gwendolyn',
                 lastName: 'Ferguson',
                 profilePicUrl: 'https://randomuser.me/api/portraits/women/21.jpg',
-                profilePicLastModified: 1458959883
+                profilePicLastModified: 1458959883,
+                timezone: 'America/Toronto'
             });
 
         bot.getUserProfile('testuser1')
@@ -38,7 +39,8 @@ describe('Get user profile info', () => {
                     'https://randomuser.me/api/portraits/women/21.jpg');
                 assert.equal(profile.profilePicLastModified,
                     1458959883);
-
+                assert.equal(profile.timezone,
+                    'America/Toronto');
                 done();
             }, (err) => {
                 assert.fail(err);

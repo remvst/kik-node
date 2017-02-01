@@ -1,6 +1,6 @@
 {
     "name": "@kikinteractive/kik",
-    "version": "2.0.12",
+    "version": "2.0.14",
     "description": "Kik bot API for Node.js",
     "main": "index.js",
     "engines": {

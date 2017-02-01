@@ -668,4 +668,18 @@ describe('Message parsing', () => {
             '859537ca-3ae4-46fc-bb18-6e7ba3182c0f', '6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f'
         ]);
     });
+
+    it('handles metadata', () => {
+        const message = Bot.Message.fromJSON({
+            'type': 'picture',
+            'from': 'atestuser',
+            'picUrl': 'picurl',
+            'id': '9a8764cb-3ae4-46fc-bb18-9871decfa11a',
+            'metadata': { 'foo': 'bar' }
+        });
+
+        assert.ok(message.isPictureMessage());
+
+        assert.deepEqual(message.metadata, { 'foo': 'bar' });
+    });
 });

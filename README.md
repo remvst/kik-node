@@ -547,6 +547,7 @@ Object that stores a specific message that can be sent to/received from a user. 
         * [.autoplay](#Message+autoplay) ⇒ <code>boolean</code>
         * [.noSave](#Message+noSave) ⇒ <code>boolean</code>
         * [.participants](#Message+participants) ⇒ <code>array</code>
+        * [.chatType](#Message+chatType) ⇒ <code>string</code>
         * [.mention](#Message+mention) ⇒ <code>string</code>
         * [.picked](#Message+picked) ⇒ <code>array</code>
         * [.isTextMessage()](#Message+isTextMessage) ⇒ <code>boolean</code>
@@ -750,6 +751,12 @@ See https://dev.kik.com/#/docs/messaging#video
 
 ### message.participants ⇒ <code>array</code>
 See https://dev.kik.com/#/docs/messaging#participants
+
+**Kind**: instance property of <code>[Message](#Message)</code>  
+<a name="Message+chatType"></a>
+
+### message.chatType ⇒ <code>array</code>
+See https://dev.kik.com/#/docs/messaging#chatType
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+mention"></a>

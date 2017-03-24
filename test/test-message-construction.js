@@ -635,6 +635,21 @@ describe('Message parsing', () => {
         assert.deepEqual(message.participants, ['sometestguy', 'sometestguy2']);
     });
 
+    it('handles chatType', () => {
+        const message = Bot.Message.fromJSON({
+            'type': 'text',
+            'from': 'atestuser',
+            'id': '6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f',
+            'timestamp': 1399303478832,
+            'chatType': 'public',
+            'body': 'Test'
+        });
+
+        assert.ok(message.isTextMessage());
+
+        assert.equal(message.chatType, 'public');
+    });
+
     it('handles mentions', () => {
         const message = Bot.Message.fromJSON({
             'type': 'text',

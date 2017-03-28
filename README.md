@@ -750,7 +750,7 @@ See https://dev.kik.com/#/docs/messaging#video
 <a name="Message+participants"></a>
 
 ### message.participants ⇒ <code>array</code>
-See https://dev.kik.com/#/docs/messaging#participants
+See https://dev.kik.com/#/docs/messaging#participants (will be undefined for receipt messages)
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+chatType"></a>

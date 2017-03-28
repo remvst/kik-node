@@ -756,7 +756,7 @@ See https://dev.kik.com/#/docs/messaging#participants (will be undefined for rec
 <a name="Message+chatType"></a>
 
 ### message.chatType ⇒ <code>array</code>
-See https://dev.kik.com/#/docs/messaging#chatType
+See https://dev.kik.com/#/docs/messaging#all-received-chat-messages-excluding-receipts
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+mention"></a>

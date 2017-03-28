@@ -635,7 +635,7 @@ describe('Message parsing', () => {
         assert.deepEqual(message.participants, ['sometestguy', 'sometestguy2']);
     });
 
-    it('handles chatType', () => {
+    it('handles public chatType', () => {
         const message = Bot.Message.fromJSON({
             'type': 'text',
             'from': 'atestuser',
@@ -648,6 +648,39 @@ describe('Message parsing', () => {
         assert.ok(message.isTextMessage());
 
         assert.equal(message.chatType, 'public');
+        assert.ok(message.isInPublicChat());
+    });
+
+    it('handles private chatType', () => {
+        const message = Bot.Message.fromJSON({
+            'type': 'text',
+            'from': 'atestuser',
+            'id': '6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f',
+            'timestamp': 1399303478832,
+            'chatType': 'private',
+            'body': 'Test'
+        });
+
+        assert.ok(message.isTextMessage());
+
+        assert.equal(message.chatType, 'private');
+        assert.ok(message.isInPrivateChat());
+    });
+
+    it('handles direct chatType', () => {
+        const message = Bot.Message.fromJSON({
+            'type': 'text',
+            'from': 'atestuser',
+            'id': '6d8d060c-3ae4-46fc-bb18-6e7ba3182c0f',
+            'timestamp': 1399303478832,
+            'chatType': 'direct',
+            'body': 'Test'
+        });
+
+        assert.ok(message.isTextMessage());
+
+        assert.equal(message.chatType, 'direct');
+        assert.ok(message.isInDirectChat());
     });
 
     it('handles mentions', () => {

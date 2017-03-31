@@ -553,9 +553,13 @@ Object that stores a specific message that can be sent to/received from a user. 
         * [.autoplay](#Message+autoplay) ⇒ <code>boolean</code>
         * [.noSave](#Message+noSave) ⇒ <code>boolean</code>
         * [.participants](#Message+participants) ⇒ <code>array</code>
+        * [.chatType](#Message+chatType) ⇒ <code>string</code>
         * [.mention](#Message+mention) ⇒ <code>string</code>
         * [.picked](#Message+picked) ⇒ <code>array</code>
         * [.metadata](#Message+metadata) ⇒ <code>object</code>
+        * [.isInPublicChat()](#Message+isInPublicChat) ⇒ <code>boolean</code>
+        * [.isInPrivateChat()](#Message+isInPrivateChat) ⇒ <code>boolean</code>
+        * [.isInDirectChat()](#Message+isInDirectChat) ⇒ <code>boolean</code>
         * [.isTextMessage()](#Message+isTextMessage) ⇒ <code>boolean</code>
         * [.isLinkMessage()](#Message+isLinkMessage) ⇒ <code>boolean</code>
         * [.isPictureMessage()](#Message+isPictureMessage) ⇒ <code>boolean</code>
@@ -759,6 +763,12 @@ See https://dev.kik.com/#/docs/messaging#video
 See https://dev.kik.com/#/docs/messaging#participants
 
 **Kind**: instance property of <code>[Message](#Message)</code>  
+<a name="Message+chatType"></a>
+
+### message.chatType ⇒ <code>array</code>
+See https://dev.kik.com/#/docs/messaging#all-received-chat-messages-excluding-receipts (will be `undefined` for receipt messages)
+
+**Kind**: instance property of <code>[Message](#Message)</code>  
 <a name="Message+mention"></a>
 
 ### message.mention ⇒ <code>string</code>
@@ -780,6 +790,24 @@ See https://dev.kik.com/#/docs/messaging#friend-picker
 
 ### message.isTextMessage() ⇒ <code>boolean</code>
 See https://dev.kik.com/#/docs/messaging#text
+
+**Kind**: instance method of <code>[Message](#Message)</code>  
+<a name="Message+isInPublicChat"></a>
+
+### message.isInPublicChat() ⇒ <code>boolean</code>
+See https://dev.kik.com/#/docs/messaging#all-received-chat-messages-excluding-receipts
+
+**Kind**: instance method of <code>[Message](#Message)</code>  
+<a name="Message+isInPrivateChat"></a>
+
+### message.isInPrivateChat() ⇒ <code>boolean</code>
+See https://dev.kik.com/#/docs/messaging#all-received-chat-messages-excluding-receipts
+
+**Kind**: instance method of <code>[Message](#Message)</code>  
+<a name="Message+isInDirectChat"></a>
+
+### message.isInDirectChat() ⇒ <code>boolean</code>
+See https://dev.kik.com/#/docs/messaging#all-received-chat-messages-excluding-receipts
 
 **Kind**: instance method of <code>[Message](#Message)</code>  
 <a name="Message+isLinkMessage"></a>

@@ -15,7 +15,7 @@ describe('Data scan code', () => {
             skipSignatureCheck: true
         });
 
-        const errorMessage = 'data option should should be a string. ' +
+        const errorMessage = 'data option should be a string. ' +
             'Use JSON.stringify() if you wish to pass an object';
 
         assert.throws(() => {

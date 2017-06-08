@@ -8,6 +8,21 @@ const BOT_USERNAME = 'testbot';
 const BOT_API_KEY = '2042cd8e-638c-4183-aef4-d4bef6f01981';
 
 describe('Data scan code', () => {
+    it('throws if trying to send something other than a string', () => {
+        let bot = new Bot({
+            username: BOT_USERNAME,
+            apiKey: BOT_API_KEY,
+            skipSignatureCheck: true
+        });
+
+        const errorMessage = 'data option should should be a string. ' +
+            'Use JSON.stringify() if you wish to pass an object';
+
+        assert.throws(() => {
+            bot.getKikCodeUrl({ 'data': { abc: 123 } });
+        }, Error, errorMessage);
+    });
+
     it('returns regular data URL', (done) => {
         let bot = new Bot({
             username: BOT_USERNAME,
@@ -16,10 +31,14 @@ describe('Data scan code', () => {
         });
 
         nock('https://api.kik.com')
-            .post('/v1/codes')
+            .post('/v1/code', { 'data': 'foobar' })
+            .basicAuth({
+                'user': BOT_USERNAME,
+                'pass': BOT_API_KEY
+            })
             .reply(200, { 'id': '54bd91bf1a2044abcde7c9d87378cf32572bd927' });
 
-        bot.getKikCodeUrl({ 'data': { abc: 123 } })
+        bot.getKikCodeUrl({ 'data': 'foobar' })
             .then((url) => {
                 assert.equal(url, 'https://scancode.kik.com/api/v1/images/remote/' +
                            '54bd91bf1a2044abcde7c9d87378cf32572bd927' + '/1200x1200.png');
